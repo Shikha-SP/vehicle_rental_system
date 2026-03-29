@@ -1,26 +1,28 @@
 <?php
 require_once '../../config/db.php';          // Connect to the database
 require_once '../../includes/functions.php'; // Include helper functions
-session_start();                           // Start session to manage login state and CSRF tokens
+session_start();                             // Start session to manage login state and CSRF tokens
 
 $theme = 'light';
 if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
     $theme = 'dark';
 }
 
-// Redirect logged-in users to dashboard (or vehicle list)
+// Redirect logged-in users to correct homepage based on admin status
 if (isLoggedIn()) {
-    redirect('dashboard.php'); // Change dashboard.php to your landing page
+    if ($_SESSION['is_admin']) {
+        redirect('../admin/home_page.php');
+    } else {
+        redirect('../user/home_page.php');
+    }
 }
 
-// Generate CSRF token if it doesn't exist
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = generateCsrfToken();
 }
 
 $errors = [];
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
@@ -61,14 +63,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Insert user if no errors
     if (empty($errors)) {
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = mysqli_prepare($conn, "INSERT INTO users (first_name,last_name,email,address,phone,password,license_no,license_type,is_admin) VALUES (?,?,?,?,?,?,?,?,0)");
+        $stmt = mysqli_prepare($conn, "INSERT INTO users (first_name,last_name,email,address,phone_number,password,license_number,license_type,is_admin) VALUES (?,?,?,?,?,?,?,?,0)");
         mysqli_stmt_bind_param($stmt, "ssssssss", $first_name, $last_name, $email, $address, $phone, $password_hash, $license_no, $license_type);
         if (mysqli_stmt_execute($stmt)) {
             session_regenerate_id(true);
             $_SESSION['user_id'] = mysqli_insert_id($conn);
             $_SESSION['username'] = $first_name;
             $_SESSION['csrf_token'] = generateCsrfToken();
-            redirect('dashboard.php'); // redirect after signup
+
+            // Redirect to user homepage (new users are normal users by default)
+            redirect('../user/home_page.php');
+
         } else {
             $errors[] = "Failed to create account. Try again.";
         }
@@ -76,7 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!-- HTML Form -->
 <!DOCTYPE html>
 <html lang="en" data-theme="<?= e($theme) ?>">
 <head>

@@ -8,8 +8,13 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
     $theme = 'dark';
 }
 
+// Redirect logged-in users to the correct homepage based on admin status
 if (isLoggedIn()) {
-    redirect('dashboard.php');
+    if ($_SESSION['is_admin']) {
+        redirect('../admin/home_page.php');
+    } else {
+        redirect('../user/home_page.php');
+    }
 }
 
 if (!isset($_SESSION['csrf_token'])) {
@@ -43,7 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['username'] = $user['first_name'];
                 $_SESSION['is_admin'] = (bool)$user['is_admin'];
                 $_SESSION['csrf_token'] = generateCsrfToken();
-                redirect('dashboard.php');
+
+                // Redirect based on admin status
+                if ($user['is_admin']) {
+                    redirect('../admin/home_page.php');
+                } else {
+                    redirect('../user/home_page.php');
+                }
+
             } else {
                 $errors[] = "Incorrect password.";
             }
