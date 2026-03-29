@@ -1,0 +1,8 @@
+This is a placeholder file. 
+
+Purpose:
+- Git does not track empty folders, so this file ensures the folder appears in the GitHub repository.
+- You should keep this file until you add actual project files to this folder.
+- Once you add real files, delete this placeholder file.
+
+Folder: assets/images
