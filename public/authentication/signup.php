@@ -1,6 +1,6 @@
 <?php
-require_once '../config/db.php';          // Connect to the database
-require_once '../includes/functions.php'; // Include helper functions
+require_once '../../config/db.php';          // Connect to the database
+require_once '../../includes/functions.php'; // Include helper functions
 session_start();                           // Start session to manage login state and CSRF tokens
 
 $theme = 'light';

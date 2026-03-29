@@ -1,6 +1,6 @@
 <?php
-require_once '../config/db.php';
-require_once '../includes/functions.php';
+require_once '../../config/db.php';
+require_once '../../includes/functions.php';
 session_start();
 
 $theme = 'light';
