@@ -37,6 +37,9 @@ CREATE TABLE IF NOT EXISTS users (
     is_admin TINYINT(1) DEFAULT 0,
     license_number VARCHAR(50),
     license_type ENUM('A','K','B','C','D','E') DEFAULT 'B',
+    is_verified TINYINT(1) NOT NULL DEFAULT 0,
+    verification_token VARCHAR(64) DEFAULT NULL,
+    token_expires_at DATETIME DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
 
@@ -71,5 +74,5 @@ CREATE TABLE IF NOT EXISTS bookings (
 )");
 
 // confirmation
-echo "Database and tables are ready.";
+//echo "Database and tables are ready.";
 ?>

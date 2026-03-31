@@ -1,10 +1,10 @@
 <?php
-// landing_page.php - public landing page
+// landing_page.php
 session_start();
 
-// If user is already logged in, redirect based on role
+// Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
-    if (isset($_SESSION['is_admin']) && $_SESSION['is_admin']) {
+    if (!empty($_SESSION['is_admin'])) {
         header("Location: admin/home_page.php");
         exit;
     } else {
@@ -13,14 +13,15 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Welcome to Vehicle Rental System</title>
-</head>
-<body>
-    <h1>Welcome to Vehicle Rental System</h1>
-    <p>Please <a href="authentication/login.php">Login</a> or <a href="authentication/signup.php">Sign Up</a></p>
-</body>
-</html>
+
+<?php require_once '../includes/header.php'; ?>
+
+<h1>Welcome to Vehicle Rental System</h1>
+<p>
+    Please 
+    <a href="authentication/login.php">Login</a> 
+    or 
+    <a href="authentication/signup.php">Sign Up</a>
+</p>
+
+<?php require_once '../includes/footer.php'; ?>
