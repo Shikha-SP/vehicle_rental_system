@@ -1,0 +1,126 @@
+/* Dark theme background */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #121212; 
+    color: #ffffff;
+}
+
+.text-red { color: #e60000; }
+
+.btn { padding: 12px 24px; border: none; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+.btn-red { background-color: #e60000; color: white; }
+.btn-outline { background-color: transparent; border: 2px solid #555; color: white; }
+
+.hero-section {
+    /* [ADD IMAGE OF THE CAR HERE] - Main Hero Background Image */
+    /* E.g., background-image: url('../../uploads/hero-car.jpg'); */
+    background-color: #1a1a1a; 
+    height: 70vh; 
+    display: flex; 
+    align-items: center; 
+    padding-left: 5%;
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* Search Bar Styles */
+.search-bar-container {
+    background-color: #222;
+    border: 1px solid #333;
+    padding: 15px 30px;
+    margin-top: 40px;
+    display: flex;
+    gap: 30px;
+    align-items: flex-end; /* Align inputs and button at the bottom */
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.search-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-field label {
+    font-size: 0.8rem;
+    color: #aaa;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.search-field input, .search-field select {
+    background-color: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    border-bottom: 1px solid #444;
+    padding: 5px 0;
+    min-width: 150px;
+}
+
+.search-field input::placeholder {
+    color: #666;
+}
+
+.search-field select option {
+    background-color: #222;
+    color: #fff;
+}
+
+.btn-search {
+    background-color: #e60000;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.gallery-section { padding: 50px 5%; background-color: #1a1a1a; }
+.section-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 30px; }
+.view-all { color: #e60000; text-decoration: none; font-weight: bold; }
+
+.car-grid { display: flex; gap: 20px; }
+.car-card { background-color: #222; border: 1px solid #333; flex: 1; display: flex; flex-direction: column; }
+
+.card-img-wrapper {
+    /* Made the background of the car place black for PNG images as requested */
+    background-color: #000000; 
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+.card-img-wrapper img { max-width: 100%; height: auto; }
+
+.card-info { padding: 20px; }
+.card-info h3 { margin: 0 0 5px 0; color: #fff; font-size: 1.2rem; text-transform: uppercase; }
+.badge { background-color: #e60000; color: white; padding: 2px 6px; font-size: 0.7rem; vertical-align: middle; margin-left: 5px; }
+.model-name { margin: 0; color: #aaa; font-size: 0.9rem; margin-bottom: 20px; text-transform: uppercase; }
+
+.specs { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #333; padding-top: 15px; }
+.specs span { color: #e60000; font-weight: bold; }
+
+.btn-link {
+    /* btn link styling matching the dark theme */
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+.btn-link:hover { background-color: #444; }
+
+.red-banner { background-color: #b30000; padding: 40px 5%; display: flex; justify-content: space-between; align-items: center; margin-top: 50px; }
+.btn-white { background-color: white; color: #b30000; }
+
+.showroom-section { padding: 50px 5%; display: flex; justify-content: space-between; gap: 40px; }
+.showroom-info, .map-container { flex: 1; }
+.map-container { display: flex; align-items: center; justify-content: center; } 
+.map-container img { max-width: 100%; opacity: 0.8; }
