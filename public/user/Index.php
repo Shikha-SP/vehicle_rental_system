@@ -1,146 +1,287 @@
-<?php 
+<?php
 /**
- * User Dashboard / Home Page
- * Location: public/user/dashboard.php
+ * ==========================================================
+ * User Dashboard / Homepage
+ * File: public/user/Index.php
+ * ==========================================================
  */
+include('../../config/db.php');
+include('../../includes/header.php');
+require_once('../../includes/functions.php');
+// ----------------------------------------------------------
+// Gallery vehicles — 3 available, with full specs
+// ----------------------------------------------------------
+$gallery_sql = "SELECT id, brand, name, type, image, price_per_day, fuel_range FROM vehicles WHERE status='available' LIMIT 3";
+$gallery_result = $conn->query($gallery_sql);
 
-// 1. Core Includes
-include('../../includes/header.php'); // This should already include functions.php
-require_once('../../includes/functions.php'); // Ensure functions.php is loaded so we can use e()
-include('../../config/db.php'); 
+// ----------------------------------------------------------
+// Brand filter tabs — distinct brands from DB
+// ----------------------------------------------------------
+$brands_sql = "SELECT DISTINCT brand FROM vehicles ORDER BY brand";
+$brands_result = $conn->query($brands_sql);
 ?>
-<!-- Link to Leaflet CSS for the Interactive Map -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-
-<!-- Link to global styles if available -->
+<!-- ======================================================
+     External Stylesheets
+====================================================== -->
 <link rel="stylesheet" href="../../assets/css/Homepage.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <main class="dashboard-content">
 
+    <!-- ====================================================
+         HERO SECTION
+    ==================================================== -->
     <section class="hero-section">
-        <div class="container hero-flex">
-            <div class="hero-text">
-                <h1>ENGINEERED FOR <br><span class="text-red">PERFORMANCE.</span><br>DRIVEN BY YOU.</h1>
-                <div class="hero-btns" style="margin-top:20px;">
-                    <!-- btn link -->
-                    <button class="btn btn-red">Book Now</button>
-                    <!-- btn link -->
-                    <button class="btn btn-outline">View Fleet</button>
-                </div>
 
-                <!-- Search Bar added below the buttons -->
-                <!-- You can update action="search.php" when processing search requests on the backend -->
-                <form action="search.php" method="GET" class="search-bar-container">
-                    <div class="search-field">
-                        <label for="pickup_location">Pick-up Location</label>
-                        <input type="text" id="pickup_location" name="pickup_location" placeholder="City or Airport">
-                    </div>
-                    <div class="search-field">
-                        <label for="vehicle_type">Vehicle Type</label>
-                        <select id="vehicle_type" name="vehicle_type">
-                            <option value="">Any Type</option>
-                            <option value="sports">Sports Car</option>
-                            <option value="luxury">Luxury</option>
-                            <option value="suv">SUV</option>
-                            <option value="sedan">Sedan</option>
-                        </select>
-                    </div>
-                    <div class="search-field">
-                        <label for="duration">Duration</label>
-                        <input type="text" id="duration" name="duration" placeholder="e.g. 3 Days">
-                    </div>
-                    <button type="submit" class="btn-search">Search</button>
-                </form>
+        <!-- Left-to-right dark gradient overlay -->
+        <div class="hero-gradient"></div>
 
-            </div>
-            <!-- [ADD IMAGE OF THE CAR HERE] - Alternatively to a CSS background, you can place a foreground img tag here -->
+        <!-- Car PNG from backend — right side, vertically centered (around green line) -->
+        <div class="hero-car-img">
+            <img src="../../uploads/car.png" alt="Featured Vehicle">
         </div>
+
+        <!-- Hero Text — bottom-left -->
+        <div class="hero-overlay">
+            <div class="hero-text">
+                <p class="hero-label">ELITE FLEET EXPERIENCE</p>
+                <h1 class="hero-heading">
+                    ENGINEERED FOR<br>
+                    <span class="text-red">PERFORMANCE.</span><br>
+                    DRIVEN BY YOU.
+                </h1>
+                <div class="hero-btns">
+                    <a href="vechile.php" class="btn btn-red">BOOK NOW</a>
+                    <a href="vechile.php" class="btn btn-ghost">VIEW FLEET</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================
+             SEARCH BAR — inside hero at bottom, full-width flush
+        ================================================ -->
+        <form action="search.php" method="GET" class="hero-search-bar">
+
+            <!-- Pick Up Location -->
+            <div class="sb-field">
+                <span class="sb-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="#c0392b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                    </svg>
+                </span>
+                <div class="sb-field-inner">
+                    <label for="pickup_location">Pick Up Location</label>
+                    <input type="text" id="pickup_location" name="pickup_location" placeholder="Beverly Hills, CA">
+                </div>
+            </div>
+            <div class="sb-divider"></div>
+
+            <!-- Vehicle Type -->
+            <div class="sb-field">
+                <span class="sb-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="#c0392b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="3" width="15" height="13" />
+                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
+                        <circle cx="5.5" cy="18.5" r="2.5" />
+                        <circle cx="18.5" cy="18.5" r="2.5" />
+                    </svg>
+                </span>
+                <div class="sb-field-inner">
+                    <label for="vehicle_type">Vehicle Type</label>
+                    <select id="vehicle_type" name="type">
+                        <option value="">Supercars</option>
+                        <option value="sedan">Sedan</option>
+                        <option value="suv">SUV</option>
+                        <option value="sports">Sports</option>
+                        <option value="supercar">Supercar</option>
+                        <option value="electric">Electric</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sb-divider"></div>
+
+            <!-- Duration -->
+            <div class="sb-field">
+                <span class="sb-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                        stroke="#c0392b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                </span>
+                <div class="sb-field-inner">
+                    <label for="pickup_date">Duration</label>
+                    <div class="sb-date-range">
+                        <input type="date" id="pickup_date" name="pickup_date">
+                        <span class="sb-date-sep">—</span>
+                        <input type="date" id="return_date" name="return_date">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Button -->
+            <button type="submit" class="sb-search-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                SEARCH
+            </button>
+
+        </form>
+
     </section>
 
+
+
+    <!-- ====================================================
+         PERFORMANCE GALLERY
+    ==================================================== -->
     <section class="gallery-section">
         <div class="container">
+
+            <p class="section-label">CURATED SELECTION</p>
             <div class="section-header">
                 <h2>THE PERFORMANCE GALLERY</h2>
-                <a href="#" class="view-all">VIEW ALL MODELS &rarr;</a>
+                <a href="vechile.php" class="view-all">EXPLORE ALL VEHICLES &rarr;</a>
             </div>
 
             <div class="car-grid">
                 <?php
-                // Information access details from backend:
-                // We're querying the 'vehicles' table to get the brand, name, image, and fuel_range
-                $sql = "SELECT brand, name, image, fuel_range FROM vehicles WHERE status = 'available' LIMIT 3";
-                $result = $conn->query($sql);
+                if ($gallery_result && $gallery_result->num_rows > 0):
+                    while ($car = $gallery_result->fetch_assoc()):
+                        $price = number_format((float) $car['price_per_day'], 0);
+                        $fuel = $car['fuel_range'] ? $car['fuel_range'] . ' km' : 'N/A';
+                        $type_label = strtoupper($car['type'] ?? 'CAR');
+                        ?>
+                        <div class="car-card">
 
-                if ($result && $result->num_rows > 0):
-                    while ($car = $result->fetch_assoc()): ?>
-                    <div class="car-card">
-                        <div class="card-img-wrapper">
-                            <!-- [ADD IMAGE OF THE CAR HERE] -->
-                            <!-- The image is fetched from the backend ($car['image']) in PNG format over the black background -->
-                            <img src="../../uploads/<?php echo e($car['image']); ?>" alt="<?php echo e($car['brand']); ?> Model">
-                        </div>
-                        <div class="card-info">
-                            <!-- Information access details from backend: Brand -->
-                            <h3><?php echo e($car['brand']); ?> <span class="badge">NEW</span></h3>
-                            
-                            <!-- Information access details from backend: Model Name -->
-                            <p class="model-name"><?php echo e($car['name']); ?></p>
-                            
-                            <div class="specs">
-                                <!-- Information access details from backend: Range/Specs -->
-                                <span>$1,200/day</span> <!-- Example static price to match design, replace with $car['price_per_day'] if available -->
-                                
-                                <!-- btn link - redirects to car details or booking page -->
-                                <button class="btn-link">RENT NOW</button>
+                            <!-- Type badge (from DB field: type) -->
+                            <div class="card-type-badge"><?php echo e($type_label); ?></div>
+
+                            <!-- Car image from DB -->
+                            <div class="card-img-wrapper">
+                                <?php if (!empty($car['image'])): ?>
+                                    <img src="../../uploads/<?php echo e($car['image']); ?>"
+                                        alt="<?php echo e($car['brand'] . ' ' . $car['name']); ?>">
+                                <?php else: ?>
+                                    <div class="no-img">NO IMAGE</div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="card-info">
+
+                                <!-- Brand + model from DB -->
+                                <div>
+                                    <h3><?php echo e($car['brand']); ?> <span class="badge">NEW</span></h3>
+                                    <p class="model-name"><?php echo e($car['name']); ?></p>
+                                </div>
+
+                                <!-- Specs from DB (fuel_range) -->
+                                <div class="card-specs-row">
+                                    <span class="spec-item">&#9981; <?php echo e($fuel); ?></span>
+                                </div>
+
+                                <!-- Price (from DB: price_per_day) + Rent button -->
+                                <div class="specs">
+                                    <span class="price">NPR <?php echo $price; ?>/day</span>
+                                    <a href="booking.php?id=<?php echo (int) $car['id']; ?>" class="btn-rent">RENT NOW</a>
+                                </div>
+
                             </div>
                         </div>
+                        <?php
+                    endwhile;
+                else:
+                    ?>
+                    <div class="no-vehicle-message">
+                        <p>No vehicles available at the moment.</p>
                     </div>
-                <?php 
-                    endwhile; 
-                else: 
-                ?>
-                    <p>No available vehicles found.</p>
                 <?php endif; ?>
             </div>
+
+            <!-- Brand Filter Tabs — generated from DB distinct brands -->
+            <div class="brand-filters">
+                <?php
+                if ($brands_result && $brands_result->num_rows > 0):
+                    while ($b = $brands_result->fetch_assoc()):
+                        ?>
+                        <a href="search.php?brand=<?php echo urlencode($b['brand']); ?>" class="brand-tab">
+                            <?php echo e(strtoupper($b['brand'])); ?>
+                        </a>
+                        <?php
+                    endwhile;
+                endif;
+                ?>
+            </div>
+
         </div>
     </section>
 
+    <!-- ====================================================
+         PROMOTIONAL BANNER — JOIN TD ELITE CLUB
+    ==================================================== -->
     <div class="red-banner">
-        <div class="container banner-flex" style="display:flex; justify-content:space-between; width:100%;">
+        <div class="container banner-flex">
             <div class="banner-text">
-                <h3 style="margin:0; font-size:1.8rem;">JOIN THE ELITE CLUB</h3>
-                <p style="margin:5px 0 0 0;">Get exclusive access to members-only events, priority booking, and premium tier vehicles.</p>
+                <h3>JOIN TD ELITE CLUB</h3>
+                <p>Get exclusive access to limited-run hypercars, priority delivery and personalized service.</p>
             </div>
-            <!-- btn link -->
-            <button class="btn btn-white">CREATE AN ACCOUNT</button>
+            <a href="signup.php" class="btn-white-outline">Apply For Membership</a>
         </div>
     </div>
 
+    <!-- ====================================================
+         SHOWROOM LOCATION + MAP
+    ==================================================== -->
     <section class="showroom-section">
-        <div class="container grid-two" style="display: flex; justify-content: space-between; gap: 40px; width: 100%;">
-            <div class="showroom-info" style="flex: 1;">
+        <div class="container grid-two">
+
+            <div class="showroom-info">
                 <h2>OUR SHOWROOMS</h2>
-                <p style="color:#aaa;">Experience engineering excellence in person at our flagship locations.</p>
-                <ul class="contact-details" style="list-style: none; padding: 0; color:#ccc;">
-                    <li style="margin-bottom: 10px;"><strong>📍 Location:</strong>Naxal Bhagawati Marga, Kathmandu, Nepal</li>
-                    <li><strong>📞 Phone:</strong>98 baunna teha bata uta aaunna</li>
+                <p>Experience engineering excellence in person.</p>
+                <ul class="contact-details">
+                    <li>
+                        <span class="contact-icon">&#128205;</span>
+                        <div>
+                            <strong>Location</strong>
+                            <span>Naxal Bhagawati Marga, Kathmandu</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="contact-icon">&#128222;</span>
+                        <div>
+                            <strong>Phone</strong>
+                            <span>+977 98XXXXXXXX</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="contact-icon">&#128336;</span>
+                        <div>
+                            <strong>Hours</strong>
+                            <span>Mon – Sat &nbsp;9AM – 6PM</span>
+                        </div>
+                    </li>
                 </ul>
             </div>
-            <div class="map-container" style="flex: 1; background-color: #222; padding: 10px;">
-                <!-- Interactive Showroom Map Container -->
-                <div id="showroom-map" style="width: 100%; height: 100%; min-height: 350px; border-radius: 5px;"></div>
+
+            <div class="map-container">
+                <div id="showroom-map"></div>
             </div>
+
         </div>
     </section>
 
 </main>
 
-<!-- Leaflet JS for Interactive Map -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-<!-- Custom Map Initialization JS -->
+<!-- Leaflet Map -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="../../assets/js/map.js"></script>
 
-<?php 
-// 3. Close the page with the global footer
-include('../../includes/footer.php'); 
-?>
+<?php include('../../includes/footer.php'); ?>

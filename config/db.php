@@ -44,12 +44,12 @@ CREATE TABLE IF NOT EXISTS users (
 $conn->query("
 CREATE TABLE IF NOT EXISTS vehicles (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,             -- vehicle model name
-    brand VARCHAR(50) NOT NULL,             -- vehicle brand
-    type VARCHAR(50) NOT NULL,              -- e.g., Scooter, Motorcycle, Car, Truck
+    name VARCHAR(100) NOT NULL,
+    brand VARCHAR(50) NOT NULL,
+    type VARCHAR(50) NOT NULL,
     price_per_day DECIMAL(10,2) NOT NULL,
-    required_license ENUM('A','K','B','C','D','E') NOT NULL DEFAULT 'B', 
-    fuel_range INT,                          -- max km on full tank
+    required_license ENUM('A','K','B','C','D','E') NOT NULL DEFAULT 'B',
+    fuel_range INT,
     status ENUM('available','rented') DEFAULT 'available',
     image VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

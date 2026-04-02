@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Add a marker
     var marker = L.marker([shopLat, shopLng]).addTo(map);
-    
+
     // Default popup content
     var popupContent = `
         <div style="text-align:center; padding: 5px;">
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </svg>
                 Open in Maps
             `;
-            
+
             // Apply inline styles to match the original design
             btn.style.backgroundColor = '#e60000';
             btn.style.color = '#ffffff';
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
             L.DomEvent.disableClickPropagation(btn);
 
             // Handle the click event
-            L.DomEvent.on(btn, 'click', function(e) {
+            L.DomEvent.on(btn, 'click', function (e) {
                 // Change button text to show loading state
                 var originalChildNodes = Array.from(btn.childNodes);
                 btn.innerHTML = "Locating...";
@@ -75,22 +75,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if ("geolocation" in navigator) {
                     navigator.geolocation.getCurrentPosition(
-                        function(position) {
+                        function (position) {
                             var userLat = position.coords.latitude;
                             var userLng = position.coords.longitude;
                             var mapUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${shopLat},${shopLng}&travelmode=driving`;
                             window.open(mapUrl, '_blank');
-                            
+
                             btn.innerHTML = "";
                             originalChildNodes.forEach(node => btn.appendChild(node));
                             btn.style.opacity = "1";
                             btn.disabled = false;
-                        }, 
-                        function(error) {
+                        },
+                        function (error) {
                             alert("Could not get your location for directions. Opening destination location only on Google Maps.");
                             var mapUrl = `https://www.google.com/maps/search/?api=1&query=${shopLat},${shopLng}`;
                             window.open(mapUrl, '_blank');
-                            
+
                             btn.innerHTML = "";
                             originalChildNodes.forEach(node => btn.appendChild(node));
                             btn.style.opacity = "1";
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert("Geolocation is not supported by your browser. Opening destination location only on Google Maps.");
                     var mapUrl = `https://www.google.com/maps/search/?api=1&query=${shopLat},${shopLng}`;
                     window.open(mapUrl, '_blank');
-                    
+
                     btn.innerHTML = "";
                     originalChildNodes.forEach(node => btn.appendChild(node));
                     btn.style.opacity = "1";
