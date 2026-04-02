@@ -15,13 +15,13 @@ if (isset($_SESSION['user_id'])) {
 ?>
 
 <?php require_once '../includes/header.php'; ?>
-
+<main>
 <h1>Welcome to Vehicle Rental System</h1>
 <p>
     Please 
     <a href="authentication/login.php">Login</a> 
     or 
     <a href="authentication/signup.php">Sign Up</a>
-</p>
+</p></main>
 
 <?php require_once '../includes/footer.php'; ?>
