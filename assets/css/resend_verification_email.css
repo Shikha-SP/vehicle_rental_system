@@ -1,0 +1,74 @@
+/* ===== RESEND EMAIL PAGE ===== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at top, #120000, #000);
+    color: #eee;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Card */
+.container {
+    background: rgba(25, 25, 25, 0.95);
+    padding: 40px;
+    border-radius: 14px;
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.2);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+}
+
+/* Title */
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+/* Success */
+.success {
+    color: #00ff9c;
+    margin-bottom: 20px;
+}
+
+/* Error list */
+ul {
+    list-style: none;
+    margin-bottom: 20px;
+}
+
+li {
+    background: rgba(255, 0, 0, 0.1);
+    border-left: 4px solid #ff1a1a;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* Buttons */
+a {
+    display: inline-block;
+    text-decoration: none;
+    background: linear-gradient(135deg, #ff1a1a, #cc0000);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+a:hover {
+    background: linear-gradient(135deg, #ff3333, #990000);
+    transform: translateY(-2px);
+}

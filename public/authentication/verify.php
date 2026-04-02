@@ -43,8 +43,16 @@ if (!empty($token)) {
 <head>
     <meta charset="UTF-8">
     <title>Email Verification</title>
+
+    <!-- ✅ CSS LINK -->
+    <link rel="stylesheet" href="../../assets/css/verification.css">
 </head>
 <body>
+
+<div class="container 
+    <?= $status === 'success' ? 'success' : 
+        ($status === 'expired' ? 'warning' : 'error') ?>">
+
     <?php if ($status === 'success'): ?>
         <h1>✅ Email Verified!</h1>
         <p>Hi <?= e($first_name) ?>, your account is now active.</p>
@@ -56,12 +64,17 @@ if (!empty($token)) {
 
     <?php elseif ($status === 'expired'): ?>
         <h1>⛔ Link Expired</h1>
-        <p>This link expired after 24 hours and your account has been removed.
-           Please <a href="signup.php">sign up again</a>.</p>
+        <p>
+            This link expired after 24 hours and your account has been removed.
+            Please <a href="signup.php">sign up again</a>.
+        </p>
 
     <?php else: ?>
         <h1>Invalid Link</h1>
         <p>This verification link is invalid. <a href="signup.php">Sign up</a></p>
     <?php endif; ?>
+
+</div>
+
 </body>
 </html>

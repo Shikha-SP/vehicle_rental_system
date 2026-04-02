@@ -75,22 +75,38 @@ if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 <head>
     <meta charset="UTF-8">
     <title>Resend Verification Email</title>
+
+    <!-- ✅ CSS LINK -->
+    <link rel="stylesheet" href="../../assets/css/resend_verification_email.css">
 </head>
 <body>
+
+<div class="container">
+
     <h1>Resend Verification Email</h1>
 
     <?php if ($success): ?>
-        <p>✅ A new verification email has been sent to <strong><?= e($email) ?></strong>. Check your inbox!</p>
+        <p class="success">
+            ✅ A new verification email has been sent to 
+            <strong><?= e($email) ?></strong>. Check your inbox!
+        </p>
         <a href="login.php">Back to Login</a>
+
     <?php else: ?>
+
         <?php if (!empty($errors)): ?>
             <ul>
                 <?php foreach ($errors as $error): ?>
-                    <li><?= $error ?></li>
+                    <li><?= e($error) ?></li>
                 <?php endforeach; ?>
             </ul>
         <?php endif; ?>
+
         <a href="login.php">Back to Login</a>
+
     <?php endif; ?>
+
+</div>
+
 </body>
 </html>
