@@ -92,7 +92,7 @@ a:hover { opacity: 0.8; }
 .signup-main {
     flex: 1;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 40% 60%;
     min-height: calc(100vh - 65px);
 }
 
@@ -102,7 +102,7 @@ a:hover { opacity: 0.8; }
     display: flex;
     flex-direction: column;
     justify-content: center;
-    max-width: 640px;
+    max-width: 840px;
     width: 100%;
 }
 
@@ -354,6 +354,7 @@ a:hover { opacity: 0.8; }
     display: block;
 }
 
+
 /* Fallback gradient if no image */
 /* .signup-hero__fallback {
     position: absolute;
@@ -365,9 +366,12 @@ a:hover { opacity: 0.8; }
 .signup-hero__overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, var(--bg) 0%, transparent 30%);
+    background: linear-gradient(to right, var(--bg) 0%, transparent 75%);
     pointer-events: none;
 }
+
+
+
 
 
 
@@ -482,6 +486,56 @@ a:hover { opacity: 0.8; }
     text-transform: uppercase;
 }
 
+
+/* ── Improved 2-Step Navigation ────────────────────────────── */
+
+/* Container for the two buttons in Step 2 */
+.signup-form__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.signup-form__back-btn {
+    width: 100%;
+    padding: 15px 24px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-label);
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all var(--transition);
+    margin-bottom:25px;
+}
+
+.signup-form__back-btn:hover {
+    border-color: var(--text-muted);
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.signup-form__back-btn svg {
+    transition: transform var(--transition);
+}
+
+.signup-form__back-btn:hover svg {
+    transform: translateX(-4px);
+}
+
+/* Adjusting the Submit button margin when inside the actions container */
+.signup-form__actions .signup-form__submit {
+    margin-bottom: 0; 
+}
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 900px) {
     .signup-main {
