@@ -12,11 +12,10 @@ $username = $_SESSION['username'] ?? 'User';
 
 <?php require_once '../../includes/header.php'; ?>
 <main>
-<h1>Welcome, <?= htmlspecialchars($username) ?></h1>
 
 <ul>
-    <li><a href="../vehicle/add.php">View Vehicles</a></li>
-    <li><a href="../vehicle/edit.php">My Rentals / Bookings</a></li>
+    <li><a href="../vehicle/add.php">View Your Bookings</a></li>
+    
 </ul>
 </main>
 <?php require_once '../../includes/footer.php'; ?>
