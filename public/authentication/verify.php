@@ -54,7 +54,7 @@ if (!empty($token)) {
         ($status === 'expired' ? 'warning' : 'error') ?>">
 
     <?php if ($status === 'success'): ?>
-        <h1>✅ Email Verified!</h1>
+        <h1>Email Verified!</h1>
         <p>Hi <?= e($first_name) ?>, your account is now active.</p>
         <a href="login.php">Log in now</a>
 
@@ -63,7 +63,7 @@ if (!empty($token)) {
         <p>Your email is already verified. <a href="login.php">Log in</a></p>
 
     <?php elseif ($status === 'expired'): ?>
-        <h1>⛔ Link Expired</h1>
+        <h1>Link Expired!</h1>
         <p>
             This link expired after 24 hours and your account has been removed.
             Please <a href="signup.php">sign up again</a>.

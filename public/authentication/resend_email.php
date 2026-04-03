@@ -87,7 +87,7 @@ if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
     <?php if ($success): ?>
         <p class="success">
-            ✅ A new verification email has been sent to 
+             A new verification email has been sent to 
             <strong><?= e($email) ?></strong>. Check your inbox!
         </p>
         <a href="login.php">Back to Login</a>
