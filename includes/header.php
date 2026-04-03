@@ -11,7 +11,6 @@ if (session_status() === PHP_SESSION_NONE) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TD Rentals</title>
 
-    <!-- ✅ Always use absolute paths -->
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/footer.css">
 </head>
@@ -19,57 +18,63 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <header>
   <nav>
-    <!-- ✅ Brand -->
+
+    <!-- 🔴 BRAND -->
     <a href="/vehicle_rental_collab_project/public/landing_page.php" class="brand">
       TD <span>RENTALS</span>
     </a>
 
-    <!-- ✅ Nav Links -->
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#">Vehicles</a></li>
-      <li><a href="#">Brands</a></li>
-      <li><a href="#">About</a></li>
-      <li><a href="#">Contact</a></li>
-    </ul>
+    <?php if (isset($_SESSION['user_id'])): ?>
+        <!-- 🔴 NAV LINKS (only for logged-in users) -->
+        <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
+        <ul class="nav-links" id="navLinks">
+          <li>
+            <a href="/vehicle_rental_collab_project/public/user/home_page.php" 
+               class="<?= ($currentPage == 'home_page.php') ? 'active' : '' ?>">Home</a>
+          </li>
+          <li>
+            <a href="/vehicle_rental_collab_project/public/vehicle/vehicles.php" 
+               class="<?= ($currentPage == 'vehicles.php') ? 'active' : '' ?>">Vehicles</a>
+          </li>
+          <li>
+            <a href="/vehicle_rental_collab_project/public/user/bookings.php" 
+               class="<?= ($currentPage == 'bookings.php') ? 'active' : '' ?>">My Bookings</a>
+          </li>
+        </ul>
 
-    <!-- ✅ Auth Section -->
-    <div class="nav-auth" id="navAuth">
+        <!-- 🔴 RIGHT SIDE -->
+        <div class="nav-auth" id="navAuth">
+          <!-- 👤 PROFILE DROPDOWN -->
+          <div class="profile-menu">
+            <button class="profile-btn" onclick="toggleDropdown()">
+              <?= isset($_SESSION['username']) ? strtoupper(substr($_SESSION['username'], 0, 1)) : 'U' ?>
+            </button>
 
-      <?php if (isset($_SESSION['user_id'])): ?>
+            <div class="dropdown" id="dropdownMenu">
+              <a href="/vehicle_rental_collab_project/public/user/settings.php">Settings</a>
+              <a href="/vehicle_rental_collab_project/public/authentication/logout.php">Logout</a>
+            </div>
+          </div>
 
-        <span class="welcome-msg">
-          Hi, <?= htmlspecialchars($_SESSION['username']) ?>
-        </span>
-
-        <?php if (!empty($_SESSION['is_admin'])): ?>
-          <a href="/vehicle_rental_collab_project/public/admin/home_page.php" class="btn-admin">
-            Admin
+          <!-- 🔥 MAIN CTA -->
+          <a href="/vehicle_rental_collab_project/public/renter/list_car.php" class="btn-primary">
+            List Your Car
           </a>
-        <?php else: ?>
-          <a href="/vehicle_rental_collab_project/public/user/home_page.php" class="btn-ghost">
-            Dashboard
-          </a>
-        <?php endif; ?>
+        </div>
+    <?php else: ?>
+        <!-- 🔴 ONLY LOGIN & REGISTER FOR GUESTS -->
+        <div class="nav-auth" id="navAuth">
+            <a href="/vehicle_rental_collab_project/public/authentication/login.php" class="btn-ghost">
+              Log In
+            </a>
 
-        <a href="/vehicle_rental_collab_project/public/authentication/logout.php" class="btn-ghost">
-          Logout
-        </a>
+            <a href="/vehicle_rental_collab_project/public/authentication/signup.php" class="btn-primary">
+              Register
+            </a>
+        </div>
+    <?php endif; ?>
 
-      <?php else: ?>
-
-        <a href="/vehicle_rental_collab_project/public/authentication/login.php" class="btn-ghost">
-          Log In
-        </a>
-
-        <a href="/vehicle_rental_collab_project/public/authentication/signup.php" class="btn-primary">
-          Register
-        </a>
-
-      <?php endif; ?>
-
-    </div>
-
-    <!-- ✅ Mobile Toggle -->
+    <!-- 🔴 MOBILE TOGGLE -->
     <button class="nav-toggle"
       onclick="document.getElementById('navLinks').classList.toggle('open'); 
                document.getElementById('navAuth').classList.toggle('open')">
@@ -78,3 +83,20 @@ if (session_status() === PHP_SESSION_NONE) {
 
   </nav>
 </header>
+
+<!-- 🔴 DROPDOWN SCRIPT -->
+<script>
+function toggleDropdown() {
+  document.getElementById("dropdownMenu").classList.toggle("show");
+}
+
+// close dropdown when clicking outside
+window.onclick = function(e) {
+  if (!e.target.matches('.profile-btn')) {
+    const dropdown = document.getElementById("dropdownMenu");
+    if (dropdown && dropdown.classList.contains('show')) {
+      dropdown.classList.remove('show');
+    }
+  }
+}
+</script>
