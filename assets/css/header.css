@@ -1,5 +1,5 @@
 /* ============================================================
-   TD RENTALS — Header Styles
+   TD RENTALS — Header Styles (UPDATED)
    Dark luxury automotive aesthetic
    ============================================================ */
 
@@ -20,7 +20,7 @@
   --transition:    0.22s ease;
 }
 
-/* ── Reset & Base ── */
+/* ── Reset ── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -33,9 +33,9 @@ html, body {
   font-family: var(--font-body);
   font-size: 15px;
   line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
 }
-/* ── Sticky footer layout ── */
+
+/* ── Layout ── */
 body {
   display: flex;
   flex-direction: column;
@@ -46,17 +46,16 @@ main {
   flex: 1;
 }
 
-/* ── Header Shell ── */
+/* ── Header ── */
 header {
   position: sticky;
   top: 0;
   z-index: 1000;
   width: 100%;
   height: var(--nav-h);
-  background-color: rgba(10, 10, 10, 0.96);
+  background: #181818;
   border-bottom: 1px solid var(--clr-border);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 /* ── Nav ── */
@@ -67,37 +66,31 @@ header nav {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 32px;
-  gap: 0;
 }
 
-/* ── Brand / Logo ── */
-header nav .brand {
+/* ── Brand ── */
+.brand {
   font-family: var(--font-display);
   font-size: 26px;
   letter-spacing: 0.08em;
-  color: var(--clr-text);
   text-decoration: none;
-  margin-right: auto;           /* push everything else right */
-  display: flex;
-  align-items: center;
-  gap: 2px;
+  color: var(--clr-text);
+  margin-right: auto;
 }
 
-header nav .brand span {
+.brand span {
   color: var(--clr-accent);
 }
 
-/* ── Nav Links (center group) ── */
+/* ── Nav Links ── */
 .nav-links {
   display: flex;
-  align-items: center;
   gap: 6px;
   list-style: none;
   margin-right: 32px;
 }
 
 .nav-links a {
-  font-family: var(--font-body);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -126,33 +119,28 @@ header nav .brand span {
   color: var(--clr-text);
 }
 
-.nav-links a:hover::after,
-.nav-links a.active::after {
+.nav-links a:hover::after {
   transform: scaleX(1);
 }
 
 .nav-links a.active {
-  color: var(--clr-accent);
+  color: var(--clr-accent); /* red highlight */
 }
 
-/* ── Auth / User area (right side) ── */
+.nav-links a.active::after {
+  transform: scaleX(1);   /* show underline */
+  background: var(--clr-accent);
+}
+
+/* ── Right Side ── */
 .nav-auth {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* Welcome text */
-.nav-auth .welcome-msg {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--clr-muted);
-  text-transform: uppercase;
-}
-
-/* Ghost link (Login / Dashboard / Logout) */
-.nav-auth a.btn-ghost {
+/* ── Buttons ── */
+.btn-ghost {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -161,16 +149,14 @@ header nav .brand span {
   text-decoration: none;
   padding: 7px 16px;
   border: 1px solid var(--clr-border);
-  transition: border-color var(--transition), color var(--transition);
+  transition: 0.2s;
 }
 
-.nav-auth a.btn-ghost:hover {
+.btn-ghost:hover {
   border-color: rgba(255,255,255,0.3);
-  color: #fff;
 }
 
-/* Primary CTA (Register / Sign Up) */
-.nav-auth a.btn-primary {
+.btn-primary {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -178,71 +164,101 @@ header nav .brand span {
   color: #fff;
   text-decoration: none;
   padding: 8px 20px;
-  background-color: var(--clr-accent);
-  transition: background-color var(--transition);
+  background: var(--clr-accent);
+  transition: 0.2s;
 }
 
-.nav-auth a.btn-primary:hover {
-  background-color: var(--clr-accent-hv);
+.btn-primary:hover {
+  background: var(--clr-accent-hv);
 }
 
-/* Admin badge */
-.nav-auth a.btn-admin {
-  font-size: 11px;
+/* ============================================================
+   👤 PROFILE DROPDOWN (NEW)
+   ============================================================ */
+
+.profile-menu {
+  position: relative;
+}
+
+/* Profile circle */
+.profile-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--clr-border);
+  background: var(--clr-surface);
+  color: var(--clr-text);
   font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.profile-btn:hover {
+  border-color: var(--clr-accent);
   color: var(--clr-accent);
+}
+
+/* Dropdown */
+.dropdown {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  min-width: 180px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: 10px;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.dropdown a {
+  padding: 12px 14px;
   text-decoration: none;
-  padding: 7px 16px;
-  border: 1px solid var(--clr-accent);
-  transition: background-color var(--transition), color var(--transition);
+  color: var(--clr-text);
+  font-size: 13px;
+  transition: background 0.2s;
 }
 
-.nav-auth a.btn-admin:hover {
-  background-color: var(--clr-accent);
-  color: #fff;
+.dropdown a:hover {
+  background: rgba(255,255,255,0.05);
 }
 
-/* ── Mobile Hamburger ── */
+/* Show dropdown */
+.dropdown.show {
+  display: flex;
+}
+
+/* ============================================================
+   📱 Mobile
+   ============================================================ */
+
 .nav-toggle {
   display: none;
   flex-direction: column;
-  justify-content: center;
   gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
   margin-left: 12px;
 }
 
 .nav-toggle span {
-  display: block;
   width: 22px;
   height: 2px;
-  background: var(--clr-text);
-  transition: transform var(--transition), opacity var(--transition);
+  background: white;
 }
 
-/* ── Responsive ── */
+/* Mobile layout */
 @media (max-width: 768px) {
+
   header nav {
     flex-wrap: wrap;
-    height: auto;
     padding: 0 20px;
-    position: relative;
-  }
-
-  header {
-    height: auto;
-  }
-
-  .nav-brand-row {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: var(--nav-h);
   }
 
   .nav-toggle {
@@ -255,9 +271,7 @@ header nav .brand span {
     display: none;
     width: 100%;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
-    padding: 12px 0 20px;
+    padding: 12px 0;
     border-top: 1px solid var(--clr-border);
   }
 
@@ -266,21 +280,20 @@ header nav .brand span {
     display: flex;
   }
 
-  .nav-links {
-    margin-right: 0;
-    gap: 4px;
-  }
-
   .nav-links a {
     width: 100%;
     padding: 10px 0;
-    font-size: 13px;
   }
 
   .nav-auth {
-    flex-direction: row;
-    flex-wrap: wrap;
     gap: 8px;
-    padding-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Fix dropdown on mobile */
+  .dropdown {
+    position: static;
+    width: 100%;
+    margin-top: 8px;
   }
 }
