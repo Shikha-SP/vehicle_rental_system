@@ -1,0 +1,59 @@
+/* Overlay behind the box */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.35); /* semi-transparent */
+    backdrop-filter: blur(2px); /* optional subtle blur */
+    z-index: 500;
+}
+
+/* Logout box styling */
+.logout-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #111;
+    border: 1px solid #e8192c;
+    padding: 32px;
+    text-align: center;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+    z-index: 1000; /* above overlay */
+}
+
+.logout-box h2 {
+    margin-bottom: 20px;
+    color: #fff;
+}
+
+.logout-box a {
+    text-decoration: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.btn-yes {
+    background-color: #e8192c;
+    color: #fff;
+}
+
+.btn-yes:hover {
+    background-color: #ff2d42;
+}
+
+.btn-no {
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #555;
+}
+
+.btn-no:hover {
+    background-color: #333;
+}
