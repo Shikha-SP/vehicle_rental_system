@@ -1,0 +1,164 @@
+/* ============================================================
+   TD RENTALS — INFO PAGES
+   Dark automotive theme — Privacy Policy, Terms, Contact
+   ============================================================ */
+
+:root {
+    --bg:           #0e0e0e;
+    --bg-card:      #161616;
+    --text:         #f0f0f0;
+    --text-muted:   #aaaaaa;
+    --accent:       #e03030;
+    --accent-dim:   rgba(224,48,48,0.18);
+    --border:       #2c2c2c;
+    --radius:       8px;
+    --font-head:    'Barlow Condensed', sans-serif;
+    --font-body:    'Barlow', sans-serif;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.6;
+}
+
+/* ── Page container ───────────────────────────────────────── */
+.info-page {
+    max-width: 800px;
+    margin: 60px auto;
+    padding: 30px 25px;
+    background-color: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+}
+
+/* ── Headings ─────────────────────────────────────────────── */
+.info-page h1 {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--accent);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.info-page h2 {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: var(--text);
+    margin-top: 30px;
+    margin-bottom: 12px;
+}
+
+/* ── Paragraphs ─────────────────────────────────────────── */
+.info-page p {
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 16px;
+}
+
+/* ── Links ──────────────────────────────────────────────── */
+.info-page a {
+    color: var(--accent);
+    text-decoration: underline;
+}
+.info-page a:hover { opacity: 0.8; }
+
+/* ── Contact Form ───────────────────────────────────────── */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.contact-form label {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.contact-form input,
+.contact-form textarea {
+    padding: 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background-color: #1a1a1a;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    width: 100%;
+}
+
+.contact-form textarea { min-height: 120px; resize: vertical; }
+
+.contact-form button {
+    padding: 14px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+.contact-form button:hover {
+    background: #c82020;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px var(--accent-dim);
+}
+
+/* ── Footer styling ──────────────────────────────────────── */
+.info-page + footer {
+    margin-top: 50px;
+}
+
+footer.site-footer {
+    background-color: var(--bg-card);
+    padding: 25px;
+    border-radius: var(--radius);
+    text-align: center;
+}
+
+footer.site-footer p,
+footer.site-footer a {
+    color: var(--text-muted);
+    font-family: var(--font-body);
+}
+
+footer.site-footer a:hover { color: var(--accent); }
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .info-page { padding: 20px 15px; margin: 40px 10px; }
+    .info-page h1 { font-size: 1.6rem; }
+    .contact-form button { font-size: 0.95rem; }
+}
+
+
+/* Back Button */
+.info-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background-color: var(--bg-card);
+    color: var(--accent);
+    font-family: var(--font-head);
+    font-weight: 700;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-bottom: 20px;
+    text-decoration: none;
+}
+
+.info-back-btn:hover {
+    background-color: var(--accent);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px var(--accent-dim);
+}
