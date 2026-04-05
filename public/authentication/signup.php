@@ -383,7 +383,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="#">Terms of Service</a>
             <a href="#">Contact</a>
         </nav>
-        <p class="signup-footer__copy">© 2024 TD Rentals — Engineered for Performance.</p>
+        <p class="signup-footer__copy">© 2026 TD Rentals — Engineered for Performance.</p>
     </footer>
 
 </div>

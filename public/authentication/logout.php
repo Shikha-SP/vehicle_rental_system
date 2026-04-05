@@ -34,16 +34,28 @@ if (isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/logout.css">
 </head>
 <body>
-
-    <!-- Overlay -->
-    <div class="overlay"></div>
-
-    <!-- Logout Box -->
-    <div class="logout-box">
-        <h2>Do you really want to log out?</h2>
-        <a href="logout.php?confirm=yes" class="btn-yes">Yes, Log Out</a>
-        <a href="../user/home_page.php" class="btn-no">Cancel</a>
+    <div class="background-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="grid-overlay"></div>
     </div>
 
+    <div class="overlay"></div>
+
+    <div class="logout-box">
+        <div class="icon-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 3H6a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h4M16 17l5-5-5-5M19.8 12H9" />
+            </svg>
+        </div>
+        <h2>Confirm Logout</h2>
+        <p>You are about to end your session. Any unsaved booking progress may be lost.</p>
+        
+        <div class="btn-group">
+            <a href="logout.php?confirm=yes" class="btn-yes">Logout</a>
+            <a href="../user/home_page.php" class="btn-no">Stay Logged In</a>
+        </div>
+    </div>
 </body>
 </html>

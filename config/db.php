@@ -73,6 +73,17 @@ CREATE TABLE IF NOT EXISTS bookings (
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
 )");
 
+$conn->query("
+CREATE TABLE IF NOT EXISTS password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+)");
+
 // confirmation
 //echo "Database and tables are ready.";
 ?>

@@ -153,7 +153,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <!-- Forgot link -->
-                <a href="#" class="login-form__forgot">Forgot password?</a>
+
+                <a href="forgot_password.php" class="login-form__forgot">Forgot password?</a>
+                
 
                 <!-- Submit -->
                 <button class="login-form__submit" type="submit">
@@ -210,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- ── Footer ── -->
     <footer class="login-footer">
-        <span class="login-footer__copy">© 2024 TD Rentals — Engineered for Performance.</span>
+        <span class="login-footer__copy">© 2026 TD Rentals — Engineered for Performance.</span>
         <nav class="login-footer__links">
             <a href="#">Privacy</a>
             <a href="#">Terms</a>
