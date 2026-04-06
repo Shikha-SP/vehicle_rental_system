@@ -28,18 +28,33 @@ if (session_status() === PHP_SESSION_NONE) {
         <!-- 🔴 NAV LINKS (only for logged-in users) -->
         <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
         <ul class="nav-links" id="navLinks">
-          <li>
-            <a href="/vehicle_rental_collab_project/public/user/home_page.php" 
-               class="<?= ($currentPage == 'home_page.php') ? 'active' : '' ?>">Home</a>
-          </li>
-          <li>
-            <a href="/vehicle_rental_collab_project/public/vehicle/vehicles.php" 
-               class="<?= ($currentPage == 'vehicles.php') ? 'active' : '' ?>">Vehicles</a>
-          </li>
-          <li>
-            <a href="/vehicle_rental_collab_project/public/user/bookings.php" 
-               class="<?= ($currentPage == 'bookings.php') ? 'active' : '' ?>">My Bookings</a>
-          </li>
+          
+          <?php if (!empty($_SESSION['is_admin'])): ?>
+            <!-- 🔴 ADMIN NAVIGATION -->
+            <li>
+              <a href="/vehicle_rental_collab_project/public/admin/home_page.php" 
+                 class="<?= ($currentPage == 'home_page.php') ? 'active' : '' ?>">Dashboard</a>
+            </li>
+            <li>
+              <a href="/vehicle_rental_collab_project/public/admin/review_rental_requests.php" 
+                 class="<?= ($currentPage == 'review_rental_requests.php') ? 'active' : '' ?>">Review Vehicles</a>
+            </li>
+          <?php else: ?>
+            <!-- 🔴 REGULAR USER NAVIGATION -->
+            <li>
+              <a href="/vehicle_rental_collab_project/public/user/home_page.php" 
+                 class="<?= ($currentPage == 'home_page.php') ? 'active' : '' ?>">Home</a>
+            </li>
+            <li>
+              <a href="/vehicle_rental_collab_project/public/vehicle/vehicles.php" 
+                 class="<?= ($currentPage == 'vehicles.php') ? 'active' : '' ?>">Vehicles</a>
+            </li>
+            <li>
+              <a href="/vehicle_rental_collab_project/public/user/bookings.php" 
+                 class="<?= ($currentPage == 'bookings.php') ? 'active' : '' ?>">My Bookings</a>
+            </li>
+          <?php endif; ?>
+          
         </ul>
 
         <!-- 🔴 RIGHT SIDE -->
@@ -56,11 +71,14 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
           </div>
 
-          <!-- 🔥 MAIN CTA -->
-          <a href="/vehicle_rental_collab_project/public/renter/list_car.php" class="btn-primary">
-            List Your Car
-          </a>
+          <!-- 🔥 MAIN CTA - Only show for regular users -->
+          <?php if (empty($_SESSION['is_admin'])): ?>
+            <a href="/vehicle_rental_collab_project/public/renter/list_car.php" class="btn-primary">
+              List Your Vehicle
+            </a>
+          <?php endif; ?>
         </div>
+        
     <?php else: ?>
         <!-- 🔴 ONLY LOGIN & REGISTER FOR GUESTS -->
         <div class="nav-auth" id="navAuth">

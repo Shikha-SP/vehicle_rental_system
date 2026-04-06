@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
             
             try {
-                const response = await fetch('../../ajax/update_password.php', { 
+                const response = await fetch('../../ajax/delete_account.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

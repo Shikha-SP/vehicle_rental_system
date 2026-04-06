@@ -47,15 +47,21 @@ CREATE TABLE IF NOT EXISTS users (
 $conn->query("
 CREATE TABLE IF NOT EXISTS vehicles (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,             -- vehicle model name
-    brand VARCHAR(50) NOT NULL,             -- vehicle brand
-    type VARCHAR(50) NOT NULL,              -- e.g., Scooter, Motorcycle, Car, Truck
-    price_per_day DECIMAL(10,2) NOT NULL,
-    required_license ENUM('A','K','B','C','D','E') NOT NULL DEFAULT 'B', 
-    fuel_range INT,                          -- max km on full tank
-    status ENUM('available','rented') DEFAULT 'available',
-    image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    user_id INT NOT NULL,                    -- Added: who owns the vehicle
+    model VARCHAR(100) NOT NULL,             -- Changed from 'name' to 'model'
+    license_type ENUM('A','B','C','D','E') NOT NULL DEFAULT 'B',
+    transmission ENUM('Manual','Automatic') NOT NULL,
+    fuel_type ENUM('Petrol','Diesel','Electric','Hybrid','CNG') NOT NULL,
+    price_per_day DECIMAL(10,2) NOT NULL,    -- matches your price field
+    color VARCHAR(20) DEFAULT '#e03030',
+    top_speed INT,                           -- matches your kms field
+    fuel_capacity INT,                       -- matches your fuel_capacity field
+    image_path VARCHAR(255),                 -- image storage path
+    status ENUM('pending','approved','rejected','available','rented') DEFAULT 'pending',
+    approved_at DATETIME NULL,
+    rejected_at DATETIME NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 )");
 
 // Step 6: Create 'bookings' table
