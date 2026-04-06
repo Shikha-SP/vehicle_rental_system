@@ -1,0 +1,383 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap');
+
+/* ── Variables ───────────────────────────────────────────────── */
+:root {
+    --bg:           #0e0e0e;
+    --bg-card:      #161616;
+    --bg-input:     #1e1e1e;
+    --border:       #2c2c2c;
+    --border-focus: #e03030;
+    --accent:       #e03030;
+    --accent-dim:   rgba(224, 48, 48, 0.15);
+    --accent-glow:  rgba(224, 48, 48, 0.30);
+    --text:         #f0f0f0;
+    --text-muted:   #777777;
+    --text-label:   #999999;
+    --font-head:    'Barlow Condensed', sans-serif;
+    --font-body:    'Barlow', sans-serif;
+    --radius:       4px;
+    --t:            0.22s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Page ────────────────────────────────────────────────────── */
+.lc-page {
+    min-height: 100vh;
+    background: var(--bg);
+    background-image: repeating-linear-gradient(
+        90deg, transparent, transparent 119px,
+        rgba(255,255,255,0.018) 120px
+    );
+    color: var(--text);
+    font-family: var(--font-body);
+    padding: 56px 32px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+}
+
+/* ── Hero ────────────────────────────────────────────────────── */
+.lc-hero {
+    text-align: center;
+    max-width: 560px;
+    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+.lc-hero__label {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+.lc-hero__title {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: clamp(44px, 7vw, 68px);
+    line-height: 0.93;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+.lc-hero__title--accent { color: var(--accent); }
+.lc-hero__sub { font-size: 15px; color: var(--text-muted); line-height: 1.65; }
+
+/* ── Two-column form grid ────────────────────────────────────── */
+.lc-form {
+    width: 100%;
+    max-width: 1100px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+}
+.lc-col { display: flex; flex-direction: column; gap: 16px; }
+
+/* ── Section cards ───────────────────────────────────────────── */
+.lc-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 26px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+.lc-col:first-child .lc-section:nth-child(1) { animation-delay: 0.08s; }
+.lc-col:first-child .lc-section:nth-child(2) { animation-delay: 0.14s; }
+.lc-col:last-child  .lc-section:nth-child(1) { animation-delay: 0.11s; }
+.lc-col:last-child  .lc-section:nth-child(2) { animation-delay: 0.17s; }
+
+.lc-section__head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+.lc-section__num {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+}
+.lc-section__title {
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+}
+
+/* ── Field & label ───────────────────────────────────────────── */
+.lc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.lc-field { display: flex; flex-direction: column; gap: 7px; }
+.lc-label {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-label);
+}
+
+/* ── Inputs ──────────────────────────────────────────────────── */
+.lc-input {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 12px 14px;
+    outline: none;
+    width: 100%;
+    transition: border-color var(--t), box-shadow var(--t);
+}
+.lc-input::placeholder { color: #3a3a3a; }
+.lc-input:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* ── Selects ─────────────────────────────────────────────────── */
+.lc-select-wrap { position: relative; }
+.lc-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 12px 36px 12px 14px;
+    outline: none;
+    width: 100%;
+    cursor: pointer;
+    transition: border-color var(--t), box-shadow var(--t);
+}
+.lc-select:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.lc-select option { background: var(--bg-card); }
+.lc-select-icon {
+    position: absolute;
+    right: 12px; top: 50%;
+    transform: translateY(-50%);
+    width: 15px; height: 15px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* ── Color picker ────────────────────────────────────────────── */
+.lc-color-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: border-color var(--t);
+}
+.lc-color-row:hover { border-color: var(--border-focus); }
+
+#colorPicker {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.lc-color-swatch {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+    transition: background 0.2s, transform var(--t);
+}
+.lc-color-row:hover .lc-color-swatch { transform: scale(1.1); }
+
+.lc-color-meta { display: flex; flex-direction: column; gap: 1px; }
+.lc-color-name { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: 0.03em; }
+.lc-color-cat  { font-size: 12px; color: var(--text-muted); }
+.lc-color-hex  { font-size: 11px; color: #444; font-family: monospace; letter-spacing: 0.06em; }
+
+/* ── Range slider ────────────────────────────────────────────── */
+#priceRange {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none; border: none; cursor: pointer;
+}
+#priceRange::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 8px var(--accent-glow);
+    transition: transform var(--t);
+}
+#priceRange::-webkit-slider-thumb:hover { transform: scale(1.25); }
+#priceRange::-moz-range-thumb {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none; cursor: pointer;
+}
+#priceDisplay {
+    font-family: var(--font-head);
+    font-size: 26px; font-weight: 800;
+    color: var(--accent); letter-spacing: 0.02em;
+}
+
+/* ── Earnings card ───────────────────────────────────────────── */
+.lc-earnings-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+}
+.lc-earnings-card__label {
+    font-family: var(--font-head);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-label); margin-bottom: 5px;
+}
+.lc-earnings-card__amount {
+    font-family: var(--font-head);
+    font-size: 30px; font-weight: 800;
+    color: var(--text); letter-spacing: 0.02em;
+}
+.lc-earnings-card__note { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+/* ── Dropzone ────────────────────────────────────────────────── */
+.lc-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 32px 20px;
+    cursor: pointer;
+    color: var(--text-muted);
+    text-align: center;
+    transition: border-color var(--t), background var(--t), color var(--t);
+}
+.lc-dropzone:hover,
+.lc-dropzone.drag-over {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    color: var(--text);
+}
+.lc-dropzone svg { width: 30px; height: 30px; transition: color var(--t); }
+.lc-dropzone:hover svg { color: var(--accent); }
+.lc-dropzone__text { font-family: var(--font-head); font-size: 14px; font-weight: 600; letter-spacing: 0.06em; }
+.lc-dropzone__hint { font-size: 12px; color: var(--text-muted); }
+
+/* ── Image preview & remove ──────────────────────────────────── */
+.lc-preview-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.lc-img-preview {
+    width: 100%;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    object-fit: cover;
+    max-height: 220px;
+}
+
+.lc-remove-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-muted);
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color var(--t), color var(--t), background var(--t);
+}
+.lc-remove-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+.lc-remove-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-dim);
+}
+
+/* ── Submit ──────────────────────────────────────────────────── */
+.lc-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #c82020 0%, #f04040 100%);
+    border: none;
+    border-radius: var(--radius);
+    color: #fff;
+    font-family: var(--font-head);
+    font-size: 15px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    cursor: pointer;
+    position: relative; overflow: hidden;
+    transition: transform var(--t), box-shadow var(--t);
+    animation: fadeUp 0.5s 0.22s cubic-bezier(0.22,1,0.36,1) both;
+}
+.lc-submit svg { width: 18px; height: 18px; transition: transform var(--t); }
+.lc-submit:hover svg { transform: translateX(4px); }
+.lc-submit::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -75%;
+    width: 50%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.15), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.5s ease;
+}
+.lc-submit:hover::after { left: 140%; }
+.lc-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 32px var(--accent-glow); }
+.lc-submit:active { transform: translateY(0); box-shadow: none; }
+
+/* ── Keyframes ───────────────────────────────────────────────── */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 800px) {
+    .lc-page { padding: 40px 16px 60px; }
+    .lc-form  { grid-template-columns: 1fr; }
+    .lc-row   { grid-template-columns: 1fr; }
+}
