@@ -1,0 +1,447 @@
+body
+{
+    background-color: #131313;
+    color: #FFFFFF; /* make text color white */
+}
+
+.section-title
+{
+    color: #E4E2E1;
+}
+.labels
+{
+    color: #6F6F6F;
+}
+.checkbox-group
+{
+    color: #959595
+}
+.security-note
+{
+    color: #585858;
+}
+.summary
+{
+    color: #686868;
+}
+
+.note-box
+{
+    background-color: #262525;
+    color: #9D9D9D;
+}
+.input-field
+{
+    background-color: #353534;
+}
+.pay-button
+{
+    background-color: #A70712;
+}
+#summary-section
+{
+    background-color: #1D1B1B;
+}
+/* make two sections side by side */
+#payment-page {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+#payment-form-section { flex: 1; }
+#summary-section { flex: 1; }
+
+
+/* --------- --------- --------- --------- --------- --------- --------- --------- --------- ---------- */
+/* Admin dashboard */
+/* ============================================
+   TD RENTALS - OPERATIONS CONTROL DASHBOARD
+   CSS to match screenshot design
+   ============================================ */
+
+.dashboard-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: #0d0d0d;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  z-index: 100;
+}
+.dashboard-nav h3
+{
+  font-family: "Segoe UI Semibold", "Segoe UI", Segoe, "Segoe WP", "Segoe WP Semibold", sans-serif;
+  font-weight: 600;
+  font-size: 22px;
+}
+.nav-list {
+  list-style: none;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.admin-title
+{
+  text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+#fleet
+{
+  color: #aa302b;
+  font-weight: lighter;
+  font-size: 16px;
+}
+
+.nav-item {
+  padding: 12px 24px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 15px;
+  font-weight: 350;
+  letter-spacing: 0.08em;
+  color: #7A7878;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 3px solid transparent;
+}
+/* nav hover effect  */
+.nav-item:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.04);
+}
+
+.nav-item:first-child {
+  color: var(--accent-red);
+  border-left-color: var(--accent-red);
+  background: rgba(232, 65, 42, 0.08);
+}
+
+
+/* ADD VEHICLE button at sidebar bottom */
+.add-vehicle-btn {
+  display: block;
+  margin: 0 16px 20px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #e8412a, #EF6868);
+  color: #3B0605;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+  width: calc(100% - 32px);
+  transition: opacity 0.2s, transform 0.1s;
+
+}
+ .add-vehicle-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.operations-control {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+}
+
+/* make right side stack properly */
+.operations-control > *:not(.dashboard-nav) {
+  grid-column: 2;
+}
+.content-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 0;
+  padding: 0 36px 36px;
+  margin-top: 0;
+}
+
+/* ─── VERIFICATION QUEUE ─── */
+.verification-queue {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-right: none;
+  padding: 24px 0 0;
+  border-radius: 0 0 0 8px;
+  display: flex;
+  flex-direction: column;
+}
+ 
+.section-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--text-secondary);
+  padding: 0 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+ 
+.queue-list {
+  flex: 1;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+ 
+.queue-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px 16px;
+  transition: background 0.15s;
+}
+.queue-item:hover {
+  background: var(--bg-card-hover);
+}
+ .queue-initials {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #2a3040;
+  color: #7ab3d4;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+/* ─── MAIN CONTENT AREA ─── */
+.status-header,
+.fleet-overview,
+.metrics-row,
+.content-grid,
+.app-footer {
+  margin-left: 0;
+}
+ 
+/* ─── TOP STATUS HEADER ─── */
+.status-header {
+  display: flex;
+  flex-direction: column;
+  padding: 26px 36px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-primary);
+  
+}
+ 
+.status-title {
+  font-family: "Inter", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  line-height: 1;
+}
+ 
+.status-message {
+  font-family: 'Barlow', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: #F4B7AE;
+  margin-top: 6px;
+  text-transform: uppercase;
+}
+.status-header {
+  position: relative;
+}
+
+/* ─── FLEET OVERVIEW SECTION ─── */
+.fleet-overview {
+  display: none; /* merged into metrics-row visually */
+}
+ 
+/* ─── METRICS ROW ─── */
+.metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 320px;
+  gap: 0;
+  padding: 0 36px;
+  margin-top: 0;
+}
+.metrics-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 320px;
+  gap: 0;
+  padding: 0 36px;
+  margin-top: 0;
+} 
+.metric-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: none;
+  padding: 28px 28px;
+  margin-top: 24px;
+  position: relative;
+}
+.metric-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+ 
+.metric-value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 38px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+ 
+.metric-sub {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-top: 4px;
+  font-weight: 600;
+}
+ 
+.metric-secondary {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-top: 16px;
+}
+.metric-trend {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-red);
+  letter-spacing: 0.04em;
+}
+/* ─── RECENT BOOKINGS ─── */
+.recent-bookings {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 8px 0;
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+ 
+.recent-bookings .section-title {
+  padding: 0 0 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: "Inter", "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-size: 12px;        /* range: 11px–13px */
+  font-weight: 600;       /* semi-bold feel */
+  letter-spacing: 0.12em; /* wide tracking */
+  text-transform: uppercase;
+}
+ 
+/* Filter / Export buttons */
+.recent-bookings .section-title::after {
+  content: 'FILTER BY STATUS    EXPORT CSV';
+  font-size: 11px;
+  font-family: 'Barlow', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 10px;
+}
+.header-actions
+{
+  background-color: #1C1B1B;
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+ 
+.bookings-table thead tr {
+  border-bottom: 1px solid var(--border);
+}
+ 
+.bookings-table th {
+  font-family: 'Barlow', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  text-align: left;
+  padding: 14px 12px 14px 0;
+  text-transform: uppercase;
+}
+.bookings-table td {
+  padding: 18px 12px 18px 0;
+  font-size: 13px;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+.table-body
+{
+  background-color: #1C1B1B;
+  width: 800px;
+}
+ /* ------------------------------------------------------------------------------------- */
+.totals {
+  display: flex;
+  gap: 24px;
+}
+.totals p {
+  margin: 0;
+}
+
+/* --------fleet ----------- */
+/* vehicle card */
+.vehicle-card
+{
+  background-color: #1C1B1B;
+}
+.short-detail
+{
+  color: #f01414;
+}
+.engine,status
+{
+  background-color: #292829;
+}
+.edit-specs
+{
+  background-color: #292829;
+  color: #FFFFFF;
+}
+.service-req
+{
+  color: #D03530;
+  background-color: #1C1B1B;
+  border-color: #3E1D1E;
+}
