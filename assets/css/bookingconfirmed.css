@@ -1,0 +1,51 @@
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+}
+body {
+      background: linear-gradient(145deg, #101010 0%, #1a1a1a 100%);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      color: #E4E2E1;
+}
+.tagline
+{
+    color: #F4B7AE;
+}
+.highlight
+{
+    color: #D03530;
+}
+.hero-description
+{
+    color: #B5B4BA;
+}
+.label
+{
+    color: #A3A3A3;
+}
+.value-status
+{
+    color: #F4B7AE;
+}
+.details-left p
+{
+    color: #B5B4BA;
+}
+.card-label .location-title .location-address .label
+{
+    color: #A3A3A3;
+}
+.date
+{
+    color: #E4E2E1;
+}
+.time
+{
+    color: #D03530;
+}

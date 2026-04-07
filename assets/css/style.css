@@ -120,7 +120,12 @@ body
   color: var(--text-primary);
   background: rgba(255,255,255,0.04);
 }
-
+li a
+{
+  display: block;
+  color: #7A7878;
+  text-decoration: none;
+}
 .nav-item:first-child {
   color: var(--accent-red);
   border-left-color: var(--accent-red);
@@ -340,16 +345,7 @@ body
   letter-spacing: 0.04em;
 }
 /* ─── RECENT BOOKINGS ─── */
-.recent-bookings {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-top: none;
-  border-radius: 0 0 8px 0;
-  padding: 24px 28px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
+
  
 .recent-bookings .section-title {
   padding: 0 0 16px;
@@ -365,59 +361,10 @@ body
 }
  
 /* Filter / Export buttons */
-.recent-bookings .section-title::after {
-  content: 'FILTER BY STATUS    EXPORT CSV';
-  font-size: 11px;
-  font-family: 'Barlow', sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: var(--text-secondary);
-  display: flex;
-  gap: 10px;
-}
+
 .header-actions
 {
   background-color: #1C1B1B;
-}
-
-.bookings-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 8px;
-}
- 
-.bookings-table thead tr {
-  border-bottom: 1px solid var(--border);
-}
- 
-.bookings-table th {
-  font-family: 'Barlow', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: var(--text-dim);
-  text-align: left;
-  padding: 14px 12px 14px 0;
-  text-transform: uppercase;
-}
-.bookings-table td {
-  padding: 18px 12px 18px 0;
-  font-size: 13px;
-  color: var(--text-primary);
-  vertical-align: middle;
-}
-.table-body
-{
-  background-color: #1C1B1B;
-  width: 800px;
-}
- /* ------------------------------------------------------------------------------------- */
-.totals {
-  display: flex;
-  gap: 24px;
-}
-.totals p {
-  margin: 0;
 }
 
 /* --------fleet ----------- */
