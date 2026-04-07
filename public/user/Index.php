@@ -120,7 +120,7 @@ require_once('../../includes/functions.php');
                 <!-- Example geographic pins (using percentage positioning) -->
                 <div class="dot" style="top: 35%; left: 22%;"></div> <!-- North America -->
                 <div class="dot" style="top: 55%; left: 51%;"></div> <!-- Africa -->
-                <div class="dot" style="top: 48%; left: 71%;"></div> <!-- Asia -->
+                <div class="dot" style="top: 48.5%; left: 68.3%;"></div> <!-- Asia -->
             </div>
         </div>
 
@@ -153,7 +153,7 @@ require_once('../../includes/functions.php');
         </div>
         <!-- Decorative background element for CTA -->
         <!-- Since we don't have brake-caliper.png, using a pure CSS/styled approach or generic bg might be better, but adding the tag to fulfill structure -->
-        <img src="../../uploads/caliper.png" alt="Brake Caliper Decor" class="cta-bg-image">
+        <img src="../../uploads/cal.png" alt="Brake Caliper Decor" class="cta-bg-image">
     </section>
 </main>
 
