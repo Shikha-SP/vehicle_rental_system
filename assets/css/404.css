@@ -1,0 +1,254 @@
+/* =============================================================================
+   404.css — Vehicle Rental System
+   Design: Cinematic dark theme, red accent var(--accent-red)
+   Matching the specific 404 design.
+============================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+    --bg-dark: #09090b;
+    --text-main: #ffffff;
+    --text-muted: #888888;
+    --accent-red: #e62020;
+    --accent-hover: #ff3333;
+    --card-bg: #141416;
+    --btn-dark: #2a2a2c;
+    --btn-dark-hover: #36363a;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-main);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* Background Setup */
+.error-page-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 8%;
+    background: linear-gradient(to right, rgba(9, 9, 11, 0.95) 0%, rgba(9, 9, 11, 0.7) 40%, rgba(9, 9, 11, 0.2) 80%),
+                url('../../assets/images/cars/placeholder_car.png') no-repeat right center; /* Replace with actual car bg if available */
+    background-size: cover;
+}
+
+/* Top Left Logo */
+.top-logo {
+    position: absolute;
+    top: 50px;
+    left: 8%;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--accent-red);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Faint 404 in Background */
+.bg-404 {
+    position: absolute;
+    bottom: -10vh;
+    right: 5%;
+    font-size: 35vw;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.03);
+    z-index: 0;
+    pointer-events: none;
+    line-height: 1;
+}
+
+/* Content Wrapper */
+.error-content {
+    position: relative;
+    z-index: 2;
+    max-width: 650px;
+    margin-top: 40px;
+}
+
+/* Status Label */
+.status-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: #cccccc;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+}
+
+.status-line {
+    width: 30px;
+    height: 2px;
+    background-color: var(--accent-red);
+}
+
+/* Main Heading */
+.error-heading {
+    font-size: clamp(3.5rem, 7vw, 6.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    letter-spacing: -0.01em;
+}
+
+.error-heading .text-red {
+    color: var(--accent-red);
+}
+
+/* Description text */
+.error-desc {
+    font-size: 1.15rem;
+    color: #aeaeae;
+    line-height: 1.6;
+    margin-bottom: 48px;
+    font-weight: 400;
+    max-width: 550px;
+}
+
+/* Buttons Container */
+.btn-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 80px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 32px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary {
+    background: var(--accent-red);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(230, 32, 32, 0.2);
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 6px 20px rgba(230, 32, 32, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: var(--btn-dark);
+    color: #ffffff;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.btn-secondary:hover {
+    background: var(--btn-dark-hover);
+    transform: translateY(-2px);
+}
+
+.btn svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* Badges section at the bottom */
+.error-badges {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.badge-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #a0a0a0;
+    text-transform: uppercase;
+}
+
+.badge-item svg {
+    width: 12px;
+    height: 12px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .bg-404 {
+        font-size: 45vw;
+        right: -5%;
+        bottom: 5vh;
+    }
+}
+
+@media (max-width: 768px) {
+    .error-heading {
+        font-size: 3.5rem;
+    }
+    
+    .error-desc {
+        font-size: 1rem;
+    }
+
+    .btn-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .error-badges {
+        flex-direction: column;
+    }
+
+    .bg-404 {
+        font-size: 60vw;
+        right: 5%;
+        bottom: 15vh;
+    }
+}

@@ -1,287 +1,160 @@
 <?php
 /**
  * ==========================================================
- * User Dashboard / Homepage
+ * Landing Page (formerly landing-page.php)
  * File: public/user/Index.php
  * ==========================================================
  */
 include('../../config/db.php');
 include('../../includes/header.php');
 require_once('../../includes/functions.php');
-// ----------------------------------------------------------
-// Gallery vehicles — 3 available, with full specs
-// ----------------------------------------------------------
-$gallery_sql = "SELECT id, brand, name, type, image, price_per_day, fuel_range FROM vehicles WHERE status='available' LIMIT 3";
-$gallery_result = $conn->query($gallery_sql);
-
-// ----------------------------------------------------------
-// Brand filter tabs — distinct brands from DB
-// ----------------------------------------------------------
-$brands_sql = "SELECT DISTINCT brand FROM vehicles ORDER BY brand";
-$brands_result = $conn->query($brands_sql);
 ?>
 <!-- ======================================================
      External Stylesheets
 ====================================================== -->
-<link rel="stylesheet" href="../../assets/css/Homepage.css">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="../../assets/css/index.css">
 
 <main class="dashboard-content">
+    <!-- Hero Section -->
+    <header class="hero">
+        <!-- Glowing red line effect -->
+        <div class="red-glow-line"></div>
 
-    <!-- ====================================================
-         HERO SECTION
-    ==================================================== -->
-    <section class="hero-section">
-
-        <!-- Left-to-right dark gradient overlay -->
-        <div class="hero-gradient"></div>
-
-        <!-- Car PNG from backend — right side, vertically centered (around green line) -->
-        <div class="hero-car-img">
-            <img src="../../uploads/car.png" alt="Featured Vehicle">
+        <!-- Hero Background Image (Uploaded car) -->
+        <div class="hero-bg-wrapper">
+            <img src="../../uploads/hero-car.png" alt="Supercar hero background" class="hero-bg">
         </div>
 
-        <!-- Hero Text — bottom-left -->
-        <div class="hero-overlay">
-            <div class="hero-text">
-                <p class="hero-label">ELITE FLEET EXPERIENCE</p>
-                <h1 class="hero-heading">
-                    ENGINEERED FOR<br>
-                    <span class="text-red">PERFORMANCE.</span><br>
-                    DRIVEN BY YOU.
-                </h1>
-                <div class="hero-btns">
-                    <a href="vechile.php" class="btn btn-red">BOOK NOW</a>
-                    <a href="vechile.php" class="btn btn-ghost">VIEW FLEET</a>
-                </div>
+        <div class="hero-content">
+            <h4 class="hero-subtitle">ENGINEERED FOR ADRENALINE</h4>
+            <h1 class="hero-title">THE <span class="text-red">KINETIC</span><br>GALLERY.</h1>
+            <p class="hero-desc">Beyond Transportation We Provide the key <tbody>automative excellence. Curted
+                    performance for those who demmand the pinnacle of engineering. </tbody>
+            </p>
+            <div class="hero-buttons">
+                <a href="login.php" class="btn btn-primary">SECURE THE FLEET</a>
+                <a href="login.php" class="btn btn-secondary">EXPLORE SPECS</a>
             </div>
         </div>
+    </header>
 
-        <!-- ================================================
-             SEARCH BAR — inside hero at bottom, full-width flush
-        ================================================ -->
-        <form action="search.php" method="GET" class="hero-search-bar">
-
-            <!-- Pick Up Location -->
-            <div class="sb-field">
-                <span class="sb-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                        stroke="#c0392b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" />
-                        <circle cx="12" cy="10" r="3" />
-                    </svg>
-                </span>
-                <div class="sb-field-inner">
-                    <label for="pickup_location">Pick Up Location</label>
-                    <input type="text" id="pickup_location" name="pickup_location" placeholder="Beverly Hills, CA">
-                </div>
-            </div>
-            <div class="sb-divider"></div>
-
-            <!-- Vehicle Type -->
-            <div class="sb-field">
-                <span class="sb-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                        stroke="#c0392b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="1" y="3" width="15" height="13" />
-                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-                        <circle cx="5.5" cy="18.5" r="2.5" />
-                        <circle cx="18.5" cy="18.5" r="2.5" />
-                    </svg>
-                </span>
-                <div class="sb-field-inner">
-                    <label for="vehicle_type">Vehicle Type</label>
-                    <select id="vehicle_type" name="type">
-                        <option value="">Supercars</option>
-                        <option value="sedan">Sedan</option>
-                        <option value="suv">SUV</option>
-                        <option value="sports">Sports</option>
-                        <option value="supercar">Supercar</option>
-                        <option value="electric">Electric</option>
-                    </select>
-                </div>
-            </div>
-            <div class="sb-divider"></div>
-
-            <!-- Duration -->
-            <div class="sb-field">
-                <span class="sb-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                        stroke="#c0392b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="4" width="18" height="18" rx="2" />
-                        <line x1="16" y1="2" x2="16" y2="6" />
-                        <line x1="8" y1="2" x2="8" y2="6" />
-                        <line x1="3" y1="10" x2="21" y2="10" />
-                    </svg>
-                </span>
-                <div class="sb-field-inner">
-                    <label for="pickup_date">Duration</label>
-                    <div class="sb-date-range">
-                        <input type="date" id="pickup_date" name="pickup_date">
-                        <span class="sb-date-sep">—</span>
-                        <input type="date" id="return_date" name="return_date">
-                    </div>
+    <!-- Curated Collections Section -->
+    <section class="collections">
+        <h2 class="section-heading">CURATED COLLECTIONS</h2>
+        <div class="collections-grid">
+            <!-- Item 1: Supercars -->
+            <div class="collection-card card-tl">
+                <img src="../../uploads/car1.png" alt="Supercars image">
+                <div class="card-content">
+                    <span class="card-category">CATEGORY: PERFORMANCE</span>
+                    <h3 class="card-title">SUPERCARS</h3>
                 </div>
             </div>
 
-            <!-- Search Button -->
-            <button type="submit" class="sb-search-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8" />
-                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                </svg>
-                SEARCH
-            </button>
-
-        </form>
-
-    </section>
-
-
-
-    <!-- ====================================================
-         PERFORMANCE GALLERY
-    ==================================================== -->
-    <section class="gallery-section">
-        <div class="container">
-
-            <p class="section-label">CURATED SELECTION</p>
-            <div class="section-header">
-                <h2>THE PERFORMANCE GALLERY</h2>
-                <a href="vechile.php" class="view-all">EXPLORE ALL VEHICLES &rarr;</a>
+            <!-- Item 2: Classics -->
+            <div class="collection-card card-tr">
+                <img src="../../uploads/car2.png" alt="Classics image">
+                <div class="card-content">
+                    <span class="card-category">CATEGORY: HERITAGE</span>
+                    <h3 class="card-title">CLASSICS</h3>
+                </div>
             </div>
 
-            <div class="car-grid">
-                <?php
-                if ($gallery_result && $gallery_result->num_rows > 0):
-                    while ($car = $gallery_result->fetch_assoc()):
-                        $price = number_format((float) $car['price_per_day'], 0);
-                        $fuel = $car['fuel_range'] ? $car['fuel_range'] . ' km' : 'N/A';
-                        $type_label = strtoupper($car['type'] ?? 'CAR');
-                        ?>
-                        <div class="car-card">
-
-                            <!-- Type badge (from DB field: type) -->
-                            <div class="card-type-badge"><?php echo e($type_label); ?></div>
-
-                            <!-- Car image from DB -->
-                            <div class="card-img-wrapper">
-                                <?php if (!empty($car['image'])): ?>
-                                    <img src="../../uploads/<?php echo e($car['image']); ?>"
-                                        alt="<?php echo e($car['brand'] . ' ' . $car['name']); ?>">
-                                <?php else: ?>
-                                    <div class="no-img">NO IMAGE</div>
-                                <?php endif; ?>
-                            </div>
-
-                            <div class="card-info">
-
-                                <!-- Brand + model from DB -->
-                                <div>
-                                    <h3><?php echo e($car['brand']); ?> <span class="badge">NEW</span></h3>
-                                    <p class="model-name"><?php echo e($car['name']); ?></p>
-                                </div>
-
-                                <!-- Specs from DB (fuel_range) -->
-                                <div class="card-specs-row">
-                                    <span class="spec-item">&#9981; <?php echo e($fuel); ?></span>
-                                </div>
-
-                                <!-- Price (from DB: price_per_day) + Rent button -->
-                                <div class="specs">
-                                    <span class="price">NPR <?php echo $price; ?>/day</span>
-                                    <a href="booking.php?id=<?php echo (int) $car['id']; ?>" class="btn-rent">RENT NOW</a>
-                                </div>
-
-                            </div>
-                        </div>
-                        <?php
-                    endwhile;
-                else:
-                    ?>
-                    <div class="no-vehicle-message">
-                        <p>No vehicles available at the moment.</p>
-                    </div>
-                <?php endif; ?>
+            <!-- Item 3: Luxury SUVs -->
+            <div class="collection-card card-bl">
+                <img src="../../uploads/car3.png" alt="Luxury SUVs image">
+                <div class="card-content">
+                    <span class="card-category">CATEGORY: POWER</span>
+                    <h3 class="card-title">LUXURY SUVS</h3>
+                </div>
             </div>
 
-            <!-- Brand Filter Tabs — generated from DB distinct brands -->
-            <div class="brand-filters">
-                <?php
-                if ($brands_result && $brands_result->num_rows > 0):
-                    while ($b = $brands_result->fetch_assoc()):
-                        ?>
-                        <a href="search.php?brand=<?php echo urlencode($b['brand']); ?>" class="brand-tab">
-                            <?php echo e(strtoupper($b['brand'])); ?>
-                        </a>
-                        <?php
-                    endwhile;
-                endif;
-                ?>
+            <!-- Item 4: Custom Fleet -->
+            <div class="collection-card card-br">
+                <img src="../../uploads/car4.png" alt="Custom Fleet image">
+                <div class="card-content">
+                    <span class="card-category">CATEGORY: BESPOKE</span>
+                    <h3 class="card-title">CUSTOM FLEET</h3>
+                </div>
             </div>
-
         </div>
     </section>
 
-    <!-- ====================================================
-         PROMOTIONAL BANNER — JOIN TD ELITE CLUB
-    ==================================================== -->
-    <div class="red-banner">
-        <div class="container banner-flex">
-            <div class="banner-text">
-                <h3>JOIN TD ELITE CLUB</h3>
-                <p>Get exclusive access to limited-run hypercars, priority delivery and personalized service.</p>
-            </div>
-            <a href="signup.php" class="btn-white-outline">Apply For Membership</a>
+    <!-- Detailed Stats & Features Section -->
+    <section class="features">
+        <!-- Feature 1 -->
+        <div class="feature-card border-accent">
+            <div class="feature-icon"><i class="fa-solid fa-gauge-high"></i></div>
+            <h3 class="feature-title">24/7 CONCIERGE</h3>
+            <p class="feature-desc">Personal liaison for logistics, route planning, and dedicated support across all
+                time zones.</p>
+            <span class="feature-number">01</span>
         </div>
-    </div>
 
-    <!-- ====================================================
-         SHOWROOM LOCATION + MAP
-    ==================================================== -->
-    <section class="showroom-section">
-        <div class="container grid-two">
+        <!-- Feature 2 -->
+        <div class="feature-card border-accent">
+            <div class="feature-icon"><i class="fa-solid fa-earth-americas"></i></div>
+            <h3 class="feature-title">GLOBAL FLEET</h3>
+            <p class="feature-desc">Inter-connected hubs in major capitals ensuring your preferred machine is always
+                waiting.</p>
+            <span class="feature-number">02</span>
+        </div>
 
-            <div class="showroom-info">
-                <h2>OUR SHOWROOMS</h2>
-                <p>Experience engineering excellence in person.</p>
-                <ul class="contact-details">
-                    <li>
-                        <span class="contact-icon">&#128205;</span>
-                        <div>
-                            <strong>Location</strong>
-                            <span>Naxal Bhagawati Marga, Kathmandu</span>
-                        </div>
-                    </li>
-                    <li>
-                        <span class="contact-icon">&#128222;</span>
-                        <div>
-                            <strong>Phone</strong>
-                            <span>+977 98XXXXXXXX</span>
-                        </div>
-                    </li>
-                    <li>
-                        <span class="contact-icon">&#128336;</span>
-                        <div>
-                            <strong>Hours</strong>
-                            <span>Mon – Sat &nbsp;9AM – 6PM</span>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="map-container">
-                <div id="showroom-map"></div>
-            </div>
-
+        <!-- Feature 3 -->
+        <div class="feature-card border-accent">
+            <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
+            <h3 class="feature-title">Track Ready</h3>
+            <p class="feature-desc">Every vehicle is meticulously maintained by master technicians to factory-fresh
+                performance standards.</p>
+            <span class="feature-number">03</span>
         </div>
     </section>
 
+    <!-- Global Footprint Section -->
+    <section class="global-footprint">
+        <h2 class="section-heading text-center">OUR GLOBAL FOOTPRINT</h2>
+
+        <div class="map-container">
+            <img src="../../uploads/map-bg.png" alt="World Map Silhouette">
+            <div class="map-dots">
+                <!-- Example geographic pins (using percentage positioning) -->
+                <div class="dot" style="top: 35%; left: 22%;"></div> <!-- North America -->
+                <div class="dot" style="top: 55%; left: 51%;"></div> <!-- Africa -->
+                <div class="dot" style="top: 48%; left: 71%;"></div> <!-- Asia -->
+            </div>
+        </div>
+
+        <!-- Statistics Counter -->
+        <div class="stats-counter">
+            <div class="stat-item">
+                <h3 class="stat-num">15+</h3>
+                <p class="stat-label">LOCATIONS</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-num">500+</h3>
+                <p class="stat-label">VEHICLES</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="stat-num">10K</h3>
+                <p class="stat-label">CLIENTS</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="cta">
+        <div class="cta-content">
+            <h2 class="cta-title">READY FOR THE <br>THROTTLE?</h2>
+            <p class="cta-desc">Join the inner circle of the world's most exclusive driving club.
+                Experience the pinnacle of velocity.</p>
+        </div>
+        <div class="cta-action-area">
+            <a href="../authentication/login.php" class="btn btn-white">DISCOVER CARS</a>
+        </div>
+        <!-- Decorative background element for CTA -->
+        <!-- Since we don't have brake-caliper.png, using a pure CSS/styled approach or generic bg might be better, but adding the tag to fulfill structure -->
+        <img src="../../uploads/caliper.png" alt="Brake Caliper Decor" class="cta-bg-image">
+    </section>
 </main>
-
-<!-- Leaflet Map -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="../../assets/js/map.js"></script>
 
 <?php include('../../includes/footer.php'); ?>
