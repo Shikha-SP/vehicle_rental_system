@@ -1,69 +1,191 @@
 <?php
-// includes/functions.php
-// Reusable helper functions for Vehicle Rental System
+/**
+ * includes/functions.php
+ * All shared helper / utility functions for TD Rentals.
+ * Requires config/db.php to be loaded first.
+ */
+
+// ─── Authentication helpers ───────────────────────────────────────────────────
 
 /**
- * Escape output for safe HTML display (prevents XSS attacks)
- *
- * @param string $string The string to escape
- * @return string Escaped string safe for HTML output
+ * Return the current logged-in user array, or null.
  */
-function e($string) {
-    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+function currentUser(): ?array {
+    return $_SESSION['user'] ?? null;
 }
 
 /**
- * Redirect to a different page and exit immediately
- *
- * @param string $url The URL to redirect to
+ * Redirect to login page if not logged in.
  */
-function redirect($url) {
-    header("Location: $url");
+function requireLogin(): void {
+    if (!currentUser()) {
+        header('Location: ' . SITE_URL . '/public/authentication/login.php?msg=login_required');
+        exit;
+    }
+}
+
+/**
+ * Redirect to home page if not an admin.
+ */
+function requireAdmin(): void {
+    $user = currentUser();
+    if (!$user || $user['role'] !== 'admin') {
+        header('Location: ' . SITE_URL . '/public/user/index.php');
+        exit;
+    }
+}
+
+// ─── CSRF protection ──────────────────────────────────────────────────────────
+
+/**
+ * Return (and lazily create) a CSRF token stored in the session.
+ */
+function csrfToken(): string {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+/**
+ * Abort with 403 if the POST CSRF token doesn't match the session token.
+ */
+function verifyCsrf(): void {
+    $token = $_POST['csrf_token'] ?? '';
+    if (!hash_equals(csrfToken(), $token)) {
+        http_response_code(403);
+        exit('Invalid CSRF token.');
+    }
+}
+
+// ─── JSON response helper (used by ajax/) ─────────────────────────────────────
+
+/**
+ * Emit a JSON response and exit.
+ *
+ * @param array $data
+ * @param int   $status HTTP status code
+ */
+function jsonResponse(array $data, int $status = 200): never {
+    http_response_code($status);
+    echo json_encode($data);
     exit;
 }
 
+// ─── Flash message helpers ────────────────────────────────────────────────────
+
 /**
- * Check if a user is logged in
+ * Store a flash message in the session.
  *
- * @return bool True if user is logged in, false otherwise
+ * @param string $type  'success' | 'error'
+ * @param string $msg
  */
-function isLoggedIn() {
-    return isset($_SESSION['user_id']);
+function setFlash(string $type, string $msg): void {
+    $_SESSION['flash'] = ['type' => $type, 'msg' => $msg];
 }
 
 /**
- * Check if logged-in user is an admin
+ * Retrieve and clear the flash message.
  *
- * @return bool True if user has admin privileges, false otherwise
+ * @return array{type:string, msg:string}
  */
-function isAdmin() {
-    return isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1;
+function getFlash(): array {
+    $flash = $_SESSION['flash'] ?? ['type' => '', 'msg' => ''];
+    unset($_SESSION['flash']);
+    return $flash;
+}
+
+// ─── Booking helpers ──────────────────────────────────────────────────────────
+
+/**
+ * Calculate rental cost breakdown.
+ *
+ * @param float  $pricePerDay
+ * @param string $pickup      Y-m-d
+ * @param string $dropoff     Y-m-d
+ * @return array{days:int, rental_total:float, insurance_fee:float, grand_total:float}
+ */
+function calcBooking(float $pricePerDay, string $pickup, string $dropoff): array {
+    $days        = (int)((strtotime($dropoff) - strtotime($pickup)) / 86400);
+    $rentalTotal = $days * $pricePerDay;
+    $insurance   = $days * 150;
+    $grandTotal  = $rentalTotal + $insurance;
+
+    return [
+        'days'          => $days,
+        'rental_total'  => $rentalTotal,
+        'insurance_fee' => $insurance,
+        'grand_total'   => $grandTotal,
+    ];
 }
 
 /**
- * Generate a new CSRF token and store it in session
+ * Check whether a car is available for a date range.
  *
- * @return string The generated CSRF token
+ * @param int    $carId
+ * @param string $pickup   Y-m-d
+ * @param string $dropoff  Y-m-d
+ * @param int    $excludeBookingId  Ignore this booking ID (for edits)
+ * @return bool
  */
-function generateCsrfToken() {
-    if (!isset($_SESSION)) {
-        session_start();
+function isCarAvailable(int $carId, string $pickup, string $dropoff, int $excludeBookingId = 0): bool {
+    $sql = "SELECT id FROM bookings
+            WHERE car_id = ? AND status NOT IN ('cancelled')
+              AND pickup_date < ? AND dropoff_date > ?";
+    $params = [$carId, $dropoff, $pickup];
+
+    if ($excludeBookingId) {
+        $sql    .= ' AND id != ?';
+        $params[] = $excludeBookingId;
     }
-    $token = bin2hex(random_bytes(32));
-    $_SESSION['csrf_token'] = $token;
-    return $token;
+
+    $sql .= ' LIMIT 1';
+    $stmt = db()->prepare($sql);
+    $stmt->execute($params);
+    return !$stmt->fetch();
 }
 
+// ─── Admin audit log ──────────────────────────────────────────────────────────
+
 /**
- * Verify a CSRF token from form submission
- *
- * @param string $token The token to verify
- * @return bool True if valid, false otherwise
+ * Write an entry to the audit_logs table (silently ignores DB errors).
  */
-function verifyCsrfToken($token) {
-    if (!isset($_SESSION['csrf_token']) || $token !== $_SESSION['csrf_token']) {
-        return false;
+function auditLog(string $action, string $targetType = '', int $targetId = 0, string $detail = ''): void {
+    $u = currentUser();
+    try {
+        db()->prepare("INSERT INTO audit_logs (admin_id, admin_name, action, target_type, target_id, detail)
+                       VALUES (?, ?, ?, ?, ?, ?)")
+           ->execute([
+               $u['id']   ?? null,
+               $u['name'] ?? 'System',
+               $action,
+               $targetType,
+               $targetId ?: null,
+               $detail   ?: null,
+           ]);
+    } catch (Exception $e) {
+        // Silently fail — audit logging must never break the main request
     }
-    return true;
 }
-?>
+
+// ─── Image upload helper ──────────────────────────────────────────────────────
+
+/**
+ * Handle a vehicle image upload.
+ * Returns the filename saved inside assets/images/, or null on failure.
+ */
+function uploadVehicleImage(array $file): ?string {
+    if (empty($file['name']) || $file['error'] !== UPLOAD_ERR_OK) {
+        return null;
+    }
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+        return null;
+    }
+    $filename = 'car_' . time() . '.' . $ext;
+    $dest     = ROOT_PATH . '/assets/images/' . $filename;
+    if (move_uploaded_file($file['tmp_name'], $dest)) {
+        return $filename;
+    }
+    return null;
+}
