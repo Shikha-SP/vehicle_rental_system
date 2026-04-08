@@ -32,8 +32,8 @@ require_once('../../includes/functions.php');
                     performance for those who demmand the pinnacle of engineering. </tbody>
             </p>
             <div class="hero-buttons">
-                <a href="login.php" class="btn btn-primary">SECURE THE FLEET</a>
-                <a href="login.php" class="btn btn-secondary">EXPLORE SPECS</a>
+                <a href="/vehicle_rental_system/public/user/login.php" class="btn btn-primary">SECURE THE FLEET</a>
+                <a href="/vehicle_rental_system/public/user/login.php" class="btn btn-secondary">EXPLORE SPECS</a>
             </div>
         </div>
     </header>
