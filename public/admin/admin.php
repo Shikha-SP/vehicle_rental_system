@@ -228,8 +228,10 @@ a{color:inherit;text-decoration:none} img{display:block;max-width:100%} button{f
 .flash.err{background:rgba(224,53,53,.12);color:#f87171;border:1px solid rgba(224,53,53,.25)}
 /* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:2rem}
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem}
-.stat-card.accent{border-color:var(--red);background:rgba(224,53,53,.07)}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;transition:.2s}
+.stat-card:hover{border-color:var(--red);background:rgba(224,53,53,.07)}
+.stat-card.accent{border-color:var(--border);background:var(--bg2)}
+.stat-card.accent:hover{border-color:var(--red);background:rgba(224,53,53,.07)}
 .stat-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--fg3);margin-bottom:.5rem;display:flex;align-items:center;justify-content:space-between}
 .stat-badge{font-size:.6rem;color:var(--green);background:rgba(34,197,94,.12);padding:2px 6px;border-radius:3px;font-weight:600}
 .stat-badge.warn{color:var(--red);background:rgba(224,53,53,.12)}
@@ -283,8 +285,10 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
 .fleet-add-icon{width:52px;height:52px;background:var(--bg4);border-radius:50%;display:flex;align-items:center;justify-content:center}
 /* CUSTOMER */
 .customer-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem}
-.cust-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem}
-.cust-stat.accent{border-color:var(--red);background:rgba(224,53,53,.07)}
+.cust-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;transition:.2s}
+.cust-stat:hover{border-color:var(--red);background:rgba(224,53,53,.07)}
+.cust-stat.accent{border-color:var(--border);background:var(--bg2)}
+.cust-stat.accent:hover{border-color:var(--red);background:rgba(224,53,53,.07)}
 .cust-stat-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fg3);margin-bottom:.25rem}
 .cust-stat-value{font-family:var(--display);font-size:1.8rem}
 .cust-stat-sub{font-size:.65rem;color:var(--fg3);margin-top:2px}
@@ -302,8 +306,10 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
 /* RESERVATIONS */
 .res-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
-.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem}
-.res-stat.accent{border-color:var(--red)}
+.res-stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;transition:.2s}
+.res-stat:hover{border-color:var(--red);background:rgba(224,53,53,.07)}
+.res-stat.accent{border-color:var(--border)}
+.res-stat.accent:hover{border-color:var(--red);background:rgba(224,53,53,.07)}
 .res-stat-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:var(--fg3);margin-bottom:.5rem}
 .res-stat-value{font-family:var(--display);font-size:2rem;line-height:1} .res-stat-value.red{color:var(--red)}
 .filter-row{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
@@ -337,7 +343,12 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
 .fleet-sub-item label{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--fg3);display:block;margin-bottom:4px}
 .fleet-sub-item span{font-family:var(--display);font-size:1.8rem}
 .fleet-sub-bar{height:3px;border-radius:2px;margin-top:.35rem}
-.revenue-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem}
+.fleet-sub-item{transition:.2s}
+.fleet-sub-item:hover .available-bar{background:var(--red) !important}
+.fleet-sub-item:hover .maintenance-bar{background:var(--red) !important}
+.fleet-sub-item:hover .utilization-bar{background:var(--red) !important}
+.revenue-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;transition:.2s}
+.revenue-card:hover{border-color:var(--red);background:rgba(224,53,53,.07)}
 .rev-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--fg3);display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
 .rev-badge{font-size:.65rem;color:var(--green);background:rgba(34,197,94,.12);padding:2px 6px;border-radius:3px;font-weight:600}
 .rev-value{font-family:var(--display);font-size:2.2rem;margin-bottom:.75rem}
@@ -438,17 +449,17 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
         <div class="fleet-sub-item">
           <label>Maintenance</label>
           <span><?= $totalCars - $availCars ?></span>
-          <div class="fleet-sub-bar" style="background:var(--blue);width:<?= $totalCars>0?round(($totalCars-$availCars)/$totalCars*100):0 ?>%"></div>
+          <div class="fleet-sub-bar maintenance-bar" style="background:var(--blue);width:<?= $totalCars>0?round(($totalCars-$availCars)/$totalCars*100):0 ?>%"></div>
         </div>
         <div class="fleet-sub-item">
           <label>Available</label>
           <span><?= $availCars ?></span>
-          <div class="fleet-sub-bar" style="background:var(--red);width:<?= $totalCars>0?round($availCars/$totalCars*100):0 ?>%"></div>
+          <div class="fleet-sub-bar available-bar" style="background:var(--fg3);width:<?= $totalCars>0?round($availCars/$totalCars*100):0 ?>%"></div>
         </div>
         <div class="fleet-sub-item">
           <label>Utilization</label>
           <span><?= $totalCars>0?round($confirmedCount/$totalCars*100).'%':'0%' ?></span>
-          <div class="fleet-sub-bar" style="background:var(--fg3);width:<?= $totalCars>0?min(100,round($confirmedCount/$totalCars*100)):0 ?>%"></div>
+          <div class="fleet-sub-bar utilization-bar" style="background:var(--fg3);width:<?= $totalCars>0?min(100,round($confirmedCount/$totalCars*100)):0 ?>%"></div>
         </div>
       </div>
     </div>
