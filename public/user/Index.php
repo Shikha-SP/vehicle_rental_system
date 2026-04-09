@@ -32,8 +32,10 @@ require_once('../../includes/functions.php');
                     performance for those who demmand the pinnacle of engineering. </tbody>
             </p>
             <div class="hero-buttons">
-                <a href="/vehicle_rental_system/public/user/login.php" class="btn btn-primary">SECURE THE FLEET</a>
-                <a href="/vehicle_rental_system/public/user/login.php" class="btn btn-secondary">EXPLORE SPECS</a>
+                <a href="/vehicle_rental_system/public/authentication/login.php" class="btn btn-primary">SECURE THE
+                    FLEET</a>
+                <a href="/vehicle_rental_system/public/authentication/login.php" class="btn btn-secondary">EXPLORE
+                    SPECS</a>
             </div>
         </div>
     </header>
@@ -149,7 +151,7 @@ require_once('../../includes/functions.php');
                 Experience the pinnacle of velocity.</p>
         </div>
         <div class="cta-action-area">
-            <a href="../authentication/login.php" class="btn btn-white">DISCOVER CARS</a>
+            <a href="/vehicle_rental_system/public/authentication/login.php" class="btn btn-white">DISCOVER CARS</a>
         </div>
         <!-- Decorative background element for CTA -->
         <!-- Since we don't have brake-caliper.png, using a pure CSS/styled approach or generic bg might be better, but adding the tag to fulfill structure -->

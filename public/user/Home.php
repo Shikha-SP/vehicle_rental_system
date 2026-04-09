@@ -282,6 +282,6 @@ $brands_result = $conn->query($brands_sql);
 
 <!-- Leaflet Map -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="../../assets/js/map.js"></script>
+<script src="../../assets/js/map.js?v=2"></script>
 
 <?php include('../../includes/footer.php'); ?>

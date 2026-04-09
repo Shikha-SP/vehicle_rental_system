@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initialize the map
     var map = L.map('showroom-map').setView([shopLat, shopLng], 16);
 
-    var geoapifyUrl = 'https://maps.geoapify.com/v1/tile/carto/{z}/{x}/{y}.png?&apiKey=ee4b8e9049f44c1387225e75fa5397c7';
+    var geoapifyUrl = '/vehicle_rental_system/ajax/map_proxy.php?z={z}&x={x}&y={y}';
 
     L.tileLayer(geoapifyUrl, {
         attribution: 'Powered by <a href="https://www.geoapify.com/">Geoapify</a> | &copy; OpenStreetMap contributors',
