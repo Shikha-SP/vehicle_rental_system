@@ -1,7 +1,8 @@
 <?php
 session_start();
 
-// FIXED: Only redirect if not logged in OR if user is an admin
+// FIXED: Only redirect if NOT logged in OR if user is an admin
+// Regular users should see the vehicles page, admins and guests should be redirected
 if (!isset($_SESSION['user_id']) || (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1)) {
     header("Location: ../landing_page.php");
     exit;
@@ -18,7 +19,7 @@ $min_price    = isset($_GET['min_price'])    ? (float)$_GET['min_price'] : 0;
 $max_price    = isset($_GET['max_price'])    ? (float)$_GET['max_price'] : 0;
 $color        = isset($_GET['color'])        ? trim($_GET['color'])      : '';
 
-// Build the SQL query with proper condition handling
+// Build the SQL query - showing ALL approved vehicles from ALL users
 $sql = "SELECT v.*, u.first_name, u.email 
         FROM vehicles v 
         JOIN users u ON v.user_id = u.id 
@@ -28,7 +29,7 @@ $conditions = [];
 $param_types = "";
 $params = [];
 
-// Add search condition (searching by model only since brand column doesn't exist)
+// Add search condition (searching by model)
 if (!empty($search)) {
     $conditions[] = "(v.model LIKE ?)";
     $param_types .= "s";
