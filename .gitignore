@@ -1,0 +1,13 @@
+# Ignore Composer vendor folder
+/vendor/
+
+# Ignore uploads (user files / runtime images)
+uploads/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore local environment/config files
+/config/*.local.php
+.env
