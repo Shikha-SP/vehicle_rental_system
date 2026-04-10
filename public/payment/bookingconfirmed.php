@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/ac1574deb1.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/vehicle_rental_system/assets/css/bookingconfirmed.css">
+        <!-- <link rel="stylesheet" href="/vehicle_rental_system/assets/css/paymentdetail.css"> -->
     <title>Booking confirmed</title>
 </head>
 <body>
@@ -33,11 +35,9 @@
             </div>
 
             <div class="hero-right">
-                <div class="car-image">
-                    <img src="car.png" alt="Car Image">
-                </div>
-
                 <div class="confirmation-card">
+                    <img class="car-image" src="/vehicle_rental_system/assets/images/ferrari-img.jpg" alt="">
+                    <div class="car-image-overlay"></div>
                     <div class="confirmation-item">
                         <p class="label">CONFIRMATION</p>
                         <p class="value">#TD-8829-X</p>
@@ -66,7 +66,7 @@
 
                 <!-- COLLECTION POINT -->
                 <div class="card location-card">
-                    <p class="card-label">COLLECTION POINT</p>
+                    <p class="card-label"><i class="fa-solid fa-location-dot icon"></i>COLLECTION POINT</p>
                     <h3 class="location-title">MIAMI INTERNATIONAL</h3>
                     <p class="location-address">
                         VIP Terminal B, Suite 104 <br>
@@ -80,7 +80,7 @@
 
                 <!-- RETURN POINT -->
                 <div class="card location-card">
-                    <p class="card-label">RETURN POINT</p>
+                    <p class="card-label"><i class="fa-solid fa-arrow-left icon"></i>RETURN POINT</p>
                     <h3 class="location-title">MIAMI INTERNATIONAL</h3>
                     <p class="location-address">
                         VIP Terminal B, Suite 104 <br>
