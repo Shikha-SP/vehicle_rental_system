@@ -381,3 +381,42 @@
     .lc-form  { grid-template-columns: 1fr; }
     .lc-row   { grid-template-columns: 1fr; }
 }
+
+/* ── Color Presets ───────────────────────────────────────────── */
+.lc-color-presets {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+}
+.lc-color-presets__label {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-label);
+}
+.lc-color-presets__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.lc-preset-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform var(--t), border-color var(--t), box-shadow var(--t);
+    flex-shrink: 0;
+}
+.lc-preset-swatch:hover {
+    transform: scale(1.2);
+    border-color: rgba(255,255,255,0.3);
+}
+.lc-preset-swatch.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+    transform: scale(1.15);
+}

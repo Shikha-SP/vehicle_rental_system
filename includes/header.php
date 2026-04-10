@@ -19,18 +19,18 @@ if (session_status() === PHP_SESSION_NONE) {
 <header>
   <nav>
 
-    <!-- 🔴 BRAND -->
+    <!-- BRAND -->
     <a href="/vehicle_rental_collab_project/public/landing_page.php" class="brand">
       TD <span>RENTALS</span>
     </a>
 
     <?php if (isset($_SESSION['user_id'])): ?>
-        <!-- 🔴 NAV LINKS (only for logged-in users) -->
+        <!-- NAV LINKS (only for logged-in users) -->
         <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
         <ul class="nav-links" id="navLinks">
           
           <?php if (!empty($_SESSION['is_admin'])): ?>
-            <!-- 🔴 ADMIN NAVIGATION -->
+            <!-- ADMIN NAVIGATION -->
             <li>
               <a href="/vehicle_rental_collab_project/public/admin/home_page.php" 
                  class="<?= ($currentPage == 'home_page.php') ? 'active' : '' ?>">Dashboard</a>
@@ -40,7 +40,7 @@ if (session_status() === PHP_SESSION_NONE) {
                  class="<?= ($currentPage == 'review_rental_requests.php') ? 'active' : '' ?>">Review Vehicles</a>
             </li>
           <?php else: ?>
-            <!-- 🔴 REGULAR USER NAVIGATION -->
+            <!-- REGULAR USER NAVIGATION -->
             <li>
               <a href="/vehicle_rental_collab_project/public/user/home_page.php" 
                  class="<?= ($currentPage == 'home_page.php') ? 'active' : '' ?>">Home</a>
@@ -53,13 +53,17 @@ if (session_status() === PHP_SESSION_NONE) {
               <a href="/vehicle_rental_collab_project/public/user/bookings.php" 
                  class="<?= ($currentPage == 'bookings.php') ? 'active' : '' ?>">My Bookings</a>
             </li>
+               <li>
+              <a href="/vehicle_rental_collab_project/public/renter/my_vehicles.php" 
+                 class="<?= ($currentPage == 'my_vehicles.php') ? 'active' : '' ?>">My Listings</a>
+            </li>
           <?php endif; ?>
           
         </ul>
 
-        <!-- 🔴 RIGHT SIDE -->
+        <!-- RIGHT SIDE -->
         <div class="nav-auth" id="navAuth">
-          <!-- 👤 PROFILE DROPDOWN -->
+          <!-- PROFILE DROPDOWN -->
           <div class="profile-menu">
             <button class="profile-btn" onclick="toggleDropdown()">
               <?= isset($_SESSION['username']) ? strtoupper(substr($_SESSION['username'], 0, 1)) : 'U' ?>
@@ -71,7 +75,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
           </div>
 
-          <!-- 🔥 MAIN CTA - Only show for regular users -->
+          <!-- MAIN CTA - Only show for regular users -->
           <?php if (empty($_SESSION['is_admin'])): ?>
             <a href="/vehicle_rental_collab_project/public/renter/list_car.php" class="btn-primary">
               List Your Vehicle
@@ -80,7 +84,7 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
         
     <?php else: ?>
-        <!-- 🔴 ONLY LOGIN & REGISTER FOR GUESTS -->
+        <!-- ONLY LOGIN & REGISTER FOR GUESTS -->
         <div class="nav-auth" id="navAuth">
             <a href="/vehicle_rental_collab_project/public/authentication/login.php" class="btn-ghost">
               Log In
@@ -92,7 +96,7 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     <?php endif; ?>
 
-    <!-- 🔴 MOBILE TOGGLE -->
+    <!-- MOBILE TOGGLE -->
     <button class="nav-toggle"
       onclick="document.getElementById('navLinks').classList.toggle('open'); 
                document.getElementById('navAuth').classList.toggle('open')">
@@ -102,7 +106,7 @@ if (session_status() === PHP_SESSION_NONE) {
   </nav>
 </header>
 
-<!-- 🔴 DROPDOWN SCRIPT -->
+<!-- DROPDOWN SCRIPT -->
 <script>
 function toggleDropdown() {
   document.getElementById("dropdownMenu").classList.toggle("show");

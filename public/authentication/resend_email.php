@@ -18,7 +18,7 @@ $email = strtolower(trim(filter_var($email, FILTER_SANITIZE_EMAIL)));
 if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $errors[] = "Invalid email address.";
 } else {
-    // Check if user exists
+    // Validation Layer: Verify the targeted account actually exists in our secure database
     $stmt = mysqli_prepare($conn, "SELECT id, first_name, last_name, is_verified FROM users WHERE email=? LIMIT 1");
     mysqli_stmt_bind_param($stmt, "s", $email);
     mysqli_stmt_execute($stmt);
@@ -30,18 +30,19 @@ if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         if ($user['is_verified']) {
             $errors[] = "Your account is already verified. You can login.";
         } else {
-            // Generate new token
+            // Token Generation Phase: Construct a secure, random cryptographic verification token
             $verification_token = bin2hex(random_bytes(32));
+            // Establish a strict 24-hour expiration window for the verification token security
             $token_expires_at = date('Y-m-d H:i:s', strtotime('+24 hours'));
 
-            // Update user record
+            // Persistence Phase: Securely append the new token and expiration to the user identity utilizing a parameterized query
             $update = mysqli_prepare($conn, 
                 "UPDATE users SET verification_token=?, token_expires_at=? WHERE id=?"
             );
             mysqli_stmt_bind_param($update, "ssi", $verification_token, $token_expires_at, $user['id']);
             mysqli_stmt_execute($update);
 
-            // Send verification email
+            // Communication Phase: Construct the absolute verification callback URL required for email validation
             $verify_url = "http://localhost/vehicle_rental_collab_project/public/authentication/verify.php?token=" . $verification_token;
 
             try {
@@ -76,7 +77,7 @@ if (!$email || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     <meta charset="UTF-8">
     <title>Resend Verification Email</title>
 
-    <!-- ✅ CSS LINK -->
+    <!-- Import external stylesheet tailored specifically for the email resend modal UI -->
     <link rel="stylesheet" href="../../assets/css/resend_verification_email.css">
 </head>
 <body>

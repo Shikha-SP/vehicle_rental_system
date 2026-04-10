@@ -104,6 +104,101 @@ function updateColorUI(hex) {
 colorPicker.addEventListener("input", () => updateColorUI(colorPicker.value));
 updateColorUI(colorPicker.value);
 
+// ===== COLOR PRESETS =====
+const carPresets = [
+    // Reds & Pinks
+    { hex: "#e03030", name: "Racing Red" },
+    { hex: "#c82020", name: "Deep Red" },
+    { hex: "#8b0000", name: "Dark Red" },
+    { hex: "#ff6347", name: "Tomato" },
+    // Whites & Silvers
+    { hex: "#ffffff", name: "White" },
+    { hex: "#f5f5f5", name: "Pearl White" },
+    { hex: "#c0c0c0", name: "Silver" },
+    { hex: "#a9a9a9", name: "Dark Gray" },
+    // Blacks & Grays
+    { hex: "#1a1a1a", name: "Midnight Black" },
+    { hex: "#2f2f2f", name: "Graphite" },
+    { hex: "#708090", name: "Slate Gray" },
+    { hex: "#808080", name: "Gray" },
+    // Blues
+    { hex: "#003366", name: "Navy Blue" },
+    { hex: "#1e3a5f", name: "Deep Blue" },
+    { hex: "#4169e1", name: "Royal Blue" },
+    { hex: "#87ceeb", name: "Sky Blue" },
+    // Greens
+    { hex: "#1a3c1a", name: "Forest Green" },
+    { hex: "#2e8b57", name: "Sea Green" },
+    { hex: "#006400", name: "Dark Green" },
+    { hex: "#556b2f", name: "Olive Green" },
+    // Browns & Golds
+    { hex: "#3d1f00", name: "Dark Brown" },
+    { hex: "#8b4513", name: "Saddle Brown" },
+    { hex: "#d4a017", name: "Gold" },
+    { hex: "#b8860b", name: "Dark Gold" },
+    // Oranges & Yellows
+    { hex: "#ff8c00", name: "Dark Orange" },
+    { hex: "#ff4500", name: "Orange Red" },
+    { hex: "#ffcc00", name: "Yellow" },
+    { hex: "#f5c518", name: "Amber" },
+    // Purples
+    { hex: "#4b0082", name: "Indigo" },
+    { hex: "#6a0dad", name: "Purple" },
+    { hex: "#9370db", name: "Medium Purple" },
+    { hex: "#483d8b", name: "Dark Slate Blue" },
+];
+
+const presetGrid = document.getElementById("colorPresetGrid");
+
+carPresets.forEach(({ hex, name }) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "lc-preset-swatch";
+    btn.style.background = hex;
+    btn.title = name;
+
+    btn.addEventListener("click", () => {
+        colorPicker.value = hex;
+        updateColorUI(hex);
+        setActivePreset(hex);
+    });
+
+    presetGrid.appendChild(btn);
+});
+
+function setActivePreset(hex) {
+    document.querySelectorAll(".lc-preset-swatch").forEach(btn => {
+        btn.classList.toggle("active", btn.style.background === hexToRgb(hex) || btn.title === getNearestColor(hex) && btn.style.background === hex);
+    });
+    // simpler approach: match by title
+    document.querySelectorAll(".lc-preset-swatch").forEach(btn => {
+        const btnHex = rgbToHex(btn.style.background);
+        btn.classList.toggle("active", btnHex.toLowerCase() === hex.toLowerCase());
+    });
+}
+
+function hexToRgb(hex) {
+    const r = parseInt(hex.substr(1,2),16);
+    const g = parseInt(hex.substr(3,2),16);
+    const b = parseInt(hex.substr(5,2),16);
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+function rgbToHex(rgb) {
+    const m = rgb.match(/\d+/g);
+    if (!m) return "#000000";
+    return "#" + m.slice(0,3).map(n => parseInt(n).toString(16).padStart(2,"0")).join("");
+}
+
+// Also update active state when the custom picker changes
+colorPicker.addEventListener("input", () => {
+    updateColorUI(colorPicker.value);
+    setActivePreset(colorPicker.value);
+});
+
+// Set initial active preset
+setActivePreset(colorPicker.value);
+
 // ===== IMAGE DROPZONE & PREVIEW =====
 const dropzone     = document.getElementById("dropzone");
 const vehicleImage = document.getElementById("vehicleImage");

@@ -1,17 +1,25 @@
 <?php
+/**
+ * User Settings Page
+ * 
+ * This page allows users to view and manage their account details, 
+ * including changing their password, updating their name, and deleting their account.
+ */
 session_start();
 
-// Ensure the user is logged in and is NOT admin
+// Ensure the user is logged in and is NOT an admin
 if (!isset($_SESSION['user_id']) || (!empty($_SESSION['is_admin']))) {
     header("Location: ../landing_page.php");
     exit;
 }
 
+// Get the user ID from the active session
 $user_id = $_SESSION['user_id'];
 
+// Include database connection to fetch user information
 require_once '../../config/db.php';
 
-// Fetch user data
+// Fetch current user data securely using a prepared statement to prevent SQL injection
 $query = "SELECT id, first_name, last_name, email, created_at FROM users WHERE id = ?";
 $stmt = mysqli_prepare($conn, $query);
 mysqli_stmt_bind_param($stmt, "i", $user_id);
@@ -19,18 +27,19 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $user = mysqli_fetch_assoc($result);
 
+// Terminate execution if the user record is not found in the database
 if (!$user) {
     die("User not found.");
 }
 
-// Full name
+// Construct the user's full name for display purposes
 $full_name = $user['first_name'] . ' ' . $user['last_name'];
 $display_name = $_SESSION['username'] ?? $full_name;
 
-// Active section
+// Determine which settings section is currently active, defaulting to 'overview'
 $active_section = isset($_GET['section']) ? $_GET['section'] : 'overview';
 
-// Include header
+// Include the common site header markup
 require_once '../../includes/header.php';
 ?>
 

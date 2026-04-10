@@ -1,6 +1,14 @@
 <?php
+/**
+ * List Car Form
+ * 
+ * This page provides the user interface for a host (renter) to list a new vehicle.
+ * It captures identity, specifications, pricing, and an image of the vehicle.
+ * Form data is sent to `../vehicle/add.php` for database insertion.
+ */
 session_start();
 
+// Ensure only logged-in non-admin users (renters) can list vehicles
 if (!isset($_SESSION['user_id']) || (!empty($_SESSION['is_admin']))) {
     header("Location: ../landing_page.php");
     exit;
@@ -123,6 +131,10 @@ $color         = $_POST['color']         ?? '#e03030';
                             <span class="lc-color-hex"  id="hexValue"><?= htmlspecialchars($color) ?></span>
                         </div>
                     </div>
+                    <div class="lc-color-presets">
+    <span class="lc-color-presets__label">Basic Colours</span>
+    <div class="lc-color-presets__grid" id="colorPresetGrid"></div>
+</div>
                 </div>
             </div>
 

@@ -1,12 +1,20 @@
 <?php
+/**
+ * Email Verification Handler
+ * 
+ * This file processes the link sent to the user's email after registration.
+ * It validates the secure token, checks for expiration, and activates the account.
+ */
 require_once '../../config/db.php';
 require_once '../../includes/functions.php';
 session_start();
 
+// Grab the token from the URL query string
 $token  = trim($_GET['token'] ?? '');
-$status = 'invalid';
+$status = 'invalid'; // Default state
 
 if (!empty($token)) {
+    // Look up the user associated with this specific verification token
     $stmt = mysqli_prepare($conn,
         "SELECT id, first_name, is_verified, token_expires_at FROM users WHERE verification_token = ?"
     );
@@ -16,18 +24,30 @@ if (!empty($token)) {
     mysqli_stmt_bind_result($stmt, $user_id, $first_name, $is_verified, $expires_at);
     mysqli_stmt_fetch($stmt);
 
+    // Scenario 1: The token doesn't exist in our database at all
     if (mysqli_stmt_num_rows($stmt) === 0) {
         $status = 'invalid';
-    } elseif ($is_verified) {
+    } 
+    // Scenario 2: The token is valid, but the user is already marked as verified
+    elseif ($is_verified) {
         $status = 'already_verified';
-    } elseif (strtotime($expires_at) < time()) {
+    } 
+    // Scenario 3: The 24-hour expiration window has passed
+    elseif (strtotime($expires_at) < time()) {
         mysqli_stmt_close($stmt);
+        
+        // Since the token expired before they verified, we delete the unverified account.
+        // This frees up their email address so they can try signing up again.
         $del = mysqli_prepare($conn, "DELETE FROM users WHERE verification_token = ?");
         mysqli_stmt_bind_param($del, "s", $token);
         mysqli_stmt_execute($del);
         $status = 'expired';
-    } else {
+    } 
+    // Scenario 4: Token is valid and hasn't expired. Proceed with verification!
+    else {
         mysqli_stmt_close($stmt);
+        
+        // Update the user record to 'verified' and clear out the one-time token fields
         $upd = mysqli_prepare($conn,
             "UPDATE users SET is_verified = 1, verification_token = NULL, token_expires_at = NULL WHERE id = ?"
         );
@@ -44,7 +64,7 @@ if (!empty($token)) {
     <meta charset="UTF-8">
     <title>Email Verification</title>
 
-    <!-- ✅ CSS LINK -->
+    <!-- Link to the tailored CSS for the verification cards -->
     <link rel="stylesheet" href="../../assets/css/verification.css">
 </head>
 <body>

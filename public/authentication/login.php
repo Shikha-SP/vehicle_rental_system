@@ -8,15 +8,17 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
     $theme = 'dark';
 }
 
-// Redirect logged-in users
+// If the user is already logged in, redirect them to their respective dashboard
+// so they do not see the login form again.
 if (isLoggedIn()) {
     if ($_SESSION['is_admin']) {
-        redirect('../admin/home_page.php');
+        redirect('../admin/home_page.php'); // Route admin users to the management portal
     } else {
-        redirect('../user/home_page.php');
+        redirect('../user/home_page.php');  // Route normal customers to the user dashboard
     }
 }
 
+// Initialize CSRF protection: generate a token to prevent Cross-Site Request Forgery
 if (!isset($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = generateCsrfToken();
 }
@@ -25,6 +27,8 @@ $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+    // Verify the CSRF token submitted from the form against the one in their active session.
+    // If it doesn't match or doesn't exist, we halt the script.
     if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
         die("Security error: Invalid CSRF token.");
     }
@@ -32,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email    = strtolower(trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)));
     $password = trim($_POST['password'] ?? '');
 
+    // Perform basic validation to ensure the fields are formatted properly
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Valid email is required.";
     }
@@ -40,7 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Password is required.";
     }
 
+    // If basic validation passes, lookup the user in the database
     if (empty($errors)) {
+        // Use prepared statements here to completely prevent SQL injection attacks
         $stmt = mysqli_prepare($conn,
             "SELECT id, first_name, password, is_admin, is_verified 
              FROM users WHERE email=? LIMIT 1"
@@ -53,11 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result && mysqli_num_rows($result) === 1) {
             $user = mysqli_fetch_assoc($result);
 
+            // Ensure the user actually verified their email address before letting them in
             if (!$user['is_verified']) {
                 $safe_email = urlencode($email);
                 $errors[] = "Please verify your email first. 
                     <a href='resend_email.php?email={$safe_email}'>Resend verification email</a>";
+            // Compare the submitted password with the completely secure bcrypt hash we have stored
             } elseif (password_verify($password, $user['password'])) {
+                // Generate a new session ID to protect against session fixation vulnerabilities
                 session_regenerate_id(true);
 
                 $_SESSION['user_id']   = $user['id'];
@@ -65,10 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['is_admin']  = (bool) $user['is_admin'];
                 $_SESSION['csrf_token'] = generateCsrfToken();
 
+                // Check the user's role and route them to the correct dashboard section
                 if ($user['is_admin']) {
-                    redirect('../admin/home_page.php');
+                    redirect('../admin/home_page.php'); // Send admin users to management portal
                 } else {
-                    redirect('../user/home_page.php');
+                    redirect('../user/home_page.php');  // Send normal drivers to standard portal
                 }
             } else {
                 $errors[] = "Invalid email or password.";
@@ -111,11 +122,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <p class="login-card__sub">Sign in to access your driver profile and reservations.</p>
 
-            <!-- Errors -->
+            <!-- Conditionally render the error notification block if exceptions were raised during form processing -->
+            <!-- Note: We don't automatically escape these error elements so that we can embed HTML links (like the "Resend Verification" link) directly in the error message -->
             <?php if (!empty($errors)): ?>
                 <ul class="login-errors">
                     <?php foreach ($errors as $error): ?>
-                        <li><?= $error /* allow link HTML */ ?></li>
+                        <li><?= $error ?></li>
                     <?php endforeach; ?>
                 </ul>
             <?php endif; ?>
@@ -152,8 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <!-- Forgot link -->
-
+                <!-- Password Recovery entry point -->
                 <a href="forgot_password.php" class="login-form__forgot">Forgot password?</a>
                 
 

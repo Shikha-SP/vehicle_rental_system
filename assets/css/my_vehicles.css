@@ -36,7 +36,7 @@
 
 /* ── Page shell ──────────────────────────────────────────────── */
 .my-vehicles {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 56px 44px 80px;
     position: relative;
@@ -65,10 +65,52 @@
     margin-bottom: 36px;
 }
 
-/* ── Empty state ─────────────────────────────────────────────── */
-.my-vehicles > p {
+/* ── Alert messages ──────────────────────────────────────────── */
+.alert {
+    padding: 14px 20px;
+    margin-bottom: 28px;
+    border-radius: var(--radius);
     font-family: var(--font-body);
-    font-size: 15px;
+    font-size: 14px;
+    font-weight: 500;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-success {
+    background: rgba(46, 204, 113, 0.12);
+    border-left: 3px solid #2ecc71;
+    color: #6ee09a;
+}
+
+.alert-error {
+    background: rgba(224, 48, 48, 0.12);
+    border-left: 3px solid var(--accent);
+    color: #ff8080;
+}
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.empty-state p {
+    font-family: var(--font-body);
+    font-size: 16px;
     color: var(--text-muted);
     margin-bottom: 24px;
 }
@@ -88,28 +130,40 @@
     padding: 22px 28px;
     display: flex;
     align-items: center;
-    gap: 28px;
+    justify-content: space-between;
+    gap: 20px;
     transition: border-color var(--t), box-shadow var(--t), transform var(--t);
     animation: itemIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
     position: relative;
     overflow: hidden;
+    flex-wrap: wrap;
 }
 
 /* Left accent bar */
 .vehicle-item::before {
     content: '';
     position: absolute;
-    left: 0; top: 0; bottom: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
     width: 3px;
     background: var(--border);
     transition: background var(--t);
 }
 
-.vehicle-item:hover::before { background: var(--accent); }
+.vehicle-item:hover::before {
+    background: var(--accent);
+}
 
 @keyframes itemIn {
-    from { opacity: 0; transform: translateX(-16px); }
-    to   { opacity: 1; transform: translateX(0); }
+    from {
+        opacity: 0;
+        transform: translateX(-16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 .vehicle-item:nth-child(1) { animation-delay: 0.05s; }
@@ -124,76 +178,110 @@
     transform: translateX(4px);
 }
 
-/* ── Item model name ─────────────────────────────────────────── */
-.vehicle-item h3 {
+/* ── Vehicle info section ───────────────────────────────────── */
+.vehicle-info {
+    flex: 2;
+    min-width: 180px;
+}
+
+.vehicle-info h3 {
     font-family: var(--font-head);
     font-weight: 700;
     font-size: 20px;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--text);
-    flex: 1;
-    margin: 0;
+    margin: 0 0 8px 0;
 }
 
-/* ── Item meta (price / status) ──────────────────────────────── */
-.vehicle-item p {
+.vehicle-details {
+    display: flex;
+    gap: 16px;
     font-family: var(--font-body);
     font-size: 13px;
     color: var(--text-muted);
-    margin: 0;
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
-/* ── Status badges ───────────────────────────────────────────── */
-.status-pending,
-.status-approved,
-.status-rejected {
+.vehicle-details .year {
+    background: var(--bg-input);
+    padding: 2px 8px;
+    border-radius: var(--radius);
+}
+
+.vehicle-details .price {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* ── Status badge ───────────────────────────────────────────── */
+.vehicle-status {
+    flex-shrink: 0;
+}
+
+.status-badge {
     font-family: var(--font-head);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    padding: 4px 10px;
+    padding: 6px 14px;
     border-radius: 2px;
     display: inline-block;
+    white-space: nowrap;
 }
 
 .status-pending {
-    background: var(--status-pending-bg);
-    border: 1px solid var(--status-pending-bdr);
+    /* background: var(--status-pending-bg); */
+    /* border: 1px solid var(--status-pending-bdr); */
     color: var(--status-pending-text);
 }
 
 .status-approved {
-    background: var(--status-approved-bg);
-    border: 1px solid var(--status-approved-bdr);
+    /* background: var(--status-approved-bg); */
+    /* border: 1px solid var(--status-approved-bdr); */
     color: var(--status-approved-text);
+    /* padding:5px; */
 }
 
 .status-rejected {
-    background: var(--status-rejected-bg);
-    border: 1px solid var(--status-rejected-bdr);
+    /* background: var(--status-rejected-bg); */
+    /* border: 1px solid var(--status-rejected-bdr); */
     color: var(--status-rejected-text);
 }
 
-/* ── CTA button ──────────────────────────────────────────────── */
+/* ── Action buttons container ────────────────────────────────── */
+.vehicle-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Info text for approved vehicles */
+.info-text {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: #6ee09a;
+    background: rgba(46, 204, 113, 0.1);
+    padding: 6px 12px;
+    border-radius: var(--radius);
+    white-space: nowrap;
+}
+
+/* ── Button styles ─────────────────────────────────────────── */
 .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 24px;
-    background: linear-gradient(135deg, #c82020 0%, #f04040 100%);
+    padding: 8px 18px;
     border: none;
     border-radius: var(--radius);
     color: #fff;
     font-family: var(--font-head);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     text-decoration: none;
     cursor: pointer;
@@ -204,50 +292,121 @@
     flex-shrink: 0;
 }
 
-/* Shimmer sweep */
+/* Primary button (Resubmit / List First Vehicle) */
+.btn-primary {
+    background: linear-gradient(135deg, #c82020 0%, #f04040 100%);
+}
+
+/* Edit button (only for pending) */
+.btn-edit {
+    background: linear-gradient(135deg, #f5a623 0%, #f7c948 100%);
+    color: #1a1a1a;
+}
+
+.btn-edit:hover {
+    box-shadow: 0 4px 16px rgba(245, 166, 35, 0.3);
+}
+
+/* Remove button */
+.btn-remove {
+    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+    border: 1px solid rgba(224, 48, 48, 0.3);
+}
+
+.btn-remove:hover {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, #3a1a1a 0%, #4a2a2a 100%);
+    box-shadow: 0 4px 16px rgba(224, 48, 48, 0.2);
+}
+
+/* Shimmer effect for all buttons */
 .btn::after {
     content: '';
     position: absolute;
-    top: 0; left: -75%;
+    top: 0;
+    left: -75%;
     width: 50%;
     height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.15), transparent);
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.1), transparent);
     transform: skewX(-20deg);
     transition: left 0.5s ease;
+    pointer-events: none;
 }
-.btn:hover::after { left: 140%; }
+
+.btn:hover::after {
+    left: 140%;
+}
 
 .btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px var(--accent-glow);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
+
 .btn:active {
     transform: translateY(0);
     box-shadow: none;
 }
 
-/* First-vehicle CTA */
-.my-vehicles > .btn {
-    margin-top: 8px;
+/* ── Responsive Design ──────────────────────────────────────── */
+@media (max-width: 768px) {
+    .my-vehicles {
+        padding: 36px 24px 60px;
+    }
+    
+    .vehicle-item {
+        padding: 20px;
+    }
+    
+    .vehicle-info h3 {
+        font-size: 18px;
+    }
 }
 
-/* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 640px) {
     .my-vehicles {
-        padding: 36px 20px 60px;
+        padding: 28px 16px 50px;
     }
-
+    
     .vehicle-item {
-        flex-wrap: wrap;
-        gap: 12px;
-        padding: 18px 20px 18px 24px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 18px;
     }
-
-    .vehicle-item h3 {
+    
+    .vehicle-info {
         width: 100%;
     }
-
-    .vehicle-item p {
+    
+    .vehicle-info h3 {
+        font-size: 16px;
+    }
+    
+    .vehicle-details {
         font-size: 12px;
+    }
+    
+    .vehicle-status {
+        width: 100%;
+    }
+    
+    .vehicle-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    .btn {
+        padding: 6px 14px;
+        font-size: 10px;
+    }
+    
+    .info-text {
+        font-size: 10px;
+        padding: 4px 10px;
+    }
+    
+    .status-badge {
+        font-size: 10px;
+        padding: 4px 12px;
     }
 }

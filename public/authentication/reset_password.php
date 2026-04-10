@@ -1,9 +1,15 @@
 <?php
-// Use __DIR__ for more reliable pathing
+/**
+ * Reset Password Handler
+ * 
+ * This file allows a user to set a new password after clicking the link 
+ * in their "Forgot Password" email. It verifies the token before allowing 
+ * a password reset to ensure the request is legitimate.
+ */
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../includes/functions.php';
 
-// Define e() safety net if it's not in functions.php
+// XSS Mitigation Fallback: Ensure the character escaping routine exists in the global scope 
 if (!function_exists('e')) {
     function e($val) {
         return htmlspecialchars($val ?? '', ENT_QUOTES, 'UTF-8');
@@ -23,7 +29,9 @@ $user_id = null;
 $errors = [];
 $success = false;
 
-// 1. Verify token
+// Step 1: Token Validation
+// Verify that the reset token provided in the URL is valid, hasn't been used yet, 
+// and hasn't expired (tokens generally expire to limit exposure windows).
 if (empty($token)) {
     $errors[] = "Invalid password reset link.";
 } else {
@@ -46,7 +54,8 @@ if (empty($token)) {
     }
 }
 
-// 2. Handle password reset form submission
+// Step 2: Form Processing
+// If the token is valid and the user submits the new password form, process the update.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid_token) {
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
@@ -67,12 +76,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid_token) {
     if (empty($errors)) {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
         
-        // Update user password
+        // Update the user's password in the database securely using a prepared statement
         $update = mysqli_prepare($conn, "UPDATE users SET password = ? WHERE id = ?");
         mysqli_stmt_bind_param($update, "si", $hashed_password, $user_id);
         
         if (mysqli_stmt_execute($update)) {
-            // Mark token as used so it cannot be used again
+            // Security measure: Mark the token as used so it cannot be reused (prevents replay attacks)
             $mark_used = mysqli_prepare($conn, "UPDATE password_resets SET used = 1 WHERE token = ?");
             mysqli_stmt_bind_param($mark_used, "s", $token);
             mysqli_stmt_execute($mark_used);
