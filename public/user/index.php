@@ -138,7 +138,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <div class="booking-header">
           <div>
             <p class="booking-label">Daily Rate</p>
-            <p class="booking-price">$<?= number_format($car['price_per_day'], 0) ?><span class="booking-unit">/day</span></p>
+            <p class="booking-price">रू<?= number_format($car['price_per_day'], 0) ?><span class="booking-unit">/day</span></p>
           </div>
           <div class="booking-rating">★ 4.8</div>
         </div>
@@ -180,10 +180,10 @@ require_once __DIR__ . '/../../includes/header.php';
           </div>
 
           <div class="booking-summary" id="bookingSummary">
-            <div class="summary-row"><span><?= $defaults['days'] ?> Days Rental</span><span id="rentalTotal">$<?= number_format($defaults['rental_total'], 0) ?></span></div>
-            <div class="summary-row"><span>Insurance (Full Coverage)</span><span id="insuranceTotal">$<?= number_format($defaults['insurance_fee'], 0) ?></span></div>
+            <div class="summary-row"><span><?= $defaults['days'] ?> Days Rental</span><span id="rentalTotal">रू<?= number_format($defaults['rental_total'], 0) ?></span></div>
+            <div class="summary-row"><span>Insurance (Full Coverage)</span><span id="insuranceTotal">रू<?= number_format($defaults['insurance_fee'], 0) ?></span></div>
             <div class="summary-row summary-grand">
-              <span>TOTAL</span><span class="grand-total" id="grandTotal">$<?= number_format($defaults['grand_total'], 0) ?></span>
+              <span>TOTAL</span><span class="grand-total" id="grandTotal">रू<?= number_format($defaults['grand_total'], 0) ?></span>
             </div>
           </div>
 
@@ -244,7 +244,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <p class="fleet-sub"><?= htmlspecialchars($fc['subtitle']) ?></p>
           </div>
           <div class="fleet-price-wrap">
-            <span class="fleet-price">$<?= number_format($fc['price_per_day'], 0) ?></span>
+            <span class="fleet-price">रू<?= number_format($fc['price_per_day'], 0) ?></span>
             <span class="fleet-unit">/DAY</span>
           </div>
         </div>

@@ -466,7 +466,7 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
     <div>
       <div class="revenue-card">
         <div class="rev-label">Total Revenue <span class="rev-badge">+12.4%</span></div>
-        <div class="rev-value">$<?= number_format($totalRevenue, 0) ?></div>
+        <div class="rev-value">रू<?= number_format($totalRevenue, 0) ?></div>
         <div class="mini-chart">
           <?php
           $vals = array_values($revenueByDay);
@@ -529,7 +529,7 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
           </td>
           <td><?= (int)($b['days'] ?? 0) ?> Day<?= ($b['days'] ?? 0) != 1 ? 's' : '' ?></td>
           <td><span class="badge b-<?= $b['status'] ?>"><?= ucfirst($b['status']) ?></span></td>
-          <td style="font-weight:600">$<?= number_format($b['grand_total'], 2) ?></td>
+          <td style="font-weight:600">रू<?= number_format($b['grand_total'], 2) ?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
@@ -575,7 +575,7 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
           <div class="spec-item"><label>Status</label><span style="font-size:.75rem"><?= $c['available'] ? 'Active' : 'Hidden' ?></span></div>
         </div>
         <div style="font-size:.8rem;color:var(--fg3);margin-bottom:.75rem">
-          $<?= number_format($c['price_per_day'], 0) ?>/day
+          रू<?= number_format($c['price_per_day'], 0) ?>/day
           <?php if ($ac > 0): ?> · <span style="color:var(--yellow)"><?= $ac ?> active booking<?= $ac > 1 ? 's' : '' ?></span><?php endif; ?>
         </div>
         <div class="fleet-card-actions">
@@ -617,7 +617,7 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
 </div>
 <div class="content">
   <div class="customer-stats">
-    <div class="cust-stat"><div class="cust-stat-label">Avg LTV</div><div class="cust-stat-value">$<?= number_format($totalRevenue / max(1, $totalUsers), 0) ?></div><div class="cust-stat-sub">per registered user</div></div>
+    <div class="cust-stat"><div class="cust-stat-label">Avg LTV</div><div class="cust-stat-value">रू<?= number_format($totalRevenue / max(1, $totalUsers), 0) ?></div><div class="cust-stat-sub">per registered user</div></div>
     <div class="cust-stat"><div class="cust-stat-label">Rental Frequency</div><div class="cust-stat-value"><?= $totalUsers > 0 ? number_format($totalBookings / $totalUsers, 1) : 0 ?>x</div><div class="cust-stat-sub">Annual avg per user</div></div>
     <div class="cust-stat"><div class="cust-stat-label">Approval Rate</div><div class="cust-stat-value"><?= $totalBookings > 0 ? round($confirmedCount / $totalBookings * 100) : 92 ?>%</div><div class="cust-stat-sub">Confirmed bookings</div></div>
     <div class="cust-stat accent"><div class="cust-stat-label">Total Active Users</div><div class="cust-stat-value"><?= $totalUsers ?></div><div class="cust-stat-sub">All time registrations</div></div>
@@ -654,7 +654,7 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
               <span style="font-size:.72rem;color:var(--fg3)"><?= $uCount ?> Rental<?= $uCount !== 1 ? 's' : '' ?></span>
             </div>
           </td>
-          <td style="font-weight:600">$<?= number_format($uRevenue, 2) ?></td>
+          <td style="font-weight:600">रू<?= number_format($uRevenue, 2) ?></td>
         </tr>
         <?php endforeach; ?>
         </tbody>
@@ -706,7 +706,7 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
   <div class="res-stats">
     <div class="res-stat"><div class="res-stat-label">Total Active</div><div class="res-stat-value"><?= $confirmedCount ?></div></div>
     <div class="res-stat accent"><div class="res-stat-label">Pending Review</div><div class="res-stat-value red"><?= $pendingCount ?></div></div>
-    <div class="res-stat"><div class="res-stat-label">Revenue (All Time)</div><div class="res-stat-value">$<?= number_format($totalRevenue, 2) ?></div></div>
+    <div class="res-stat"><div class="res-stat-label">Revenue (All Time)</div><div class="res-stat-value">रू<?= number_format($totalRevenue, 2) ?></div></div>
   </div>
   <div class="filter-row">
     <span class="filter-label">Booking Status</span>
@@ -740,7 +740,7 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
           </td>
           <td style="font-size:.75rem"><?= htmlspecialchars($b['pickup_date']) ?> →<br><?= htmlspecialchars($b['dropoff_date']) ?></td>
           <td><span class="badge b-<?= $b['status'] ?>"><?= ucfirst($b['status']) ?></span></td>
-          <td style="font-weight:700">$<?= number_format($b['grand_total'], 2) ?></td>
+          <td style="font-weight:700">रू<?= number_format($b['grand_total'], 2) ?></td>
           <td>
             <form method="POST" style="display:inline">
               <input type="hidden" name="action"     value="update_status"/>
@@ -771,7 +771,7 @@ tr:last-child td{border:none} tr:hover td{background:rgba(255,255,255,.02)}
 <div class="content">
   <div class="stats-row">
     <div class="stat-card"><div class="stat-label">Total Bookings</div><div class="stat-value"><?= $totalBookings ?></div><div class="stat-sub">All time</div></div>
-    <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" style="font-size:1.8rem">$<?= number_format($totalRevenue, 0) ?></div><div class="stat-sub">Excl. cancelled</div></div>
+    <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" style="font-size:1.8rem">रू<?= number_format($totalRevenue, 0) ?></div><div class="stat-sub">Excl. cancelled</div></div>
     <div class="stat-card accent"><div class="stat-label">Pending Actions <span class="stat-badge warn"><?= $pendingCount ?></span></div><div class="stat-value"><?= $pendingCount ?></div><div class="stat-sub">Need review</div></div>
   </div>
   <div class="sec">

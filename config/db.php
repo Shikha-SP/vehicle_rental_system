@@ -9,7 +9,8 @@
  */
 
 // ─── App constants ────────────────────────────────────────────────────────────
-define('SITE_URL',  'http://localhost/vehicle_rental_db');   // ← change for production
+//  define('SITE_URL',  'http://localhost/vehicle_rental_db');   // ← change for production
+define('SITE_URL', 'http://localhost/vehicle_rental_system111/vehicle_rental_system');
 define('ROOT_PATH', dirname(__DIR__));                // absolute path to project root
 
 // ─── Database credentials ────────────────────────────────────────────────────

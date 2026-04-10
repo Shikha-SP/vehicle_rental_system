@@ -41,7 +41,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <p class="fleet-sub"><?= htmlspecialchars($fc['subtitle']) ?></p>
           </div>
           <div class="fleet-price-wrap">
-            <span class="fleet-price">$<?= number_format($fc['price_per_day'], 0) ?></span>
+            <span class="fleet-price">रू<?= number_format($fc['price_per_day'], 0) ?></span>
             <span class="fleet-unit">/DAY</span>
           </div>
         </div>

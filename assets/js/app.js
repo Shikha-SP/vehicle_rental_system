@@ -89,9 +89,9 @@
     if (!rentalEl || !insEl || !grandEl) return;
     const rows = summaryEl ? summaryEl.querySelectorAll('.summary-row') : [];
     if (rows[0]) rows[0].querySelector('span').textContent = `${days} Day${days !== 1 ? 's' : ''} Rental`;
-    rentalEl.textContent = '$' + rental.toLocaleString();
-    insEl.textContent    = '$' + insurance.toLocaleString();
-    grandEl.textContent  = '$' + grand.toLocaleString();
+    rentalEl.textContent = 'रू' + rental.toLocaleString();
+    insEl.textContent    = 'रू' + insurance.toLocaleString();
+    grandEl.textContent  = 'रू' + grand.toLocaleString();
   }
 
   let availCheckTimer = null;

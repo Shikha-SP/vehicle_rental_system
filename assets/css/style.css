@@ -1,9 +1,9 @@
 /* ============================================================
-   TD RENTALS — Main Stylesheet
+   TD RENTALS â€” Main Stylesheet
    Dark luxury theme matching the original React/Tailwind design
    ============================================================ */
 
-/* ── Custom Properties ─────────────────────────────────────── */
+/* â”€â”€ Custom Properties â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 :root {
   --bg:             hsl(0,0%,7%);
   --bg-secondary:   hsl(0,0%,14%);
@@ -20,7 +20,7 @@
   --transition:     0.2s ease;
 }
 
-/* ── Reset ─────────────────────────────────────────────────── */
+/* â”€â”€ Reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
@@ -35,18 +35,18 @@ img { display: block; max-width: 100%; }
 ul { list-style: none; }
 input, button, textarea, select { font-family: inherit; font-size: inherit; }
 
-/* ── Container ─────────────────────────────────────────────── */
+/* â”€â”€ Container â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
 
-/* ── Typography helpers ────────────────────────────────────── */
+/* â”€â”€ Typography helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .text-primary { color: var(--primary); }
 .font-display { font-family: var(--font-display); }
 
-/* ── Buttons ───────────────────────────────────────────────── */
+/* â”€â”€ Buttons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -67,12 +67,12 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 .btn-lg  { padding: 0.85rem 1.5rem; font-size: 0.95rem; }
 .btn-full { width: 100%; }
 
-/* ── Alerts ────────────────────────────────────────────────── */
+/* â”€â”€ Alerts â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .alert { border-radius: var(--radius); padding: 0.7rem 1rem; font-size: 0.85rem; margin-bottom: 1rem; }
 .alert-success { background: hsl(140,50%,18%); color: hsl(140,60%,70%); border: 1px solid hsl(140,40%,30%); }
 .alert-error   { background: hsl(0,50%,18%);   color: hsl(0,70%,72%);   border: 1px solid hsl(0,40%,30%); }
 
-/* ── NAVBAR ────────────────────────────────────────────────── */
+/* â”€â”€ NAVBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .navbar {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -121,7 +121,7 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
   cursor: pointer;
 }
 
-/* ── HERO ──────────────────────────────────────────────────── */
+/* â”€â”€ HERO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .hero {
   position: relative;
   min-height: 80vh;
@@ -169,7 +169,7 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
   letter-spacing: -0.01em;
 }
 
-/* ── SPECS + BOOKING ───────────────────────────────────────── */
+/* â”€â”€ SPECS + BOOKING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .specs-section { background: var(--bg); padding: 2.5rem 0; }
 .specs-grid {
   display: grid;
@@ -273,7 +273,7 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 .grand-total     { font-family: var(--font-display); font-size: 1.5rem; color: var(--primary); }
 .booking-note    { font-size: 0.6rem; color: var(--fg-muted); text-align: center; margin-top: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; }
 
-/* ── TESTIMONIALS ──────────────────────────────────────────── */
+/* â”€â”€ TESTIMONIALS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .testimonials-section { background: var(--bg-surface); padding: 5rem 0; }
 .testimonials-grid    { display: grid; grid-template-columns: repeat(1,1fr); gap: 2rem; }
 @media (min-width: 768px) { .testimonials-grid { grid-template-columns: repeat(3,1fr); } }
@@ -293,7 +293,7 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 .author-name { font-size: 0.7rem; font-weight: 700; }
 .author-role { font-size: 0.6rem; color: var(--fg-muted); letter-spacing: 0.1em; }
 
-/* ── FLEET ─────────────────────────────────────────────────── */
+/* â”€â”€ FLEET â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .fleet-section { background: var(--bg); padding: 5rem 0; }
 .fleet-header  { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5rem; }
 .fleet-link    { color: var(--primary); font-size: 0.8rem; font-weight: 600; transition: letter-spacing var(--transition); }
@@ -332,7 +332,7 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 .fleet-price { font-family: var(--font-display); font-size: 1.3rem; }
 .fleet-unit  { font-size: 0.7rem; color: var(--fg-muted); }
 
-/* ── FOOTER ────────────────────────────────────────────────── */
+/* â”€â”€ FOOTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .footer { background: var(--bg-secondary); border-top: 1px solid var(--border); }
 .footer .container { padding-top: 3.5rem; padding-bottom: 3.5rem; }
 .footer-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2rem; margin-bottom: 3rem; }
@@ -359,7 +359,7 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 .footer-legal { display: flex; gap: 1.5rem; }
 .footer-legal a:hover { color: var(--fg); }
 
-/* ── AUTH PAGES ────────────────────────────────────────────── */
+/* â”€â”€ AUTH PAGES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
 .auth-card {
   width: 100%; max-width: 400px;
@@ -372,16 +372,16 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 .auth-footer { margin-top: 1.25rem; text-align: center; font-size: 0.8rem; color: var(--fg-muted); }
 .auth-footer a { color: var(--primary); }
 
-/* ── FLEET PAGE ────────────────────────────────────────────── */
+/* â”€â”€ FLEET PAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .page-hero { padding: 7rem 0 3rem; background: var(--bg-surface); }
 .page-title { font-family: var(--font-display); font-size: clamp(2.5rem,6vw,5rem); letter-spacing: 0.04em; }
 
-/* ── CAR DETAIL PAGE ───────────────────────────────────────── */
+/* â”€â”€ CAR DETAIL PAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .car-detail-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; padding: 3rem 0; }
 @media (min-width: 1024px) { .car-detail-grid { grid-template-columns: 1fr 380px; } }
 .car-detail-img { width: 100%; height: 400px; object-fit: cover; border-radius: var(--radius); }
 
-/* ── RESPONSIVE ────────────────────────────────────────────── */
+/* â”€â”€ RESPONSIVE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 @media (max-width: 767px) {
   .navbar { padding: 0.75rem 1rem; }
   .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; gap: 1rem; }
