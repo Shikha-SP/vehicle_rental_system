@@ -138,7 +138,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <div class="booking-header">
           <div>
             <p class="booking-label">Daily Rate</p>
-            <p class="booking-price">रू<?= number_format($car['price_per_day'], 0) ?><span class="booking-unit">/day</span></p>
+            <p class="booking-price">NPR<?= number_format($car['price_per_day'], 0) ?><span class="booking-unit">/day</span></p>
           </div>
           <div class="booking-rating">★ 4.8</div>
         </div>
@@ -161,6 +161,7 @@ require_once __DIR__ . '/../../includes/header.php';
           <input type="hidden" name="action"     value="book" />
           <input type="hidden" name="csrf_token" value="<?= csrfToken() ?>" />
 
+        
           <label class="form-label">Pick-up Date</label>
           <div class="form-input-icon mb-4">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -180,10 +181,10 @@ require_once __DIR__ . '/../../includes/header.php';
           </div>
 
           <div class="booking-summary" id="bookingSummary">
-            <div class="summary-row"><span><?= $defaults['days'] ?> Days Rental</span><span id="rentalTotal">रू<?= number_format($defaults['rental_total'], 0) ?></span></div>
-            <div class="summary-row"><span>Insurance (Full Coverage)</span><span id="insuranceTotal">रू<?= number_format($defaults['insurance_fee'], 0) ?></span></div>
+            <div class="summary-row"><span><?= $defaults['days'] ?> Days Rental</span><span id="rentalTotal">NPR<?= number_format($defaults['rental_total'], 0) ?></span></div>
+            <div class="summary-row"><span>Insurance (Full Coverage)</span><span id="insuranceTotal">NPR<?= number_format($defaults['insurance_fee'], 0) ?></span></div>
             <div class="summary-row summary-grand">
-              <span>TOTAL</span><span class="grand-total" id="grandTotal">रू<?= number_format($defaults['grand_total'], 0) ?></span>
+              <span>TOTAL</span><span class="grand-total" id="grandTotal">NPR<?= number_format($defaults['grand_total'], 0) ?></span>
             </div>
           </div>
 
@@ -244,7 +245,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <p class="fleet-sub"><?= htmlspecialchars($fc['subtitle']) ?></p>
           </div>
           <div class="fleet-price-wrap">
-            <span class="fleet-price">रू<?= number_format($fc['price_per_day'], 0) ?></span>
+            <span class="fleet-price">NPR<?= number_format($fc['price_per_day'], 0) ?></span>
             <span class="fleet-unit">/DAY</span>
           </div>
         </div>

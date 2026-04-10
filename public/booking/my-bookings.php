@@ -102,7 +102,7 @@ require_once __DIR__ . '/../../includes/header.php';
         </div>
         <p class="booking-total" style="margin-top:.5rem">
           <span class="bstat bstat-<?= $b['status'] ?>"><?= ucfirst($b['status']) ?></span>
-          &nbsp; Total: <strong>रू<?= number_format($b['grand_total'], 0) ?></strong>
+          &nbsp; Total: <strong>NPR<?= number_format($b['grand_total'], 0) ?></strong>
         </p>
       </div>
       <div>
