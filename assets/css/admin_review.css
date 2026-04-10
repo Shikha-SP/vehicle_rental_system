@@ -1,0 +1,347 @@
+/* ============================================================
+   TD RENTALS — ADMIN REVIEW PAGE
+   Dark automotive theme — matches login.css design system
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap');
+
+/* ── Variables (mirrors login.css) ─────────────────────────── */
+:root {
+    --bg:           #0e0e0e;
+    --bg-card:      #161616;
+    --bg-input:     #1e1e1e;
+    --border:       #2c2c2c;
+    --border-focus: #e03030;
+    --accent:       #e03030;
+    --accent-dim:   rgba(224, 48, 48, 0.18);
+    --accent-glow:  rgba(224, 48, 48, 0.30);
+    --approve:      #1a7a3a;
+    --approve-dim:  rgba(26, 122, 58, 0.18);
+    --approve-glow: rgba(26, 122, 58, 0.30);
+    --text:         #f0f0f0;
+    --text-muted:   #777777;
+    --text-label:   #999999;
+    --font-head:    'Barlow Condensed', sans-serif;
+    --font-body:    'Barlow', sans-serif;
+    --radius:       4px;
+    --t:            0.22s ease;
+}
+
+/* ── Page background (matches login-page decorative lines) ─── */
+.admin-review {
+    position: relative;
+    min-height: calc(100vh - 120px);
+    padding: 48px 44px 64px;
+    background: var(--bg);
+    overflow: hidden;
+}
+
+/* Vertical grid lines — same as login-page::before */
+.admin-review::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 119px,
+            rgba(255, 255, 255, 0.025) 120px
+        );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Diagonal red slash — same as login-page::after */
+.admin-review::after {
+    content: '';
+    position: fixed;
+    top: -10%;
+    right: -5%;
+    width: 55vw;
+    height: 130vh;
+    background: linear-gradient(
+        135deg,
+        transparent 0%,
+        transparent 48%,
+        rgba(224, 48, 48, 0.06) 48%,
+        rgba(224, 48, 48, 0.06) 52%,
+        transparent 52%
+    );
+    transform: skewX(-8deg);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Page heading ───────────────────────────────────────────── */
+.admin-review > h1 {
+    position: relative;
+    z-index: 10;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: clamp(32px, 5vw, 52px);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 6px;
+
+    animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Red accent rule under heading — mirrors login-card__rule */
+.admin-review > h1::after {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 3px;
+    background: var(--accent);
+    border-radius: 2px;
+    margin-top: 12px;
+    margin-bottom: 32px;
+}
+
+/* ── Entrance animation (matches cardIn from login) ─────────── */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Alert messages ─────────────────────────────────────────── */
+.alert {
+    position: relative;
+    z-index: 10;
+    border-radius: var(--radius);
+    padding: 13px 18px;
+    margin-bottom: 28px;
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    animation: fadeUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.alert.success {
+    background: rgba(26, 122, 58, 0.12);
+    border: 1px solid rgba(26, 122, 58, 0.40);
+    color: #5ddc85;
+}
+
+.alert.error {
+    background: var(--accent-dim);
+    border: 1px solid rgba(224, 48, 48, 0.35);
+    color: #ff8080;
+}
+
+/* ── Vehicles grid ──────────────────────────────────────────── */
+.vehicles-grid {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+/* ── Vehicle card ───────────────────────────────────────────── */
+.vehicle-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color var(--t), box-shadow var(--t), transform var(--t);
+    animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.vehicle-card:hover {
+    border-color: #3c3c3c;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    transform: translateY(-3px);
+}
+
+/* Stagger card animations */
+.vehicle-card:nth-child(1)  { animation-delay: 0.05s; }
+.vehicle-card:nth-child(2)  { animation-delay: 0.10s; }
+.vehicle-card:nth-child(3)  { animation-delay: 0.15s; }
+.vehicle-card:nth-child(4)  { animation-delay: 0.20s; }
+.vehicle-card:nth-child(5)  { animation-delay: 0.25s; }
+.vehicle-card:nth-child(6)  { animation-delay: 0.30s; }
+
+/* ── Vehicle image ──────────────────────────────────────────── */
+.vehicle-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    border-bottom: 1px solid var(--border);
+    filter: brightness(0.9);
+    transition: filter var(--t);
+}
+
+.vehicle-card:hover .vehicle-image {
+    filter: brightness(1);
+}
+
+/* ── Vehicle info ───────────────────────────────────────────── */
+.vehicle-info {
+    padding: 20px 20px 16px;
+    flex: 1;
+}
+
+.vehicle-info h3 {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Label/value rows */
+.vehicle-info p {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.vehicle-info p:last-child {
+    border-bottom: none;
+}
+
+.vehicle-info p strong {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-label);
+}
+
+
+/* ── Vehicle actions ────────────────────────────────────────── */
+.vehicle-actions {
+    display: flex;
+    gap: 10px;
+    padding: 16px 20px 20px;
+    border-top: 1px solid var(--border);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* ── Shared btn styles ──────────────────────────────────────── */
+.btn {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+    transition: transform var(--t), box-shadow var(--t);
+}
+
+/* Shimmer sweep — matches login submit button */
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.12), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.5s ease;
+}
+.btn:hover::after { left: 140%; }
+
+/* ── Approve button ─────────────────────────────────────────── */
+.btn.approve {
+    background: linear-gradient(135deg, #166d30 0%, #22a64a 100%);
+    color: #fff;
+}
+.btn.approve:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--approve-glow);
+}
+.btn.approve:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* ── Reject button ──────────────────────────────────────────── */
+.btn.reject {
+    background: linear-gradient(135deg, #c82020 0%, #f04040 100%);
+    color: #fff;
+}
+.btn.reject:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+}
+.btn.reject:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+/* ── Empty state ────────────────────────────────────────────── */
+.no-vehicles {
+    position: relative;
+    z-index: 10;
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 60px;
+    text-align: center;
+    padding: 48px;
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.no-vehicles::before {
+    content: '—';
+    display: block;
+    font-size: 28px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    letter-spacing: 0;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .admin-review {
+        padding: 32px 20px 48px;
+    }
+
+    .vehicles-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .vehicle-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 520px) {
+    .admin-review {
+        padding: 24px 16px 40px;
+    }
+}

@@ -1,0 +1,139 @@
+:root {
+    --primary-red: #e8192c;
+    --dark-bg: #050505;
+    --card-bg: rgba(20, 20, 20, 0.95);
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--dark-bg);
+}
+
+/* --- Sophisticated Animated Background --- */
+.background-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.blob {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(232, 25, 44, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(60px);
+    animation: move 20s infinite alternate;
+}
+
+.blob-1 { top: -10%; left: -10%; animation-duration: 25s; }
+.blob-2 { bottom: -10%; right: -10%; background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%); }
+.blob-3 { top: 40%; left: 30%; width: 300px; height: 300px; animation-duration: 15s; }
+
+/* Subtle pattern overlay to give the BG texture */
+.grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+@keyframes move {
+    from { transform: translate(0, 0) rotate(0deg); }
+    to { transform: translate(100px, 50px) rotate(30deg); }
+}
+
+/* --- Glassmorphism Logic --- */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(30px); /* Deep blur for that "faint" look */
+    -webkit-backdrop-filter: blur(30px);
+    z-index: 2;
+}
+
+/* --- Clean, Matte Logout Box --- */
+.logout-box {
+    position: relative;
+    z-index: 10;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--card-bg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    width: 380px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+.icon-header {
+    color: var(--primary-red);
+    margin-bottom: 20px;
+}
+
+.icon-header svg {
+    width: 42px;
+    height: 42px;
+}
+
+.logout-box h2 {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+}
+
+.logout-box p {
+    color: #777;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+/* --- Buttons (No Glow, Clean Design) --- */
+.btn-group {
+    display: flex;
+    gap: 12px;
+}
+
+.logout-box a {
+    flex: 1;
+    text-decoration: none;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: 0.2s ease-in-out;
+}
+
+/* Solid Red - High Contrast */
+.btn-yes {
+    background: var(--primary-red);
+    color: #fff;
+    border: none;
+}
+
+.btn-yes:hover {
+    background: #c11424; /* Darker red, no glow */
+}
+
+/* Minimal Gray - Ghost Style */
+.btn-no {
+    background: #222;
+    color: #eee;
+    border: 1px solid #333;
+}
+
+.btn-no:hover {
+    background: #2a2a2a;
+    border-color: #444;
+}

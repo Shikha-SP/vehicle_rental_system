@@ -1,0 +1,299 @@
+/* ============================================================
+   TD RENTALS — Header Styles (UPDATED)
+   Dark luxury automotive aesthetic
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600&display=swap');
+
+/* ── CSS Variables ── */
+:root {
+  --clr-bg:        #0a0a0a;
+  --clr-surface:   #111111;
+  --clr-border:    rgba(255, 255, 255, 0.07);
+  --clr-accent:    #e8192c;
+  --clr-accent-hv: #ff2d42;
+  --clr-text:      #ffffff;
+  --clr-muted:     #888888;
+  --nav-h:         68px;
+  --font-display:  'Bebas Neue', sans-serif;
+  --font-body:     'Barlow', sans-serif;
+  --transition:    0.22s ease;
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: var(--clr-bg);
+  color: var(--clr-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ── Layout ── */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+/* ── Header ── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  height: var(--nav-h);
+  background: #181818;
+  border-bottom: 1px solid var(--clr-border);
+  backdrop-filter: blur(12px);
+}
+
+/* ── Nav ── */
+header nav {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ── Brand ── */
+.brand {
+  font-family: var(--font-display);
+  font-size: 26px;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  color: var(--clr-text);
+  margin-right: auto;
+}
+
+.brand span {
+  color: var(--clr-accent);
+}
+
+/* ── Nav Links ── */
+.nav-links {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+  margin-right: 32px;
+}
+
+.nav-links a {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--clr-muted);
+  text-decoration: none;
+  padding: 6px 14px;
+  position: relative;
+  transition: color var(--transition);
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 14px;
+  right: 14px;
+  height: 1px;
+  background: var(--clr-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition);
+}
+
+.nav-links a:hover {
+  color: var(--clr-text);
+}
+
+.nav-links a:hover::after {
+  transform: scaleX(1);
+}
+
+.nav-links a.active {
+  color: var(--clr-accent); /* red highlight */
+}
+
+.nav-links a.active::after {
+  transform: scaleX(1);   /* show underline */
+  background: var(--clr-accent);
+}
+
+/* ── Right Side ── */
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ── Buttons ── */
+.btn-ghost {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--clr-text);
+  text-decoration: none;
+  padding: 7px 16px;
+  border: 1px solid var(--clr-border);
+  transition: 0.2s;
+}
+
+.btn-ghost:hover {
+  border-color: rgba(255,255,255,0.3);
+}
+
+.btn-primary {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 20px;
+  background: var(--clr-accent);
+  transition: 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--clr-accent-hv);
+}
+
+/* ============================================================
+   👤 PROFILE DROPDOWN (NEW)
+   ============================================================ */
+
+.profile-menu {
+  position: relative;
+}
+
+/* Profile circle */
+.profile-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--clr-border);
+  background: var(--clr-surface);
+  color: var(--clr-text);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.profile-btn:hover {
+  border-color: var(--clr-accent);
+  color: var(--clr-accent);
+}
+
+/* Dropdown */
+.dropdown {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  min-width: 180px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: 10px;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.dropdown a {
+  padding: 12px 14px;
+  text-decoration: none;
+  color: var(--clr-text);
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.dropdown a:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+/* Show dropdown */
+.dropdown.show {
+  display: flex;
+}
+
+/* ============================================================
+   📱 Mobile
+   ============================================================ */
+
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+.nav-toggle span {
+  width: 22px;
+  height: 2px;
+  background: white;
+}
+
+/* Mobile layout */
+@media (max-width: 768px) {
+
+  header nav {
+    flex-wrap: wrap;
+    padding: 0 20px;
+  }
+
+  .nav-toggle {
+    display: flex;
+    margin-left: auto;
+  }
+
+  .nav-links,
+  .nav-auth {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    padding: 12px 0;
+    border-top: 1px solid var(--clr-border);
+  }
+
+  .nav-links.open,
+  .nav-auth.open {
+    display: flex;
+  }
+
+  .nav-links a {
+    width: 100%;
+    padding: 10px 0;
+  }
+
+  .nav-auth {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Fix dropdown on mobile */
+  .dropdown {
+    position: static;
+    width: 100%;
+    margin-top: 8px;
+  }
+}
