@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <!-- Button -->
                 <button id="pay-button" class="primary-btn">
-                    CONFIRM & PAY NRS 4,250.00
+                    CONFIRM & PAY NPR 4,250.00
                 </button>
             </form>
 
@@ -201,15 +201,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <div class="price-row">
                     <span class="price-row-name">Daily Rate ($1,250 × 3)</span>
-                    <span class="price-row-amount">NRS 3,750.00</span>
+                    <span class="price-row-amount">NPR 3,750.00</span>
                 </div>
                 <div class="price-row">
                     <span class="price-row-name">Insurance & Protection</span>
-                    <span class="price-row-amount">NRS 350.00</span>
+                    <span class="price-row-amount">NPR 350.00</span>
                 </div>
                 <div class="price-row">
                     <span class="price-row-name">Premium Handling Fee</span>
-                    <span class="price-row-amount">NRS 150.00</span>
+                    <span class="price-row-amount">NPR 150.00</span>
                 </div>
 
                 <hr class="price-divider" />
@@ -217,7 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <!-- Total -->
                 <div class="total-row">
                     <span class="total-label">Total Due</span>
-                    <span class="total-amount">NRS 4,250.00</span>
+                    <span class="total-amount">NPR 4,250.00</span>
                 </div>
 
                 <!-- Spec Badges -->
@@ -248,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <i class="fa-solid fa-circle-info notice-icon"></i>
                     <p class="notice-text">
                         Free cancellation until 48 hours prior to pickup. A security deposit
-                        of NRS 5,000 will be held during the rental period.
+                        of NPR 5,000 will be held during the rental period.
                     </p>
                 </div>
 
