@@ -1,0 +1,823 @@
+/* =============================================================================
+   Homepage.css — Vehicle Rental System
+   Design: Cinematic dark theme, red accent var(--accent-red)
+   Matching reference layout exactly.
+============================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+    --bg-dark: #09090b;
+    --text-main: #ffffff;
+    --text-muted: #888888;
+    --accent-red: #e62020;
+    --accent-hover: #ff3333;
+    --card-bg: #141416;
+    --card-hover: #1c1c1f;
+    --nav-text: #b3b3b3;
+}
+
+/* =============================================================================
+   0. RESET & BASE
+============================================================================= */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: var(--bg-dark);
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+    width: 100%;
+}
+
+/* =============================================================================
+   1. HERO SECTION
+   Layout: dark bg | car PNG right | gradient left | text bottom-left
+============================================================================= */
+.hero-section {
+    position: relative;
+    width: 100%;
+    height: 90vh;
+    min-height: 600px;
+    background: var(--bg-dark);
+    overflow: hidden;
+}
+
+/* Gradient: strong dark on left, fades to transparent right */
+.hero-gradient {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+        linear-gradient(to right,
+            rgba(9, 9, 11, 0.85) 0%,
+            rgba(9, 9, 11, 0.4) 30%,
+            transparent 65%);
+}
+
+/* Car PNG image — covers the FULL hero (left + right) */
+.hero-car-img {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.hero-car-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    filter: drop-shadow(-20px 10px 60px rgba(0, 0, 0, 0.95));
+
+    /* Smooth entrance or hover transitions */
+    transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.hero-car-img img:hover {
+    filter: drop-shadow(-25px 15px 70px rgba(0, 0, 0, 0.85));
+    transform: translateY(-4px);
+    /* subtle lift */
+}
+
+/* Hero text overlay — bottom-left, sits above search bar */
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    bottom: calc(84px + 30px + 16px);
+    /* search bar height + bottom offset + gap */
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 5% 44px 5%;
+}
+
+.hero-text {
+    max-width: 500px;
+}
+
+.hero-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: var(--accent-red);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+
+.hero-heading {
+    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.08;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    letter-spacing: -0.01em;
+}
+
+.text-red {
+    color: var(--accent-red);
+}
+
+/* Buttons */
+.hero-btns {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-block;
+    padding: 13px 30px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+.btn-red {
+    background: var(--accent-red);
+    color: #fff;
+}
+
+.btn-red:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 6px 20px rgba(230, 32, 32, 0.4);
+}
+
+.btn-ghost {
+    background-color: #333333;
+    color: white;
+    backdrop-filter: blur(5px);
+}
+
+.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.75);
+}
+
+/* =============================================================================
+   2. HERO SEARCH BAR  (inside hero, absolutely at bottom — yellow line)
+============================================================================= */
+/* Search bar — floating above bottom, narrower + taller for visibility */
+.hero-search-bar {
+    position: absolute;
+    bottom: 30px;
+    /* lifted above the bottom edge */
+    left: 7%;
+    right: 7%;
+    /* narrower than full-width */
+    z-index: 3;
+    display: flex;
+    align-items: stretch;
+    height: 84px;
+    /* taller = more noticeable */
+    background: rgba(8, 8, 8, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(230, 32, 32, 0.15);
+}
+
+/* Each field: icon + label/input stacked */
+.sb-field {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 20px;
+    gap: 10px;
+    min-width: 0;
+}
+
+.sb-icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    opacity: 0.9;
+}
+
+.sb-field-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+
+.sb-field label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: var(--accent-red);
+    text-transform: uppercase;
+    cursor: default;
+    white-space: nowrap;
+}
+
+.sb-field input,
+.sb-field select {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 0.82rem;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    min-width: 0;
+}
+
+.sb-field input::placeholder {
+    color: #666;
+}
+
+.sb-field input[type="date"] {
+    color-scheme: dark;
+    color: #bbb;
+}
+
+.sb-field select {
+    color: #ccc;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.sb-field select option {
+    background: var(--card-bg);
+    color: #fff;
+}
+
+/* Date range: two date inputs side by side */
+.sb-date-range {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sb-date-range input {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.78rem;
+}
+
+.sb-date-sep {
+    color: #555;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.sb-divider {
+    width: 1px;
+    background: #1e1e1e;
+    margin: 14px 0;
+    flex-shrink: 0;
+}
+
+/* Search button */
+.sb-search-btn {
+    padding: 0 36px;
+    background: var(--accent-red);
+    color: #fff;
+    border: none;
+    border-radius: 0 6px 6px 0;
+    /* matches right curve of search bar */
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    min-width: 120px;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    /* space between search icon and SEARCH text */
+}
+
+.sb-search-btn:hover {
+    background: var(--accent-hover);
+}
+
+/* =============================================================================
+   3. GALLERY SECTION
+============================================================================= */
+.gallery-section {
+    padding: 64px 0;
+    background: var(--card-bg);
+}
+
+.section-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: var(--accent-red);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #222;
+    padding-bottom: 16px;
+    margin-bottom: 30px;
+}
+
+.section-header h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.view-all {
+    color: var(--accent-red);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: opacity 0.2s;
+}
+
+.view-all:hover {
+    opacity: 0.75;
+}
+
+/* --- Car Grid --- */
+.car-grid {
+    display: flex;
+    gap: 18px;
+}
+
+.car-card {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid #232323;
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.car-card:hover {
+    border-color: var(--accent-red);
+    transform: translateY(-4px);
+}
+
+/* Type badge (DB: type field) */
+.card-type-badge {
+    position: absolute;
+    top: 11px;
+    left: 11px;
+    background: rgba(230, 32, 32, 0.92);
+    color: #fff;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    padding: 4px 9px;
+    text-transform: uppercase;
+    z-index: 1;
+    border-radius: 1px;
+}
+
+/* Car image wrapper (DB: image field) */
+.card-img-wrapper {
+    background: var(--bg-dark);
+    padding: 28px 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 180px;
+}
+
+.card-img-wrapper img {
+    width: 100%;
+    max-height: 155px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.car-card:hover .card-img-wrapper img {
+    transform: scale(1.03);
+}
+
+.no-img {
+    color: #2a2a2a;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+}
+
+/* Card info */
+.card-info {
+    padding: 16px 18px 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+/* Brand name (DB: brand) */
+.card-info h3 {
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.02em;
+}
+
+.badge {
+    background: var(--accent-red);
+    color: #fff;
+    padding: 2px 7px;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    border-radius: 1px;
+}
+
+/* Model name (DB: name) */
+.model-name {
+    color: #777;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* Specs row (DB: fuel_range) */
+.card-specs-row {
+    display: flex;
+    gap: 16px;
+}
+
+.spec-item {
+    font-size: 0.76rem;
+    color: #999;
+}
+
+/* Price + rent button (DB: price_per_day) */
+.specs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #222;
+    padding-top: 12px;
+    margin-top: auto;
+}
+
+.price {
+    color: var(--accent-red);
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.btn-rent {
+    display: inline-block;
+    background: #242424;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 2px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: background 0.2s ease;
+}
+
+.btn-rent:hover {
+    background: var(--accent-red);
+    color: #fff;
+}
+
+/* --- Brand Filter Tabs (DB: distinct brand values) --- */
+.brand-filters {
+    display: flex;
+    border-top: 1px solid #222;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-top: 2px;
+}
+
+.brand-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.brand-tab {
+    padding: 15px 26px;
+    color: #666;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-right: 1px solid #222;
+    white-space: nowrap;
+    transition: color 0.2s ease, background 0.2s ease;
+}
+
+.brand-tab:hover {
+    color: #fff;
+    background: var(--card-hover);
+}
+
+/* No vehicles message */
+.no-vehicle-message {
+    color: #555;
+    font-size: 0.9rem;
+    padding: 40px 0;
+    text-align: center;
+    width: 100%;
+}
+
+/* =============================================================================
+   4. PROMOTIONAL BANNER
+============================================================================= */
+.red-banner {
+    background: var(--accent-red);
+    padding: 48px 5%;
+}
+
+.banner-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.banner-text h3 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+}
+
+.banner-text p {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.8);
+    max-width: 460px;
+}
+
+.btn-white-outline {
+    display: inline-block;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    color: #fff;
+    background: transparent;
+    padding: 13px 30px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn-white-outline:hover {
+    background: #fff;
+    color: var(--accent-red);
+    border-color: #fff;
+}
+
+/* =============================================================================
+   5. SHOWROOM SECTION
+============================================================================= */
+.showroom-section {
+    padding: 72px 5%;
+    background: var(--bg-dark);
+}
+
+.grid-two {
+    display: flex;
+    gap: 56px;
+    width: 100%;
+    align-items: flex-start;
+}
+
+.showroom-info {
+    flex: 1;
+    max-width: 380px;
+}
+
+.showroom-info h2 {
+    font-size: 1.35rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.showroom-info>p {
+    color: #777;
+    font-size: 0.88rem;
+    margin-bottom: 28px;
+    line-height: 1.6;
+}
+
+.contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contact-details li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.contact-icon {
+    font-size: 1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.contact-details li div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.contact-details li strong {
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent-red);
+    font-weight: 700;
+}
+
+.contact-details li span {
+    font-size: 0.87rem;
+    color: #ccc;
+    line-height: 1.5;
+}
+
+.map-container {
+    flex: 1.4;
+    background: var(--card-bg);
+    border: 1px solid #222;
+    border-radius: 3px;
+    overflow: hidden;
+    min-height: 360px;
+}
+
+#showroom-map {
+    width: 100%;
+    height: 100%;
+    min-height: 360px;
+    border-radius: 2px;
+}
+
+/* =============================================================================
+   6. RESPONSIVE
+============================================================================= */
+@media (max-width: 960px) {
+    .car-grid {
+        flex-direction: column;
+    }
+
+    .hero-search-bar {
+        flex-wrap: wrap;
+        height: auto;
+        min-height: 84px;
+        padding: 8px 0;
+    }
+
+    .sb-field {
+        flex: 1 1 45%;
+        min-width: 150px;
+        padding: 10px 14px;
+    }
+
+    .sb-date-range {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .sb-date-sep {
+        display: none;
+    }
+
+    .sb-divider {
+        display: none;
+    }
+
+    .sb-search-btn {
+        width: 100%;
+        height: 52px;
+        min-width: unset;
+        border-radius: 0 0 6px 6px;
+        /* bottom curve when stacked */
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        height: auto;
+        min-height: 82vh;
+    }
+
+    .hero-car-img {
+        opacity: 0.45;
+    }
+
+    .hero-overlay {
+        padding: 0 5% 48px;
+        justify-content: flex-start;
+        bottom: calc(84px + 20px + 20px);
+        /* bar + bottom offset + gap */
+    }
+
+    .hero-search-bar {
+        bottom: 20px;
+        /* slightly less offset on mobile */
+        left: 4%;
+        right: 4%;
+        height: auto;
+        flex-wrap: wrap;
+        padding: 8px 0;
+    }
+
+    .hero-heading {
+        font-size: 2.4rem;
+    }
+
+    .banner-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .grid-two {
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .showroom-info {
+        max-width: 100%;
+    }
+
+    .brand-filters {
+        flex-wrap: wrap;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sb-field {
+        flex: 1 1 100%;
+    }
+
+    .hero-heading {
+        font-size: 2rem;
+    }
+
+    .btn {
+        padding: 11px 22px;
+        font-size: 0.76rem;
+    }
+
+    .banner-text h3 {
+        font-size: 1.4rem;
+    }
+}

@@ -44,19 +44,20 @@ CREATE TABLE IF NOT EXISTS users (
 )");
 
 // Step 5: Create 'vehicles' table
+// Step 5: Create 'vehicles' table
 $conn->query("
 CREATE TABLE IF NOT EXISTS vehicles (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,                    -- Added: who owns the vehicle
-    model VARCHAR(100) NOT NULL,             -- Changed from 'name' to 'model'
+    user_id INT NOT NULL,
+    model VARCHAR(100) NOT NULL,
     license_type ENUM('A','B','C','D','E') NOT NULL DEFAULT 'B',
     transmission ENUM('Manual','Automatic') NOT NULL,
     fuel_type ENUM('Petrol','Diesel','Electric','Hybrid','CNG') NOT NULL,
-    price_per_day DECIMAL(10,2) NOT NULL,    -- matches your price field
+    price_per_day DECIMAL(10,2) NOT NULL,
     color VARCHAR(20) DEFAULT '#e03030',
-    top_speed INT,                           -- matches your kms field
-    fuel_capacity INT,                       -- matches your fuel_capacity field
-    image_path VARCHAR(255),                 -- image storage path
+    top_speed INT,
+    fuel_capacity INT,
+    image_path VARCHAR(255),
     status ENUM('pending','approved','rejected','available','rented') DEFAULT 'pending',
     approved_at DATETIME NULL,
     rejected_at DATETIME NULL,

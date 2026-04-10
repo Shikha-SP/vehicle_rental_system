@@ -8,7 +8,8 @@
  * @param string $string The string to escape
  * @return string Escaped string safe for HTML output
  */
-function e($string) {
+function e($string)
+{
     return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
 }
 
@@ -17,7 +18,8 @@ function e($string) {
  *
  * @param string $url The URL to redirect to
  */
-function redirect($url) {
+function redirect($url)
+{
     header("Location: $url");
     exit;
 }
@@ -27,7 +29,8 @@ function redirect($url) {
  *
  * @return bool True if user is logged in, false otherwise
  */
-function isLoggedIn() {
+function isLoggedIn()
+{
     return isset($_SESSION['user_id']);
 }
 
@@ -36,7 +39,8 @@ function isLoggedIn() {
  *
  * @return bool True if user has admin privileges, false otherwise
  */
-function isAdmin() {
+function isAdmin()
+{
     return isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1;
 }
 
@@ -45,7 +49,8 @@ function isAdmin() {
  *
  * @return string The generated CSRF token
  */
-function generateCsrfToken() {
+function generateCsrfToken()
+{
     if (!isset($_SESSION)) {
         session_start();
     }
@@ -60,10 +65,23 @@ function generateCsrfToken() {
  * @param string $token The token to verify
  * @return bool True if valid, false otherwise
  */
-function verifyCsrfToken($token) {
+function verifyCsrfToken($token)
+{
     if (!isset($_SESSION['csrf_token']) || $token !== $_SESSION['csrf_token']) {
         return false;
     }
     return true;
+
+}
+function show404()
+{
+    http_response_code(404);
+    $errorPage = $_SERVER['DOCUMENT_ROOT'] . '/vehicle_rental_system/public/user/404.php';
+    if (file_exists($errorPage)) {
+        include($errorPage);
+    } else {
+        echo "<h1>404 - Page Not Found</h1>";
+    }
+    exit();
 }
 ?>
