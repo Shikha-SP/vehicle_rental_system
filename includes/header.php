@@ -36,8 +36,8 @@ if (session_status() === PHP_SESSION_NONE) {
                  class="<?= ($currentPage == 'dashboard.php') ? 'active' : '' ?>">Dashboard</a>
             </li>
             <li>
-              <a href="/vehicle_rental_collab_project/public/admin/reservations.php" 
-                 class="<?= ($currentPage == 'reservations.php') ? 'active' : '' ?>">Reservations</a>
+              <a href="/vehicle_rental_collab_project/public/admin/review_rental_requests.php" 
+                 class="<?= ($currentPage == 'review_rental_requests.php') ? 'active' : '' ?>">Review Vehicles</a>
             </li>
             <li>
               <a href="/vehicle_rental_collab_project/public/admin/fleet.php" 
@@ -51,10 +51,7 @@ if (session_status() === PHP_SESSION_NONE) {
               <a href="/vehicle_rental_collab_project/public/admin/audit.php" 
                  class="<?= ($currentPage == 'audit.php') ? 'active' : '' ?>">Analytics</a>
             </li>
-            <li>
-              <a href="/vehicle_rental_collab_project/public/admin/review_rental_requests.php" 
-                 class="<?= ($currentPage == 'review_rental_requests.php') ? 'active' : '' ?>">Review Vehicles</a>
-            </li>
+
           <?php else: ?>
             <!-- REGULAR USER NAVIGATION -->
             <li>

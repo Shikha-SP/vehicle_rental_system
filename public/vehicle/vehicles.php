@@ -20,9 +20,10 @@ $max_price    = isset($_GET['max_price'])    ? (float)$_GET['max_price'] : 0;
 $color        = isset($_GET['color'])        ? trim($_GET['color'])      : '';
 
 // Build the SQL query - showing ALL approved vehicles from ALL users
-$sql = "SELECT v.*, u.first_name, u.email 
+// LEFT JOIN ensures admin-added vehicles (without a matching user row) still appear
+$sql = "SELECT v.*, COALESCE(u.first_name, 'Admin') AS first_name, u.email 
         FROM vehicles v 
-        JOIN users u ON v.user_id = u.id 
+        LEFT JOIN users u ON v.user_id = u.id 
         WHERE v.status = 'approved'";
 
 $conditions = [];
@@ -216,10 +217,22 @@ sort($fuel_types);
                 <div class="vehicles-grid">
                     <?php while ($vehicle = $result->fetch_assoc()): ?>
                         <div class="vehicle-card">
-                            <?php if (!empty($vehicle['image_path'])): ?>
+                            <?php
+                            $imgPath = $vehicle['image_path'] ?? '';
+                            if (!empty($imgPath) && $imgPath !== '0'):
+                                // Resolve the correct URL from public/vehicle/ (2 levels up = project root)
+                                if (strpos($imgPath, 'http') === 0) {
+                                    $imgSrc = $imgPath; // absolute URL
+                                } elseif (strpos($imgPath, 'uploads/') === 0 || strpos($imgPath, 'assets/images/') === 0) {
+                                    $imgSrc = '../../' . $imgPath; // full relative path from project root
+                                } else {
+                                    $imgSrc = '../../uploads/vehicles/' . $imgPath; // bare filename (legacy)
+                                }
+                            ?>
                                 <div class="vehicle-image-wrapper">
-                                    <img src="../../<?= htmlspecialchars($vehicle['image_path']) ?>"
-                                         alt="<?= htmlspecialchars($vehicle['model']) ?>" class="vehicle-image">
+                                    <img src="<?= htmlspecialchars($imgSrc) ?>"
+                                         alt="<?= htmlspecialchars($vehicle['model']) ?>" class="vehicle-image"
+                                         onerror="this.closest('.vehicle-image-wrapper').style.display='none'">
                                     <div class="vehicle-badge">Available</div>
                                 </div>
                             <?php endif; ?>

@@ -72,20 +72,49 @@ $conn->query("CREATE TABLE IF NOT EXISTS audit_logs (
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 )");
 
+/**
+ * Upload a vehicle image to uploads/vehicles/ and return the relative path.
+ * Returns a path like 'uploads/vehicles/filename.jpg' on success, or null.
+ */
 function uploadVehicleImage($fileArray) {
     if (!$fileArray || !isset($fileArray['tmp_name']) || empty($fileArray['tmp_name'])) {
         return null;
     }
-    $targetDir = __DIR__ . '/../../assets/images/';
+    $targetDir = __DIR__ . '/../../uploads/vehicles/';
     if (!is_dir($targetDir)) {
-        mkdir($targetDir, 0755, true);
+        mkdir($targetDir, 0777, true);
     }
-    $filename = time() . '_' . basename($fileArray['name']);
+    $ext        = strtolower(pathinfo($fileArray['name'], PATHINFO_EXTENSION));
+    $filename   = time() . '_' . uniqid() . '.' . $ext;
     $targetFile = $targetDir . $filename;
-    
+
     if (move_uploaded_file($fileArray['tmp_name'], $targetFile)) {
-        return $filename; // Returns path relative to assets/images/
+        return 'uploads/vehicles/' . $filename; // full relative path from project root
     }
     return null;
+}
+
+/**
+ * Delete a vehicle image from disk.
+ * Accepts any stored path: 'uploads/vehicles/…', 'assets/images/…', or bare filename.
+ */
+function deleteVehicleImage($imagePath) {
+    if (empty($imagePath)) return;
+
+    $root = __DIR__ . '/../../';
+
+    if (strpos($imagePath, 'uploads/') === 0 || strpos($imagePath, 'assets/images/') === 0) {
+        $fullPath = $root . $imagePath;
+    } else {
+        // Legacy bare filename — could be in either folder; try both
+        $fullPath = $root . 'uploads/vehicles/' . $imagePath;
+        if (!file_exists($fullPath)) {
+            $fullPath = $root . 'assets/images/' . $imagePath;
+        }
+    }
+
+    if (file_exists($fullPath) && is_file($fullPath)) {
+        @unlink($fullPath);
+    }
 }
 ?>

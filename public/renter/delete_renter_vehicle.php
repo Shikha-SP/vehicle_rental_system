@@ -8,6 +8,7 @@
  */
 session_start();
 require_once '../../config/db.php';
+require_once '../../includes/functions.php';
 
 // Check if user is logged in and not admin
 if (!isset($_SESSION['user_id']) || (!empty($_SESSION['is_admin']))) {
@@ -26,8 +27,8 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $vehicle_id = $_GET['id'];
 $user_id = $_SESSION['user_id'];
 
-// First, check if the vehicle exists and belongs to the user
-$check_sql = "SELECT id, status FROM vehicles WHERE id = ? AND user_id = ?";
+// Fetch the vehicle (must belong to this user) so we can grab image_path for cleanup
+$check_sql = "SELECT id, status, image_path FROM vehicles WHERE id = ? AND user_id = ?";
 $check_stmt = $conn->prepare($check_sql);
 $check_stmt->bind_param("ii", $vehicle_id, $user_id);
 $check_stmt->execute();
@@ -58,7 +59,28 @@ if ($bookings['active_bookings'] > 0) {
     exit;
 }
 
-// Delete the vehicle
+// Delete the vehicle's image file from disk before removing the DB record
+if (!empty($vehicle['image_path'])) {
+    // Build absolute path from project root
+    $root      = __DIR__ . '/../../';
+    $imagePath = $vehicle['image_path'];
+
+    if (strpos($imagePath, 'uploads/') === 0 || strpos($imagePath, 'assets/images/') === 0) {
+        $fullPath = $root . $imagePath;
+    } else {
+        // Legacy bare filename – try uploads/vehicles/ then assets/images/
+        $fullPath = $root . 'uploads/vehicles/' . $imagePath;
+        if (!file_exists($fullPath)) {
+            $fullPath = $root . 'assets/images/' . $imagePath;
+        }
+    }
+
+    if (file_exists($fullPath) && is_file($fullPath)) {
+        @unlink($fullPath);
+    }
+}
+
+// Delete the vehicle record
 $delete_sql = "DELETE FROM vehicles WHERE id = ? AND user_id = ?";
 $delete_stmt = $conn->prepare($delete_sql);
 $delete_stmt->bind_param("ii", $vehicle_id, $user_id);
