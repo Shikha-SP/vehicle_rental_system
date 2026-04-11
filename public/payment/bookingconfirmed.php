@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/ac1574deb1.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/vehicle_rental_system/assets/css/bookingconfirmed.css">
-        <!-- <link rel="stylesheet" href="/vehicle_rental_system/assets/css/paymentdetail.css"> -->
+    <link rel="stylesheet" href="../../assets/css/bookingconfirmed.css">
+        <!-- <link rel="stylesheet" href="../../assets/css/paymentdetail.css"> -->
     <title>Booking confirmed</title>
 </head>
 <body>
@@ -36,7 +36,7 @@
 
             <div class="hero-right">
                 <div class="confirmation-card">
-                    <img class="car-image" src="/vehicle_rental_system/assets/images/ferrari-img.jpg" alt="">
+                    <img class="car-image" src="../../assets/images/ferrari-img.jpg" alt="">
                     <div class="car-image-overlay"></div>
                     <div class="confirmation-item">
                         <p class="label">CONFIRMATION</p>

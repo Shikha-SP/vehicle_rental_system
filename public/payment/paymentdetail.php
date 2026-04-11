@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <script src="https://kit.fontawesome.com/ac1574deb1.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/vehicle_rental_system/assets/css/paymentdetail.css">
+    <link rel="stylesheet" href="../../assets/css/paymentdetail.css">
     <title>Payment Details</title>
 </head>
 
@@ -177,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div id="summary-section">
 
             <div class="car-info">
-                <img class="car-image" src="/vehicle_rental_system/assets/images/ferrari-img.jpg" alt="">
+                <img class="car-image" src="../../assets/images/ferrari-img.jpg" alt="">
                 <div class="car-image-overlay"></div>
                 <h2 class="car-title">2024 Ferrari SF90</h2>
             </div>
