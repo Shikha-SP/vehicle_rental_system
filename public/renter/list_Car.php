@@ -29,6 +29,12 @@ $color         = $_POST['color']         ?? '#e03030';
 
     <!-- ── Hero ─────────────────────────────────────────────── -->
     <section class="lc-hero">
+        <?php if (isset($_SESSION['message'])): ?>
+            <div class="alert alert-<?= ($_SESSION['message_type'] === 'success') ? 'ok' : 'err' ?>" style="margin-bottom: 2rem;">
+                <?= htmlspecialchars($_SESSION['message']) ?>
+                <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
+            </div>
+        <?php endif; ?>
         <div class="lc-hero__label">TD Rentals · Host Programme</div>
         <h1 class="lc-hero__title">
             <span>List Your</span>

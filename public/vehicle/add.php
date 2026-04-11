@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || (!empty($_SESSION['is_admin']))) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: ../renter/list_Car.php");
+    header("Location: ../renter/list_car.php");
     exit;
 }
 
@@ -25,35 +25,49 @@ $color = $_POST['color'] ?? '#e03030';
 $top_speed = $_POST['kms'] ?? '';           // 'kms' from form stores top speed
 $fuel_capacity = $_POST['fuel_capacity'] ?? '';
 
-// Validate required fields
-if (empty($model) || empty($license_type) || empty($transmission) || 
-    empty($fuel_type) || empty($top_speed) || empty($fuel_capacity)) {
-    $_SESSION['error'] = "Please fill all required fields";
-    header("Location: ../renter/list_Car.php");
-    exit;
+// Validate required fields individually for better debugging
+$required_fields = [
+    'model' => 'Make & Model',
+    'license_type' => 'Vehicle Class',
+    'transmission' => 'Transmission',
+    'fuel_type' => 'Fuel Type',
+    'kms' => 'Top Speed',
+    'fuel_capacity' => 'Fuel Capacity'
+];
+
+foreach ($required_fields as $field => $label) {
+    if (!isset($_POST[$field]) || $_POST[$field] === '') {
+        $_SESSION['message'] = "The field '$label' is required.";
+        $_SESSION['message_type'] = "error";
+        header("Location: ../renter/list_car.php");
+        exit;
+    }
 }
 
 // Validate license_type values
 $valid_license_types = ['A', 'B', 'C', 'D', 'E'];
 if (!in_array($license_type, $valid_license_types)) {
-    $_SESSION['error'] = "Invalid license type selected";
-    header("Location: ../renter/list_Car.php");
+    $_SESSION['message'] = "Invalid license type selected";
+    $_SESSION['message_type'] = "error";
+    header("Location: ../renter/list_car.php");
     exit;
 }
 
 // Validate transmission
 $valid_transmissions = ['Manual', 'Automatic'];
 if (!in_array($transmission, $valid_transmissions)) {
-    $_SESSION['error'] = "Invalid transmission type";
-    header("Location: ../renter/list_Car.php");
+    $_SESSION['message'] = "Invalid transmission type";
+    $_SESSION['message_type'] = "error";
+    header("Location: ../renter/list_car.php");
     exit;
 }
 
 // Validate fuel type
 $valid_fuel_types = ['Petrol', 'Diesel', 'Electric', 'Hybrid', 'CNG'];
 if (!in_array($fuel_type, $valid_fuel_types)) {
-    $_SESSION['error'] = "Invalid fuel type";
-    header("Location: ../renter/list_Car.php");
+    $_SESSION['message'] = "Invalid fuel type";
+    $_SESSION['message_type'] = "error";
+    header("Location: ../renter/list_car.php");
     exit;
 }
 
@@ -71,8 +85,9 @@ if (isset($_FILES['vehicle_image']) && $_FILES['vehicle_image']['error'] === UPL
     $file_type = $_FILES['vehicle_image']['type'];
     
     if (!in_array($file_type, $allowed_types)) {
-        $_SESSION['error'] = "Only JPG, PNG, and WEBP images are allowed";
-        header("Location: ../renter/list_Car.php");
+        $_SESSION['message'] = "Only JPG, PNG, and WEBP images are allowed";
+        $_SESSION['message_type'] = "error";
+        header("Location: ../renter/list_car.php");
         exit;
     }
     
@@ -83,8 +98,9 @@ if (isset($_FILES['vehicle_image']) && $_FILES['vehicle_image']['error'] === UPL
     if (move_uploaded_file($_FILES['vehicle_image']['tmp_name'], $destination)) {
         $image_path = 'uploads/vehicles/' . $filename;
     } else {
-        $_SESSION['error'] = "Failed to upload image";
-        header("Location: ../renter/list_Car.php");
+        $_SESSION['message'] = "Failed to upload image";
+        $_SESSION['message_type'] = "error";
+        header("Location: ../renter/list_car.php");
         exit;
     }
 }
@@ -104,10 +120,12 @@ $stmt->bind_param("issssdsiiss",
 );
 
 if ($stmt->execute()) {
-    $_SESSION['success'] = "Your vehicle has been submitted for admin approval. You'll be notified once approved.";
+    $_SESSION['message'] = "Your vehicle has been submitted for admin approval. You'll be notified once approved.";
+    $_SESSION['message_type'] = "success";
     header("Location: ../renter/my_vehicles.php");
 } else {
-    $_SESSION['error'] = "Failed to submit vehicle: " . $conn->error;
+    $_SESSION['message'] = "Failed to submit vehicle: " . $conn->error;
+    $_SESSION['message_type'] = "error";
     header("Location: ../renter/list_Car.php");
 }
 
