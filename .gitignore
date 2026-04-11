@@ -1,13 +1,52 @@
-# Ignore Composer vendor folder
+# ----------------------
+# Composer
+# ----------------------
 /vendor/
 
-# Ignore uploads (user files / runtime images)
+# ----------------------
+# Environment / Config
+# ----------------------
+.env
+.env.*
+/config/*.local.php
+
+# ----------------------
+# User uploads / runtime files
+# ----------------------
 uploads/
 
-# Ignore system files
+# ----------------------
+# System files (Mac / Windows)
+# ----------------------
 .DS_Store
+**/.DS_Store
 Thumbs.db
 
-# Ignore local environment/config files
-/config/*.local.php
-.env
+# ----------------------
+# Logs
+# ----------------------
+*.log
+*.tmp
+
+# ----------------------
+# Node (if you ever use it)
+# ----------------------
+node_modules/
+
+# ----------------------
+# IDE / Editor files
+# ----------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ----------------------
+# OS generated files
+# ----------------------
+Desktop.ini
+
+# ----------------------
+# Git merge / temp files
+# ----------------------
+*.orig
