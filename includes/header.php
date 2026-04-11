@@ -32,8 +32,24 @@ if (session_status() === PHP_SESSION_NONE) {
           <?php if (!empty($_SESSION['is_admin'])): ?>
             <!-- ADMIN NAVIGATION -->
             <li>
-              <a href="/vehicle_rental_collab_project/public/admin/home_page.php" 
-                 class="<?= ($currentPage == 'home_page.php') ? 'active' : '' ?>">Dashboard</a>
+              <a href="/vehicle_rental_collab_project/public/admin/dashboard.php" 
+                 class="<?= ($currentPage == 'dashboard.php') ? 'active' : '' ?>">Dashboard</a>
+            </li>
+            <li>
+              <a href="/vehicle_rental_collab_project/public/admin/reservations.php" 
+                 class="<?= ($currentPage == 'reservations.php') ? 'active' : '' ?>">Reservations</a>
+            </li>
+            <li>
+              <a href="/vehicle_rental_collab_project/public/admin/fleet.php" 
+                 class="<?= ($currentPage == 'fleet.php') ? 'active' : '' ?>">Vehicles</a>
+            </li>
+            <li>
+              <a href="/vehicle_rental_collab_project/public/admin/customers.php" 
+                 class="<?= ($currentPage == 'customers.php') ? 'active' : '' ?>">Customers</a>
+            </li>
+            <li>
+              <a href="/vehicle_rental_collab_project/public/admin/audit.php" 
+                 class="<?= ($currentPage == 'audit.php') ? 'active' : '' ?>">Analytics</a>
             </li>
             <li>
               <a href="/vehicle_rental_collab_project/public/admin/review_rental_requests.php" 
