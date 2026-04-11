@@ -23,7 +23,7 @@ require_once __DIR__ . '/../../includes/header.php';
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="../../assets/css/admin.css">
 
 <div class="admin-wrapper">
   <div class="main">
@@ -35,7 +35,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <div class="stat-card"><div class="stat-label">Total Bookings</div><div class="stat-value"><?= $totalBookings ?></div><div class="stat-sub">All time</div></div>
         <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value" style="font-size:1.8rem">NPR
           <?= number_format($totalRevenue, 0) ?></div><div class="stat-sub">Excl. cancelled</div></div>
-        <div class="stat-card accent"><div class="stat-label">Pending Actions <span class="stat-badge warn"><?= $pendingCount ?></span></div><div class="stat-value"><?= $pendingCount ?></div><div class="stat-sub">Need review</div></div>
+        
       </div>
 
       <div class="sec">

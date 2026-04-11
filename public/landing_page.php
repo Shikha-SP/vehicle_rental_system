@@ -44,7 +44,7 @@ require_once('../includes/functions.php'); // From public/ to includes/
             <h1 class="hero-title">THE <span class="text-red">KINETIC</span><br>GALLERY.</h1>
             <p class="hero-desc">Beyond Transportation We Provide the key automotive excellence. Curated performance for those who demand the pinnacle of engineering.</p>
             <div class="hero-buttons">
-                <a href="authentication/login.php" class="btn btn-primary">SECURE THE FLEET</a>
+                <a href="authentication/login.php" class="btn btn-primary">BOOK YOUR RIDE</a>
                 <a href="authentication/login.php" class="btn btn-secondary">EXPLORE SPECS</a>
             </div>
         </div>
@@ -86,7 +86,7 @@ require_once('../includes/functions.php'); // From public/ to includes/
                 <img src="../uploads/car4.png" alt="Custom Fleet image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: BESPOKE</span>
-                    <h3 class="card-title">CUSTOM FLEET</h3>
+                    <h3 class="card-title">CUSTOM SELECTION</h3>
                 </div>
             </div>
         </div>
@@ -105,7 +105,7 @@ require_once('../includes/functions.php'); // From public/ to includes/
         <!-- Feature 2 -->
         <div class="feature-card border-accent">
             <div class="feature-icon"><i class="fa-solid fa-earth-americas"></i></div>
-            <h3 class="feature-title">GLOBAL FLEET</h3>
+            <h3 class="feature-title">GLOBAL NETWORK</h3>
             <p class="feature-desc">Inter-connected hubs in major capitals ensuring your preferred machine is always waiting.</p>
             <span class="feature-number">02</span>
         </div>

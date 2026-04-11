@@ -49,8 +49,8 @@ a {
     flex-direction: column;
     justify-content: center;
     padding: 0 8%;
-    background: linear-gradient(to right, rgba(9, 9, 11, 0.95) 0%, rgba(9, 9, 11, 0.7) 40%, rgba(9, 9, 11, 0.2) 80%),
-                url('../../assets/images/cars/placeholder_car.png') no-repeat right center; /* Replace with actual car bg if available */
+    background: linear-gradient(to right, rgba(9, 9, 11, 1) 0%, rgba(9, 9, 11, 0.9) 40%, rgba(9, 9, 11, 0.8) 80%);
+    background-color: var(--bg-dark);
     background-size: cover;
 }
 

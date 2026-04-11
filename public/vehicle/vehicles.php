@@ -273,7 +273,7 @@ sort($fuel_types);
                                     <span class="price-period">/day</span>
                                 </div>
                                 <div class="vehicle-actions">
-                                    <a href="view_vehicle.php?id=<?= $vehicle['id'] ?>" class="btn-view">View Details</a>
+                                    <a href="vehicle_detail.php?id=<?= $vehicle['id'] ?>" class="btn-view">View Details</a>
                                 </div>
                             </div>
                         </div>

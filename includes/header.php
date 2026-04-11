@@ -40,8 +40,8 @@ if (session_status() === PHP_SESSION_NONE) {
                  class="<?= ($currentPage == 'review_rental_requests.php') ? 'active' : '' ?>">Review Vehicles</a>
             </li>
             <li>
-              <a href="/vehicle_rental_collab_project/public/admin/fleet.php" 
-                 class="<?= ($currentPage == 'fleet.php') ? 'active' : '' ?>">Vehicles</a>
+              <a href="/vehicle_rental_collab_project/public/admin/vehicle_listings.php" 
+                 class="<?= ($currentPage == 'vehicle_listings.php') ? 'active' : '' ?>">Add Vehicles</a>
             </li>
             <li>
               <a href="/vehicle_rental_collab_project/public/admin/customers.php" 

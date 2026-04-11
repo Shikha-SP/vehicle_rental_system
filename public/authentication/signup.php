@@ -330,7 +330,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <span class="signup-heading__line2"><?= $current_step === 1 ? 'Driver Profile' : 'Driving Credentials' ?></span>
             </div>
             <p class="signup-subtext">
-                <?= $current_step === 1 ? 'Enter your details to access the world\'s most exclusive fleet.' : 'We need your license details to finalize your registration.' ?>
+                <?= $current_step === 1 ? 'Enter your details to access the world\'s most exclusive vehicle selection.' : 'We need your license details to finalize your registration.' ?>
             </p>
 
             <?php if (!empty($errors)): ?>

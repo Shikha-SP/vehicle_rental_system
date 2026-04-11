@@ -219,8 +219,8 @@ $brands_result = $conn->query($brands_sql);
                 </h1>
 
                 <div class="hero-btns">
-                    <a href="vechile.php" class="btn btn-red">BOOK NOW</a>
-                    <a href="vechile.php" class="btn btn-ghost">VIEW FLEET</a>
+                    <a href="../vehicle/vehicles.php" class="btn btn-red">BOOK NOW</a>
+                    <a href="../vehicle/vehicles.php" class="btn btn-ghost">VIEW VEHICLES</a>
                 </div>
 
             </div>

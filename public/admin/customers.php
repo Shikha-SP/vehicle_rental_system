@@ -38,7 +38,7 @@ require_once __DIR__ . '/../../includes/header.php';
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="../../assets/css/admin.css">
 
 <div class="admin-wrapper">
   <div class="main">
@@ -54,9 +54,9 @@ require_once __DIR__ . '/../../includes/header.php';
     
     <div class="content">
       <div class="customer-stats">
-        <div class="cust-stat"><div class="cust-stat-label">Avg LTV</div><div class="cust-stat-value">NPR<?= number_format($totalRevenue / max(1, $totalUsers), 0) ?></div><div class="cust-stat-sub">per registered user</div></div>
+        
         <div class="cust-stat"><div class="cust-stat-label">Rental Frequency</div><div class="cust-stat-value"><?= $totalUsers > 0 ? number_format($totalBookings / $totalUsers, 1) : 0 ?>x</div><div class="cust-stat-sub">Annual avg per user</div></div>
-        <div class="cust-stat"><div class="cust-stat-label">Approval Rate</div><div class="cust-stat-value"><?= $totalBookings > 0 ? round($confirmedCount / $totalBookings * 100) : 92 ?>%</div><div class="cust-stat-sub">Confirmed bookings</div></div>
+      
         <div class="cust-stat accent"><div class="cust-stat-label">Total Active Users</div><div class="cust-stat-value"><?= $totalUsers ?></div><div class="cust-stat-sub">All time registrations</div></div>
       </div>
       

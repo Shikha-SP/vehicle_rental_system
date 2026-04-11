@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 setFlash('error', "Database error: " . $conn->error);
             }
         }
-        header('Location: fleet.php');
+        header('Location: vehicle_listings.php');
         exit;
     }
 
@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 setFlash('error', "Database error: " . $conn->error);
             }
         }
-        header('Location: fleet.php');
+        header('Location: vehicle_listings.php');
         exit;
     }
 
@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             auditLog("vehicle_deleted", "vehicle", $cid, "Deleted: {$carModel}");
             setFlash('success', "Vehicle deleted.");
         }
-        header('Location: fleet.php');
+        header('Location: vehicle_listings.php');
         exit;
     }
 }
@@ -142,7 +142,7 @@ require_once __DIR__ . '/../../includes/header.php';
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="../../assets/css/admin.css">
 
 <style>
 /* ── Fleet-form overrides (list_car-style palette inside admin shell) ── */
@@ -342,7 +342,7 @@ require_once __DIR__ . '/../../includes/header.php';
 
     <div class="topbar">
       <div class="topbar-left">
-        <h1>FLEET INVENTORY</h1>
+        <h1>VEHICLE LISTINGS</h1>
         <p><span style="color:var(--red);font-weight:600"><?= $totalCars ?></span> Total &nbsp;·&nbsp; <?= $totalCars-$availCars ?> Hidden &nbsp;·&nbsp; <span style="color:var(--red)"><?= $availCars ?></span> Active</p>
       </div>
       <div class="topbar-right">
@@ -421,7 +421,7 @@ require_once __DIR__ . '/../../includes/header.php';
           <div class="fleet-add-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           </div>
-          <div style="font-weight:600;font-size:.9rem">Expand Your Fleet</div>
+          <div style="font-weight:600;font-size:.9rem">Expand Vehicle Listings</div>
           <div style="font-size:.75rem;color:var(--fg3);text-align:center">Add a new high-performance<br>machine to the inventory.</div>
           <button class="btn btn-ghost btn-sm">Start Entry</button>
         </div>
@@ -436,7 +436,7 @@ require_once __DIR__ . '/../../includes/header.php';
 <div class="lf-overlay" id="addModal">
   <div class="lf-box">
     <div class="lf-header">
-      <span class="lf-num">FLEET</span>
+      <span class="lf-num">LISTINGS</span>
       <span class="lf-title">Add New Vehicle</span>
     </div>
 
@@ -600,7 +600,7 @@ require_once __DIR__ . '/../../includes/header.php';
 <div class="lf-overlay" id="editModal">
   <div class="lf-box">
     <div class="lf-header">
-      <span class="lf-num">FLEET</span>
+      <span class="lf-num">LISTINGS</span>
       <span class="lf-title">Edit Vehicle</span>
     </div>
 
