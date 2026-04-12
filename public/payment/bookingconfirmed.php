@@ -1,3 +1,36 @@
+<?php
+session_start();
+require_once '../../config/db.php';
+require_once '../../includes/functions.php';
+
+$booking_id = (int)($_GET['id'] ?? 0);
+
+// if (!$booking_id) {
+//     die("Invalid booking.");
+// }
+
+// Fetch booking + vehicle info
+$sql = "
+    SELECT b.*, v.model, v.image_path
+    FROM bookings b
+    JOIN vehicles v ON b.vehicle_id = v.id
+    WHERE b.id = ?
+";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $booking_id); 
+$stmt->execute();
+$booking = $stmt->get_result()->fetch_assoc();
+
+// bug
+// var_dump($booking);
+// exit;
+
+if (!$booking) {
+    die("Booking not found.");
+}
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,23 +57,23 @@
                 </h1>
 
                 <p class="hero-description">
-                    Your Ferrari F8 Tributo is being prepped to exacting standards.
+                    Your <?= htmlspecialchars($booking['model']) ?> is being prepped to exacting standards.
                     Expect a masterpiece in performance and aesthetics.
                 </p>
 
                 <div class="hero-buttons">
-                    <button class="btn btn-primary">MANAGE BOOKING</button>
+                    <button class="btn btn-primary" >MANAGE BOOKING</button>
                     <button class="btn btn-secondary">ADD TO CALENDAR</button>
                 </div>
             </div>
 
             <div class="hero-right">
                 <div class="confirmation-card">
-                    <img class="car-image" src="../../assets/images/ferrari-img.jpg" alt="">
+                    <img class="car-image" src="../../<?= htmlspecialchars($booking['image_path']) ?>" alt="">
                     <div class="car-image-overlay"></div>
                     <div class="confirmation-item">
                         <p class="label">CONFIRMATION</p>
-                        <p class="value">#TD-8829-X</p>
+                        <p class="value">#TD-<?= htmlspecialchars($booking['id']) ?></p>
                     </div>
                     <div class="confirmation-item">
                         <p class="label">STATUS</p>
@@ -73,7 +106,7 @@
                         Miami, FL 33122
                     </p>
                     <div class="date-time">
-                        <span class="date">MAY 24, 2024</span>
+                        <span class="date"><?= htmlspecialchars($booking['start_date']) ?></span>
                         <span class="time">10:00 AM</span>
                     </div>
                 </div>
@@ -87,7 +120,7 @@
                         Miami, FL 33122
                     </p>
                     <div class="date-time">
-                        <span class="date">MAY 27, 2024</span>
+                        <span class="date"><?= htmlspecialchars($booking['end_date']) ?></span>
                         <span class="time">04:00 PM</span>
                     </div>
                 </div>
