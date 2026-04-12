@@ -20,6 +20,18 @@ $totalCars = $totalCarsResult ? $totalCarsResult->fetch_row()[0] : 0;
 $availCarsResult = $conn->query("SELECT COUNT(*) FROM vehicles WHERE status = 'available' OR status = 'approved'");
 $availCars = $availCarsResult ? $availCarsResult->fetch_row()[0] : 0;
 
+$pendingCarsResult = $conn->query("SELECT COUNT(*) FROM vehicles WHERE status = 'pending'");
+$pendingCars = $pendingCarsResult ? $pendingCarsResult->fetch_row()[0] : 0;
+
+$activeRentalsResult = $conn->query("SELECT COUNT(*) FROM bookings WHERE status != 'cancelled' AND start_date <= CURDATE() AND end_date >= CURDATE()");
+$activeRentals = $activeRentalsResult ? $activeRentalsResult->fetch_row()[0] : 0;
+
+$checkoutsTodayResult = $conn->query("SELECT COUNT(*) FROM bookings WHERE status != 'cancelled' AND start_date = CURDATE()");
+$checkoutsToday = $checkoutsTodayResult ? $checkoutsTodayResult->fetch_row()[0] : 0;
+
+$returnsTodayResult = $conn->query("SELECT COUNT(*) FROM bookings WHERE status != 'cancelled' AND end_date = CURDATE()");
+$returnsToday = $returnsTodayResult ? $returnsTodayResult->fetch_row()[0] : 0;
+
 
 // 30-Day Revenue Trend
 $revenueTrend = [];
@@ -105,6 +117,9 @@ require_once __DIR__ . '/../../includes/header.php';
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="../../assets/css/admin.css">
+<style>
+@keyframes spin { 100% { transform: rotate(360deg); } }
+</style>
 <script src="../../assets/js/chart.min.js"></script>
 
 <div class="admin-wrapper">
@@ -115,78 +130,135 @@ require_once __DIR__ . '/../../includes/header.php';
         <p>Dashboard Insight · Last 30 Days Activity</p>
       </div>
       <div class="topbar-right">
-        <div class="search-box">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" placeholder="Search insights..."/>
-        </div>
       </div>
     </div>
     
     <div class="content">
-      <!-- KPI ROW -->
-      <div class="kpi-grid">
-        <div class="kpi-card">
-          <div class="kpi-label">Total Revenue</div>
-          <div class="kpi-value">NPR <?= number_format($totalRevenue, 0) ?></div>
-          <div class="kpi-sub">Across all confirmed rentals</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Active Vehicle Listings</div>
-          <div class="kpi-value"><?= $availCars ?> <small>/ <?= $totalCars ?></small></div>
-          <div class="kpi-sub">Vehicles ready for rental</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Total Bookings</div>
-          <div class="kpi-value"><?= $totalBookings ?></div>
-          <div class="kpi-sub">Lifetime transactions</div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-label">Total Users</div>
-          <div class="kpi-value"><?= $totalUsers ?></div>
-          <div class="kpi-sub">Registered drivers</div>
-        </div>
-      </div>
+      <div class="dash-layout">
+        <!-- LEFT COLUMN: Main Snapshot & Analytics -->
+        <div class="dash-main">
+          <!-- KPI Row -->
+          <div class="kpi-row">
+            <div class="kpi-card">
+              <div class="kpi-label">Total Revenue</div>
+              <div class="kpi-value">NPR <?= number_format($totalRevenue, 0) ?></div>
+              <div class="kpi-sub">Across all confirmed rentals</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Total Vehicles</div>
+              <div class="kpi-value"><?= $totalCars ?></div>
+              <div class="kpi-sub"><?= $availCars ?> currently available</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Total Bookings</div>
+              <div class="kpi-value"><?= $totalBookings ?></div>
+              <div class="kpi-sub">Lifetime transactions</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Active Bookings</div>
+              <div class="kpi-value"><?= $activeRentals ?></div>
+              <div class="kpi-sub">Vehicles currently on rent</div>
+            </div>
+          </div>
 
-      <div class="chart-row">
-        <div class="chart-container full-chart">
-          <div class="chart-header">
-            <h3>Revenue Trend <small>(30 Days)</small></h3>
+          <!-- Revenue Trend -->
+          <div class="chart-container" style="flex: 1; min-height: 440px;">
+            <div class="chart-header">
+              <h3>Revenue Trend <small>(Last 30 Days)</small></h3>
+            </div>
+            <div class="chart-body">
+              <canvas id="revenueChart"></canvas>
+            </div>
           </div>
-          <div class="chart-body">
-            <canvas id="revenueChart"></canvas>
-          </div>
-        </div>
-      </div>
+        </div><!-- /dash-main -->
 
-      <div class="chart-row secondary">
-        <div class="chart-container">
-          <div class="chart-header">
-            <h3>User Registrations</h3>
+        <!-- RIGHT COLUMN: Actions & Side Insights -->
+        <div class="dash-sidebar">
+          
+          <!-- Immediate Action Required -->
+          <?php if ($pendingCars > 0): ?>
+          <div class="action-block">
+            <div class="action-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                ACTION REQUIRED
+            </div>
+            <div class="action-value"><?= $pendingCars ?></div>
+            <div class="action-desc">Vehicles awaiting your approval. Review them to allow renters to go live.</div>
+            <a href="review_rental_requests.php" class="btn btn-red btn-sm" style="width:100%; justify-content:center;">Review Listings Now</a>
           </div>
-          <div class="chart-body">
-            <canvas id="userTrendChart"></canvas>
+          <?php else: ?>
+          <div class="action-block" style="background:rgba(34,197,94,0.05); border-color:rgba(34,197,94,0.3);">
+            <div class="action-title" style="color:#4ade80;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                SYSTEM CLEAR
+            </div>
+            <div class="action-desc" style="margin-bottom:0;">No pending vehicles requiring admin review. The fleet is fully updated.</div>
           </div>
-        </div>
-        <div class="chart-container">
-          <div class="chart-header">
-            <h3>Top Performing Vehicles</h3>
-          </div>
-          <div class="chart-body">
-            <canvas id="topVehiclesChart"></canvas>
-          </div>
-        </div>
-      </div>
+          <?php endif; ?>
 
-      <!-- RECENT ACTIVITY -->
-      <div class="sec">
-        <div class="sec-head">
-          <span class="sec-title">Recent System Bookings</span>
-          <div style="display:flex;gap:.5rem">
-            <button class="btn btn-ghost btn-sm">Refresh</button>
+          <!-- Today's Operations -->
+          <div class="side-panel">
+            <div class="side-panel-title" style="font-size:1.1rem; margin-bottom:0.8rem;">Today's Operations</div>
+            <div style="display:flex; justify-content:space-between; margin-bottom: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom:0.5rem;">
+                <span style="color:var(--fg3); font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Check-outs (Starting)</span>
+                <span style="color:var(--blue); font-weight:bold; font-size:1.2rem;"><?= $checkoutsToday ?></span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:var(--fg3); font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Returns Expected</span>
+                <span style="color:var(--green); font-weight:bold; font-size:1.2rem;"><?= $returnsToday ?></span>
+            </div>
+          </div>
+
+          <!-- Top Assets List -->
+          <div class="side-panel">
+            <div class="side-panel-title">Top Performing Assets</div>
+            <div class="asset-list">
+              <?php if (empty($topVehicles)): ?>
+                <div style="color:var(--fg3); font-size:0.8rem;">No data available.</div>
+              <?php else: ?>
+                <?php $rank=1; foreach($topVehicles as $tv): ?>
+                  <div class="asset-item">
+                    <div style="display:flex; align-items:center;">
+                        <span class="asset-rank">#<?= $rank++ ?></span>
+                        <span class="asset-name"><?= htmlspecialchars($tv['model']) ?></span>
+                    </div>
+                    <span class="asset-count"><?= $tv['bookings'] ?></span>
+                  </div>
+                <?php endforeach; ?>
+              <?php endif; ?>
+            </div>
+          </div>
+
+          <!-- User Trend (Minified) -->
+          <div class="chart-container sm-chart">
+            <div class="chart-header">
+              <h3>User Registrations</h3>
+            </div>
+            <div class="chart-body">
+              <canvas id="userTrendChart"></canvas>
+            </div>
+          </div>
+
+        </div><!-- /dash-sidebar -->
+      </div><!-- /dash-layout -->
+
+      <!-- FULL WIDTH RECENT ACTIVITY -->
+      <div class="sec" style="margin-top:1.5rem; background:var(--bg2); backdrop-filter:var(--glass);">
+        <div class="sec-head" style="border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+          <span class="sec-title" style="font-family:var(--display); font-size:1.4rem; color:var(--fg); letter-spacing:0.05em; text-transform:none; flex-shrink:0;">Recent Bookings</span>
+          <div style="display:flex; gap:0.75rem; align-items:center;">
+            <div class="search-box" style="padding:0.4rem 0.8rem; width: 220px; border-radius: 6px; background: rgba(0,0,0,0.2);">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="dashboardSearch" placeholder="Search recent bookings..." style="font-size:0.75rem;" />
+            </div>
+            <button id="btnRefresh" class="btn btn-ghost btn-sm" style="display:flex; align-items:center; gap:6px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M21 12a9 9 0 11-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+                Refresh
+            </button>
             <a href="vehicle_listings.php" class="btn btn-red btn-sm">Manage Listings</a>
           </div>
         </div>
-        <div class="tbl-wrap">
+        <div class="tbl-wrap" style="border:none;">
           <table>
             <thead>
               <tr>
@@ -229,6 +301,7 @@ require_once __DIR__ . '/../../includes/header.php';
           </table>
         </div>
       </div>
+
     </div>
   </div>
 </div>
@@ -343,33 +416,9 @@ document.addEventListener('DOMContentLoaded', () => {
         options: commonOptions
     });
 
-    // 4. Top Vehicles Chart
-    new Chart(document.getElementById('topVehiclesChart'), {
-        type: 'bar',
-        data: {
-            labels: <?= json_encode(array_column($topVehicles, 'model')) ?>,
-            datasets: [{
-                label: 'Bookings',
-                data: <?= json_encode(array_column($topVehicles, 'bookings')) ?>,
-                backgroundColor: (context) => {
-                    const ctx = context.chart.ctx;
-                    const gradient = ctx.createLinearGradient(0, 0, 400, 0);
-                    gradient.addColorStop(0, '#e03535');
-                    gradient.addColorStop(1, 'rgba(224, 53, 53, 0.1)');
-                    return gradient;
-                },
-                borderWidth: { top: 0, right: 3, bottom: 0, left: 0 },
-                borderColor: '#f87171',
-                borderRadius: 8,
-                hoverBackgroundColor: '#f87171'
-            }]
-        },
-        options: {
-            ...commonOptions,
-            indexAxis: 'y'
-        }
-    });
+
 });
 </script>
+<script src="../../assets/js/admin_dashboard.js"></script>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>

@@ -14,8 +14,8 @@ if (file_exists($db_path)) {
     exit;
 }
 
-// Check if user is logged in and NOT admin
-if (!isset($_SESSION['user_id']) || (!empty($_SESSION['is_admin']))) {
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
     exit;
 }

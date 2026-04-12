@@ -33,6 +33,7 @@ SELECT
     fuel_capacity
 FROM vehicles
 WHERE status='available'
+AND id NOT IN (SELECT vehicle_id FROM bookings WHERE status != 'cancelled' AND end_date >= CURDATE())
 LIMIT 3
 ";
 $gallery_result = $conn->query($gallery_sql);
