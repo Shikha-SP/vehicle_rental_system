@@ -287,3 +287,19 @@ body {
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
+
+.field-error {
+    display: block;
+    color: #ff8080;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-top: 6px;
+    padding-left: 2px;
+}
+
+/* Highlight the input that has an error */
+.input-field.input-error {
+    box-shadow: 0 0 0 1.5px rgba(224, 48, 48, 0.6);
+    background-color: rgba(224, 48, 48, 0.07);
+}

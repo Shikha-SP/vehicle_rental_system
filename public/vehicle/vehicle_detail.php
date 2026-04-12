@@ -106,12 +106,13 @@ include '../../includes/header.php';
                         <span class="period">/ day</span>
                     </div>
                 </div>
-
+<!-- /Applications/XAMPP/xamppfiles/htdocs/vehicle_rental_collab_project/public/payment/paymentdetail.php -->
                 <form method="POST" action="../payment/paymentdetail.php" class="booking-form">
                     <input type="hidden" name="action" value="init_payment">
                     <input type="hidden" name="vehicle_id" value="<?= $id ?>">
                     <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
 
+                    
                     <div class="form-group">
                         <label>Pick-up Date</label>
                         <input type="date" name="pickup_date" min="<?= date('Y-m-d') ?>" value="<?= $def_pickup ?>" required>
@@ -162,6 +163,12 @@ document.addEventListener('DOMContentLoaded', () => {
             displayDays.innerText = diffDays;
             displayTotal.innerText = 'NPR ' + total.toLocaleString();
             displayGrand.innerText = 'NPR ' + total.toLocaleString();
+
+            // Send diffDays to paymentdetail.php via hidden field
+            const daysHiddenField = document.getElementById('booking-days');
+            if (daysHiddenField) {
+                daysHiddenField.value = diffDays;
+            }
         }
     }
 
