@@ -39,8 +39,7 @@ $stmt->bind_param("i", $vehicle_id);
 $stmt->execute();
 $vehicle = $stmt->get_result()->fetch_assoc();
 
-$basicprice = 500;
-$totalprice = ($vehicle['price_per_day'] * $days) + $basicprice;
+$totalprice = ($vehicle['price_per_day'] * $days);
 
 // Only validate when submitting payment fields
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
@@ -88,20 +87,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
         $user_id = $_SESSION['user_id'] ?? null;
         if (!$user_id) die("User not logged in.");
 
-        $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, created_at)
-                       VALUES (?, ?, ?, ?, ?, 'confirmed', NOW())";
-        $insert_stmt = $conn->prepare($insert_sql);
-        $insert_stmt->bind_param("iissd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $totalprice);
+        // FINAL AVAILABILITY CHECK: Ensure no overlapping bookings exist for this vehicle
+        $check_sql = "SELECT id FROM bookings 
+                      WHERE vehicle_id = ? 
+                      AND (start_date <= ? AND end_date >= ?)";
+        $check_stmt = $conn->prepare($check_sql);
+        $check_stmt->bind_param("iss", $vehicle_id, $dropoff_date, $pickup_date);
+        $check_stmt->execute();
+        $overlap = $check_stmt->get_result()->fetch_assoc();
 
-        if ($insert_stmt->execute()) {
-            $booking_id = $insert_stmt->insert_id;
-            // Clear session payment data
-            unset($_SESSION['payment_vehicle_id'], $_SESSION['payment_pickup'],
-                  $_SESSION['payment_dropoff'],    $_SESSION['payment_days']);
-            header("Location: bookingconfirmed.php?id=" . $booking_id);
-            exit;
+        if ($overlap) {
+            $errors['overlap'] = "This vehicle has just been booked by someone else for these dates. Please choose another vehicle or different dates.";
         } else {
-            $errors['database'] = "Failed to create booking. Please try again.";
+            $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, created_at)
+                           VALUES (?, ?, ?, ?, ?, 'confirmed', NOW())";
+            $insert_stmt = $conn->prepare($insert_sql);
+            $insert_stmt->bind_param("iissd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $totalprice);
+
+            if ($insert_stmt->execute()) {
+                $booking_id = $insert_stmt->insert_id;
+                // Clear session payment data
+                unset($_SESSION['payment_vehicle_id'], $_SESSION['payment_pickup'],
+                      $_SESSION['payment_dropoff'],    $_SESSION['payment_days']);
+                header("Location: bookingconfirmed.php?id=" . $booking_id);
+                exit;
+            } else {
+                $errors['database'] = "Failed to create booking. Please try again.";
+            }
         }
     }
 }
@@ -266,18 +278,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                 <p class="price-breakdown-label">Price Breakdown</p>
 
                 <div class="price-row">
-                    <span class="price-row-name">Daily Rate (NPR<?= htmlspecialchars($vehicle['price_per_day']) ?> ×
-                        <?= $days ?>)</span>
-                    <!-- <span class="price-row-amount">NPR 3,750.00</span> -->
-                    <span class="price-row-amount"><?= htmlspecialchars($vehicle['price_per_day']) ?></span>
+                    <span class="price-row-name">Daily Rate (NPR <?= number_format($vehicle['price_per_day'], 0) ?> × <?= $days ?>)</span>
+                    <span class="price-row-amount">NPR <?= number_format($vehicle['price_per_day'] * $days, 0) ?></span>
                 </div>
                 <div class="price-row">
-                    <span class="price-row-name">Insurance & Protection</span>
-                    <span class="price-row-amount">NPR 350.00</span>
-                </div>
-                <div class="price-row">
-                    <span class="price-row-name">Premium Handling Fee</span>
-                    <span class="price-row-amount">NPR 150.00</span>
+                    <span class="price-row-name">Service Fee</span>
+                    <span class="price-row-amount">INCLUDED</span>
                 </div>
 
                 <hr class="price-divider" />
@@ -285,8 +291,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                 <!-- Total -->
                 <div class="total-row">
                     <span class="total-label">Total Due</span>
-                    <span class="total-amount">NPR
-                        <?= number_format($vehicle['price_per_day'] * $days + $basicprice, 0) ?></span>
+                    <span class="total-amount">NPR <?= number_format($totalprice, 0) ?></span>
                 </div>
 
                 <!-- Spec Badges -->
@@ -316,8 +321,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                     <!-- <span class="notice-icon">ℹ️</span> -->
                     <i class="fa-solid fa-circle-info notice-icon"></i>
                     <p class="notice-text">
-                        Free cancellation until 48 hours prior to pickup. A security deposit
-                        of NPR 500 will be held during the rental period.
+                        Free cancellation until 72 hours (3 days) prior to pickup.
+                        The total amount is due upon booking to secure your reservation.
                     </p>
                 </div>
 
