@@ -65,7 +65,7 @@ body {
   gap: 16px;
   margin-top: 8px;
 }
-.btn {
+.btnn {
   padding: 16px 28px;
   font-size: 13px;
   font-weight: 800;
@@ -76,12 +76,15 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
-.btn-primary {
+.btnn-primary {
+  display: inline-block;
+  text-decoration: none;
   background-color: #d03530;
   color: #ffffff;
 }
-.btn-secondary {
+.btnn-secondary {
+  display: inline-block;
+  text-decoration: none;
   background-color: #2a2a2a;
   color: #cccccc;
 }

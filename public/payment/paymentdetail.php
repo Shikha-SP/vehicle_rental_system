@@ -40,7 +40,9 @@ $stmt->execute();
 $vehicle = $stmt->get_result()->fetch_assoc();
 
 $basicprice = 500;
-$totalprice = ($vehicle['price_per_day'] * $days) + $basicprice;
+$price_per_day = (float)$vehicle['price_per_day'];
+$totalprice = ($price_per_day * $days) + $basicprice;
+
 
 // Only validate when submitting payment fields
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
@@ -102,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
             exit;
         } else {
             $errors['database'] = "Failed to create booking. Please try again.";
-        }
+        } 
     }
 }
 ?>
@@ -115,6 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
     <meta charset="UTF-8">
     <script src="https://kit.fontawesome.com/ac1574deb1.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../../assets/css/paymentdetail.css">
+    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
+      <link rel="stylesheet" href="../../assets/css/footer.css">
     <title>Payment Details</title>
 </head>
 
@@ -327,6 +331,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
 
     </div>
 
+    <?php require '../../includes/footer.php'; ?>
 </body>
-
 </html>
