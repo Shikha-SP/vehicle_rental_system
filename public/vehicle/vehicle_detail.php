@@ -32,6 +32,16 @@ if (!$vehicle) {
 // Redirected to paymentdetail.php for final step
 $user_id = $_SESSION['user_id'] ?? null;
 
+// Check whether the current user already has an active confirmed booking for this vehicle
+$userBooking = false;
+if ($user_id) {
+    $booking_check_sql = "SELECT id FROM bookings WHERE user_id = ? AND vehicle_id = ? AND status = 'confirmed' AND end_date >= CURDATE() LIMIT 1";
+    $booking_check_stmt = $conn->prepare($booking_check_sql);
+    $booking_check_stmt->bind_param("ii", $user_id, $id);
+    $booking_check_stmt->execute();
+    $userBooking = (bool) $booking_check_stmt->get_result()->fetch_assoc();
+}
+
 // Default dates for preview
 $def_pickup = date('Y-m-d', strtotime('+1 day'));
 $def_dropoff = date('Y-m-d', strtotime('+3 days'));
@@ -106,37 +116,42 @@ include '../../includes/header.php';
                         <span class="period">/ day</span>
                     </div>
                 </div>
-<!-- /Applications/XAMPP/xamppfiles/htdocs/vehicle_rental_collab_project/public/payment/paymentdetail.php -->
-                <form method="POST" action="../payment/paymentdetail.php" class="booking-form">
-                    <input type="hidden" name="action" value="init_payment">
-                    <input type="hidden" name="vehicle_id" value="<?= $id ?>">
-                    <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
+                <?php if ($userBooking): ?>
+                    <div class="alert alert-success">You already have an active confirmed booking for this vehicle.</div>
+                    <button type="button" class="btn-book btn-booked" disabled>Booked</button>
+                    <p class="secure-note">View your booking history for full trip details.</p>
+                <?php else: ?>
+                    <form method="POST" action="../payment/paymentdetail.php" class="booking-form">
+                        <input type="hidden" name="action" value="init_payment">
+                        <input type="hidden" name="vehicle_id" value="<?= $id ?>">
+                        <input type="hidden" name="days" id="booking-days" value="<?= $def_days ?>">
+                        <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
 
-                    
-                    <div class="form-group">
-                        <label>Pick-up Date</label>
-                        <input type="date" name="pickup_date" min="<?= date('Y-m-d') ?>" value="<?= $def_pickup ?>" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Drop-off Date</label>
-                        <input type="date" name="dropoff_date" min="<?= date('Y-m-d', strtotime('+1 day')) ?>" value="<?= $def_dropoff ?>" required>
-                    </div>
-
-                    <div class="price-summary">
-                        <div class="summary-line">
-                            <span>Base Rate (<span id="summary-days"><?= $def_days ?></span> days)</span>
-                            <span id="summary-total">NPR <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
+                        <div class="form-group">
+                            <label>Pick-up Date</label>
+                            <input type="date" name="pickup_date" min="<?= date('Y-m-d') ?>" value="<?= $def_pickup ?>" required>
                         </div>
-                        <div class="summary-line total">
-                            <span>Total Estimated</span>
-                            <span id="summary-grand">NPR <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
-                        </div>
-                    </div>
 
-                    <button type="submit" class="btn-book">Book Now</button>
-                    <p class="secure-note">🛡️ Secure Payment & Insurance Covered</p>
-                </form>
+                        <div class="form-group">
+                            <label>Drop-off Date</label>
+                            <input type="date" name="dropoff_date" min="<?= date('Y-m-d', strtotime('+1 day')) ?>" value="<?= $def_dropoff ?>" required>
+                        </div>
+
+                        <div class="price-summary">
+                            <div class="summary-line">
+                                <span>Base Rate (<span id="summary-days"><?= $def_days ?></span> days)</span>
+                                <span id="summary-total">NPR <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
+                            </div>
+                            <div class="summary-line total">
+                                <span>Total Estimated</span>
+                                <span id="summary-grand">NPR <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-book">Book Now</button>
+                        <p class="secure-note">🛡️ Secure Payment & Insurance Covered</p>
+                    </form>
+                <?php endif; ?>
             </div>
         </aside>
     </div>
