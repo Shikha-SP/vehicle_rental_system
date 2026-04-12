@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Delete vehicle
     if ($action === 'delete_vehicle') {
         $cid = (int)$_POST['car_id'];
-        $activeRes   = $conn->query("SELECT COUNT(*) FROM bookings WHERE vehicle_id = $cid AND status IN ('pending','confirmed')");
+        $activeRes   = $conn->query("SELECT COUNT(*) FROM bookings WHERE vehicle_id = $cid");
         $activeCount = $activeRes->fetch_row()[0];
 
         if ($activeCount > 0) {
@@ -131,7 +131,7 @@ if ($carsRes) {
 }
 
 $activePerCar = [];
-$cRes = $conn->query("SELECT vehicle_id, COUNT(*) AS cnt FROM bookings WHERE status IN ('pending','confirmed') GROUP BY vehicle_id");
+$cRes = $conn->query("SELECT vehicle_id, COUNT(*) AS cnt FROM bookings WHERE status != 'cancelled' GROUP BY vehicle_id");
 if ($cRes) {
     while($r = $cRes->fetch_assoc()) {
         $activePerCar[$r['vehicle_id']] = (int)$r['cnt'];

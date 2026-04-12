@@ -33,7 +33,7 @@ for ($i = 29; $i >= 0; $i--) {
 $revRes = $conn->query("
     SELECT DATE(created_at) as d, SUM(total_price) as total 
     FROM bookings 
-    WHERE status != 'cancelled' AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND status != 'cancelled'
     GROUP BY DATE(created_at)
 ");
 if ($revRes) {
@@ -70,6 +70,7 @@ $topVRes = $conn->query("
     SELECT v.model, COUNT(b.id) as bookings 
     FROM vehicles v 
     JOIN bookings b ON v.id = b.vehicle_id 
+    WHERE b.status != 'cancelled'
     GROUP BY v.id 
     ORDER BY bookings DESC 
     LIMIT 5
@@ -192,7 +193,6 @@ require_once __DIR__ . '/../../includes/header.php';
                 <th>Vehicle</th>
                 <th>Client</th>
                 <th>Dates</th>
-                <th>Status</th>
                 <th>Amount</th>
               </tr>
             </thead>
@@ -222,7 +222,6 @@ require_once __DIR__ . '/../../includes/header.php';
                 <div class="tbl-main"><?= date('M d', strtotime($b['start_date'])) ?> - <?= date('M d', strtotime($b['end_date'])) ?></div>
                 <div class="tbl-sub"><?= $b['days'] ?> Days</div>
               </td>
-              <td><span class="badge b-<?= $b['status'] ?>"><?= ucfirst($b['status']) ?></span></td>
               <td class="tbl-price">NPR <?= number_format($b['total_price'], 2) ?></td>
             </tr>
             <?php endforeach; ?>

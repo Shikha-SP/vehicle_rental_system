@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Check the user's role and route them to the correct dashboard section
                 if ($user['is_admin']) {
-                    redirect('../admin/home_page.php'); // Send admin users to management portal
+                    redirect('../admin/dashboard.php'); // Send admin users to management portal
                 } else {
                     redirect('../user/home_page.php');  // Send normal drivers to standard portal
                 }
