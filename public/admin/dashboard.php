@@ -8,22 +8,22 @@ requireAdmin();
 $totalBookingsResult = $conn->query("SELECT COUNT(*) FROM bookings");
 $totalBookings = $totalBookingsResult ? $totalBookingsResult->fetch_row()[0] : 0;
 
-$totalRevenueResult = $conn->query("SELECT COALESCE(SUM(total_price), 0) FROM bookings WHERE status != 'cancelled'");
+$totalRevenueResult = $conn->query("SELECT COALESCE(SUM(total_price), 0) FROM bookings");
 $totalRevenue = $totalRevenueResult ? $totalRevenueResult->fetch_row()[0] : 0;
 
 $totalUsersResult = $conn->query("SELECT COUNT(*) FROM users");
 $totalUsers = $totalUsersResult ? $totalUsersResult->fetch_row()[0] : 0;
 
-$totalCarsResult = $conn->query("SELECT COUNT(*) FROM vehicles");
+$totalCarsResult = $conn->query("SELECT COUNT(*) FROM vehicles WHERE status IN ('available', 'rented', 'approved')");
 $totalCars = $totalCarsResult ? $totalCarsResult->fetch_row()[0] : 0;
 
-$availCarsResult = $conn->query("SELECT COUNT(*) FROM vehicles WHERE status = 'available' OR status = 'approved'");
+$availCarsResult = $conn->query("SELECT COUNT(*) FROM vehicles WHERE status = 'approved' AND id NOT IN (SELECT vehicle_id FROM bookings WHERE status != 'cancelled' AND end_date >= CURDATE())");
 $availCars = $availCarsResult ? $availCarsResult->fetch_row()[0] : 0;
 
 $pendingCarsResult = $conn->query("SELECT COUNT(*) FROM vehicles WHERE status = 'pending'");
 $pendingCars = $pendingCarsResult ? $pendingCarsResult->fetch_row()[0] : 0;
 
-$activeRentalsResult = $conn->query("SELECT COUNT(*) FROM bookings WHERE status != 'cancelled' AND start_date <= CURDATE() AND end_date >= CURDATE()");
+$activeRentalsResult = $conn->query("SELECT COUNT(*) FROM bookings WHERE status = 'confirmed'");
 $activeRentals = $activeRentalsResult ? $activeRentalsResult->fetch_row()[0] : 0;
 
 $checkoutsTodayResult = $conn->query("SELECT COUNT(*) FROM bookings WHERE status != 'cancelled' AND start_date = CURDATE()");
@@ -45,7 +45,7 @@ for ($i = 29; $i >= 0; $i--) {
 $revRes = $conn->query("
     SELECT DATE(created_at) as d, SUM(total_price) as total 
     FROM bookings 
-    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY) AND status != 'cancelled'
+    WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
     GROUP BY DATE(created_at)
 ");
 if ($revRes) {
@@ -140,14 +140,9 @@ require_once __DIR__ . '/../../includes/header.php';
           <!-- KPI Row -->
           <div class="kpi-row">
             <div class="kpi-card">
-              <div class="kpi-label">Total Revenue</div>
-              <div class="kpi-value">NPR <?= number_format($totalRevenue, 0) ?></div>
-              <div class="kpi-sub">Across all confirmed rentals</div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-label">Total Vehicles</div>
-              <div class="kpi-value"><?= $totalCars ?></div>
-              <div class="kpi-sub"><?= $availCars ?> currently available</div>
+              <div class="kpi-label">Active Bookings</div>
+              <div class="kpi-value"><?= $activeRentals ?></div>
+              <div class="kpi-sub">Confirmed & upcoming trips</div>
             </div>
             <div class="kpi-card">
               <div class="kpi-label">Total Bookings</div>
@@ -155,9 +150,14 @@ require_once __DIR__ . '/../../includes/header.php';
               <div class="kpi-sub">Lifetime transactions</div>
             </div>
             <div class="kpi-card">
-              <div class="kpi-label">Active Bookings</div>
-              <div class="kpi-value"><?= $activeRentals ?></div>
-              <div class="kpi-sub">Vehicles currently on rent</div>
+              <div class="kpi-label">Total Available Vehicles</div>
+              <div class="kpi-value"><?= $availCars ?></div>
+              <div class="kpi-sub">Ready for rental today</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">Total Vehicles</div>
+              <div class="kpi-value"><?= $totalCars ?></div>
+              <div class="kpi-sub">Booked + Available</div>
             </div>
           </div>
 

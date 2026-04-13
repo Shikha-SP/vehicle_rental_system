@@ -99,7 +99,7 @@ if (!$result) {
             <tr>
               <td>
                 <div class="tbl-item">
-                  <div class="tbl-img">
+                  <div class="tbl-img" style="width: 280px; height: 180px; border-radius: 8px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
                     <?php
                       $img = $vehicle['image_path'];
                       $src = (!empty($img) && strpos($img, 'http') === 0) ? $img : (!empty($img) ? '../../' . $img : '../../assets/images/car-placeholder.png');

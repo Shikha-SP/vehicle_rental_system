@@ -123,7 +123,7 @@ $availCarsResult = $conn->query("SELECT COUNT(*) FROM vehicles WHERE status = 'a
 $availCars = $availCarsResult ? $availCarsResult->fetch_row()[0] : 0;
 
 $cars = [];
-$carsRes = $conn->query("SELECT * FROM vehicles ORDER BY id ASC");
+$carsRes = $conn->query("SELECT v.*, u.is_admin FROM vehicles v LEFT JOIN users u ON v.user_id = u.id ORDER BY v.id ASC");
 if ($carsRes) {
     while($row = $carsRes->fetch_assoc()) {
         $cars[] = $row;
@@ -391,6 +391,7 @@ require_once __DIR__ . '/../../includes/header.php';
               <?php if ($ac > 0): ?> · <span style="color:var(--yellow)"><?= $ac ?> active booking<?= $ac > 1 ? 's' : '' ?></span><?php endif; ?>
             </div>
             <div class="fleet-card-actions">
+              <?php if (!isset($c['is_admin']) || $c['is_admin'] == 1): ?>
               <button class="btn btn-ghost btn-sm" style="flex:1"
                       onclick='openEditModal(<?= json_encode([
                           'id'          => $c['id'],
@@ -406,6 +407,12 @@ require_once __DIR__ . '/../../includes/header.php';
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
                 Edit
               </button>
+              <?php else: ?>
+              <button class="btn btn-ghost btn-sm" style="flex:1; opacity:0.5; cursor:not-allowed;" title="Cannot edit renter-owned vehicle" disabled>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                Renter
+              </button>
+              <?php endif; ?>
               <button class="btn btn-outline-red" style="flex:1"
                       <?= $ac > 0 ? 'disabled title="Cancel active bookings first"' : '' ?>
                       onclick="confirmDelete(<?= $c['id'] ?>,'<?= htmlspecialchars($c['model'], ENT_QUOTES) ?>')">

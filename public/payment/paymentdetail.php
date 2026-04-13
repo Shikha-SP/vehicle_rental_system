@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
 
         // FINAL AVAILABILITY CHECK: Ensure no overlapping bookings exist for this vehicle
         $check_sql = "SELECT id FROM bookings 
-                      WHERE vehicle_id = ? 
+                      WHERE vehicle_id = ? AND status != 'cancelled'
                       AND (start_date <= ? AND end_date >= ?)";
         $check_stmt = $conn->prepare($check_sql);
         $check_stmt->bind_param("iss", $vehicle_id, $dropoff_date, $pickup_date);
