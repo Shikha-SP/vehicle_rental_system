@@ -102,16 +102,14 @@ a {
     /* subtle lift */
 }
 
-/* Hero text overlay — bottom-left, sits above search bar */
+/* Hero text overlay — bottom-left */
 .hero-overlay {
     position: absolute;
     inset: 0;
-    bottom: calc(84px + 30px + 16px);
-    /* search bar height + bottom offset + gap */
     z-index: 2;
     display: flex;
     align-items: flex-end;
-    padding: 0 5% 44px 5%;
+    padding: 0 5% 60px 5%;
 }
 
 .hero-text {
@@ -181,152 +179,7 @@ a {
     border-color: rgba(255, 255, 255, 0.75);
 }
 
-/* =============================================================================
-   2. HERO SEARCH BAR  (inside hero, absolutely at bottom — yellow line)
-============================================================================= */
-/* Search bar — floating above bottom, narrower + taller for visibility */
-.hero-search-bar {
-    position: absolute;
-    bottom: 30px;
-    /* lifted above the bottom edge */
-    left: 7%;
-    right: 7%;
-    /* narrower than full-width */
-    z-index: 3;
-    display: flex;
-    align-items: stretch;
-    height: 84px;
-    /* taller = more noticeable */
-    background: rgba(8, 8, 8, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(230, 32, 32, 0.15);
-}
 
-/* Each field: icon + label/input stacked */
-.sb-field {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 0 20px;
-    gap: 10px;
-    min-width: 0;
-}
-
-.sb-icon {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    opacity: 0.9;
-}
-
-.sb-field-inner {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-    flex: 1;
-}
-
-.sb-field label {
-    font-size: 0.55rem;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    color: var(--accent-red);
-    text-transform: uppercase;
-    cursor: default;
-    white-space: nowrap;
-}
-
-.sb-field input,
-.sb-field select {
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #fff;
-    font-size: 0.82rem;
-    font-family: 'Inter', sans-serif;
-    width: 100%;
-    min-width: 0;
-}
-
-.sb-field input::placeholder {
-    color: #666;
-}
-
-.sb-field input[type="date"] {
-    color-scheme: dark;
-    color: #bbb;
-}
-
-.sb-field select {
-    color: #ccc;
-    cursor: pointer;
-    -webkit-appearance: none;
-    appearance: none;
-}
-
-.sb-field select option {
-    background: var(--card-bg);
-    color: #fff;
-}
-
-/* Date range: two date inputs side by side */
-.sb-date-range {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.sb-date-range input {
-    flex: 1;
-    min-width: 0;
-    font-size: 0.78rem;
-}
-
-.sb-date-sep {
-    color: #555;
-    font-size: 0.8rem;
-    flex-shrink: 0;
-}
-
-.sb-divider {
-    width: 1px;
-    background: #1e1e1e;
-    margin: 14px 0;
-    flex-shrink: 0;
-}
-
-/* Search button */
-.sb-search-btn {
-    padding: 0 36px;
-    background: var(--accent-red);
-    color: #fff;
-    border: none;
-    border-radius: 0 6px 6px 0;
-    /* matches right curve of search bar */
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.76rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    min-width: 120px;
-    transition: background 0.2s ease;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    /* space between search icon and SEARCH text */
-}
-
-.sb-search-btn:hover {
-    background: var(--accent-hover);
-}
 
 /* =============================================================================
    3. GALLERY SECTION
@@ -698,9 +551,15 @@ a {
 
 #showroom-map {
     width: 100%;
+    z-index: 1;
     height: 100%;
     min-height: 360px;
     border-radius: 2px;
+}
+
+/* 3. Ensure Leaflet controls don't fight the header */
+.leaflet-control-container {
+    z-index: 500 !important;
 }
 
 /* =============================================================================
@@ -709,40 +568,6 @@ a {
 @media (max-width: 960px) {
     .car-grid {
         flex-direction: column;
-    }
-
-    .hero-search-bar {
-        flex-wrap: wrap;
-        height: auto;
-        min-height: 84px;
-        padding: 8px 0;
-    }
-
-    .sb-field {
-        flex: 1 1 45%;
-        min-width: 150px;
-        padding: 10px 14px;
-    }
-
-    .sb-date-range {
-        flex-direction: column;
-        gap: 2px;
-    }
-
-    .sb-date-sep {
-        display: none;
-    }
-
-    .sb-divider {
-        display: none;
-    }
-
-    .sb-search-btn {
-        width: 100%;
-        height: 52px;
-        min-width: unset;
-        border-radius: 0 0 6px 6px;
-        /* bottom curve when stacked */
     }
 }
 
@@ -759,18 +584,6 @@ a {
     .hero-overlay {
         padding: 0 5% 48px;
         justify-content: flex-start;
-        bottom: calc(84px + 20px + 20px);
-        /* bar + bottom offset + gap */
-    }
-
-    .hero-search-bar {
-        bottom: 20px;
-        /* slightly less offset on mobile */
-        left: 4%;
-        right: 4%;
-        height: auto;
-        flex-wrap: wrap;
-        padding: 8px 0;
     }
 
     .hero-heading {
@@ -804,10 +617,6 @@ a {
 }
 
 @media (max-width: 480px) {
-    .sb-field {
-        flex: 1 1 100%;
-    }
-
     .hero-heading {
         font-size: 2rem;
     }
