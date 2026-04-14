@@ -297,3 +297,22 @@ header nav {
     margin-top: 8px;
   }
 }
+
+/* back button */
+
+.back 
+{
+    position: fixed;
+    top: 16px;
+    right: 24px;
+    text-decoration: none;
+    color: #6f6f6f;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    z-index: 999;
+}
+
+.back:hover {
+    color: #ffffff;
+}

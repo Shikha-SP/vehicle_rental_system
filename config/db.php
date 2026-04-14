@@ -90,6 +90,26 @@ CREATE TABLE IF NOT EXISTS password_resets (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 )");
 
+$conn->query("
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    booking_id INT NOT NULL,
+    user_id INT NOT NULL,
+
+    amount DECIMAL(10,2) NOT NULL,
+    payment_method VARCHAR(50) DEFAULT 'card',
+
+    card_last4 VARCHAR(4),         -- last 4 digits only (security)
+    card_type VARCHAR(20),         -- Visa, Mastercard
+
+    transaction_ref VARCHAR(100),  -- fake reference ID
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (booking_id) REFERENCES bookings(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);");
 // confirmation
-//echo "Database and tables are ready.";
+// echo "Database and tables are ready.";
 ?>
