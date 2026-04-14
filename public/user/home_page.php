@@ -21,10 +21,7 @@ include('../../config/db.php');
 include('../../includes/header.php');
 require_once('../../includes/functions.php');
 
-
-// ----------------------------------------------------------
 // Gallery vehicles — booking-safe version
-// ----------------------------------------------------------
 $gallery_sql = "
 SELECT 
     id, 
@@ -73,7 +70,7 @@ $brands_result = $conn->query($brands_sql);
         <div class="hero-gradient"></div>
 
         <div class="hero-car-img">
-            <img src="../../uploads/car.png" alt="Featured Vehicle">
+            <img src="../../assets/images/HomePageDiaplayCar.png" alt="Featured Vehicle">
         </div>
 
         <div class="hero-overlay">
@@ -114,69 +111,69 @@ $brands_result = $conn->query($brands_sql);
 
                 <?php if ($gallery_result && $gallery_result->num_rows > 0): ?>
 
-                    <?php while ($car = $gallery_result->fetch_assoc()): ?>
+                        <?php while ($car = $gallery_result->fetch_assoc()): ?>
 
-                        <?php
-                        $price = number_format((float) $car['price_per_day'], 0);
-                        $fuel = $car['fuel_capacity'] ? $car['fuel_capacity'] . ' L' : 'N/A';
-                        ?>
+                                <?php
+                                $price = number_format((float) $car['price_per_day'], 0);
+                                $fuel = $car['fuel_capacity'] ? $car['fuel_capacity'] . ' L' : 'N/A';
+                                ?>
 
-                        <div class="car-card">
+                                <div class="car-card">
 
-                            <div class="card-type-badge">
-                                <?php echo e(strtoupper($car['license_type'] ?? 'CAR')); ?>
-                            </div>
-
-
-                            <div class="card-img-wrapper">
-
-                                <?php if (!empty($car['image_path'])): ?>
-
-                                    <img src="../../uploads/<?php echo e($car['image_path']); ?>"
-                                        alt="<?php echo e($car['model']); ?>">
-
-                                <?php else: ?>
-
-                                    <div class="no-img">NO IMAGE</div>
-
-                                <?php endif; ?>
-
-                            </div>
+                                    <div class="card-type-badge">
+                                        <?php echo e(strtoupper($car['license_type'] ?? 'CAR')); ?>
+                                    </div>
 
 
-                            <div class="card-info">
+                                    <div class="card-img-wrapper">
 
-                                <h3>
-                                    <?php echo e($car['model']); ?>
-                                    <span class="badge">NEW</span>
-                                </h3>
+                                        <?php if (!empty($car['image_path'])): ?>
+
+                                                <img src="../../uploads/<?php echo e($car['image_path']); ?>"
+                                                    alt="<?php echo e($car['model']); ?>">
+
+                                        <?php else: ?>
+
+                                                <div class="no-img">NO IMAGE</div>
+
+                                        <?php endif; ?>
+
+                                    </div>
 
 
-                                <div class="card-specs-row">
-                                    <span class="spec-item">⛽ <?php echo e($fuel); ?></span>
+                                    <div class="card-info">
+
+                                        <h3>
+                                            <?php echo e($car['model']); ?>
+                                            <span class="badge">NEW</span>
+                                        </h3>
+
+
+                                        <div class="card-specs-row">
+                                            <span class="spec-item">⛽ <?php echo e($fuel); ?></span>
+                                        </div>
+
+
+                                        <div class="specs">
+                                            <span class="price">NPR <?php echo e($price); ?> /day</span>
+
+                                            <a href="booking.php?id=<?php echo (int) $car['id']; ?>" class="btn-rent">
+                                                RENT NOW
+                                            </a>
+
+                                        </div>
+
+                                    </div>
+
                                 </div>
 
-
-                                <div class="specs">
-                                    <span class="price">NPR <?php echo e($price); ?>/day ?>/day</span>
-
-                                    <a href="booking.php?id=<?php echo (int) $car['id']; ?>" class="btn-rent">
-                                        RENT NOW
-                                    </a>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    <?php endwhile; ?>
+                        <?php endwhile; ?>
 
                 <?php else: ?>
 
-                    <div class="no-vehicle-message">
-                        <p>No vehicles available at the moment.</p>
-                    </div>
+                        <div class="no-vehicle-message">
+                            <p>No vehicles available at the moment.</p>
+                        </div>
 
                 <?php endif; ?>
 
@@ -192,13 +189,13 @@ $brands_result = $conn->query($brands_sql);
                     while ($b = $brands_result->fetch_assoc()):
                         ?>
 
-                        <a href="search.php?license_type=<?php echo urlencode($b['license_type']); ?>" class="brand-tab">
+                                <a href="search.php?license_type=<?php echo urlencode($b['license_type']); ?>" class="brand-tab">
 
-                            <?php echo e(strtoupper($b['license_type'])); ?>
+                                    <?php echo e(strtoupper($b['license_type'])); ?>
 
-                        </a>
+                                </a>
 
-                        <?php
+                                <?php
                     endwhile;
 
                 endif;
