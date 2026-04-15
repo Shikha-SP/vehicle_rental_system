@@ -5,6 +5,7 @@ ini_set('display_errors', 1);
 require_once '../../config/db.php';
 require_once '../../config/mailer.php';
 require_once '../../includes/functions.php';
+require_once 'generate_invoice.php';
 
 session_start();
 
@@ -143,6 +144,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
 
             try
             {  
+                $invoice_data = [
+        'booking_id'    => $booking_id,
+        'first_name'    => $first_name,
+        'email'         => $email,
+        'model'         => $vehicle['model'],
+        'pickup_date'   => $pickup_date,
+        'dropoff_date'  => $dropoff_date,
+        'days'          => $days,
+        'price_per_day' => $vehicle['price_per_day'],
+        'total_price'   => $totalprice,
+    ];
+
+    $pdf_string = generateInvoicePDF($invoice_data);
+
                 // send mail
                 $mail = createMailer();
                 $mail->addAddress($email, $first_name . ' ' . $last_name);
@@ -150,18 +165,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                 $mail->isHTML(true);
                 $mail->Body = "
                             <p>Hi {$first_name},</p>
-                            <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
-                            <p>Pickup date: {$pickup_date}</p>
-                            <p>Dropoff date: {$dropoff_date}</p>
-                            <p>Total Paid: NPR $totalprice</p>
-                            <br>
-                            <p>Thank you for choosing TD Rentals 🚀</p>
-                            <br>
-                            <p>Best Regards,</p>
-                            <p>TD Rentals Team</p>
+        <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
+        <p>Pickup date: {$pickup_date}</p>
+        <p>Dropoff date: {$dropoff_date}</p>
+        <p>Total Paid: NPR $totalprice</p>
+        <p>Please find your invoice attached.</p>
+        <p>Thank you for choosing TD Rentals 🚀</p>
+        
+        <p>Best Regards,</p>
+        <p>TD Rentals Team</p>
 
                         ";
                 $mail->AltBody = "Hi {$first_name}, Your booking for {$vehicle['model']} is confirmed.";
+                // Attach PDF from string (no temp file needed)
+    $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
                 $mail->send();
             } catch (Exception $e) {
                 // Mail failed — log it, but don't block the booking
