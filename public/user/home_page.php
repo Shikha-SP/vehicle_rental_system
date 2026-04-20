@@ -13,12 +13,21 @@ if (!isset($_SESSION['user_id']) || (!empty($_SESSION['is_admin']))) {
     exit;
 }
 
-$username = $_SESSION['first_name'] ?? 'Guest';
-
 // DB + INCLUDES
 include('../../config/db.php');
 include('../../includes/header.php');
 require_once('../../includes/functions.php');
+
+$user_id = $_SESSION['user_id'];
+
+// Fetch user data for the welcome message
+$user_query = "SELECT first_name FROM users WHERE id = ?";
+$stmt = $conn->prepare($user_query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$user_result = $stmt->get_result();
+$user_data = $user_result->fetch_assoc();
+$username = $user_data['first_name'] ?? 'Guest';
 
 // Gallery vehicles — booking-safe version
 $gallery_sql = "
@@ -75,7 +84,7 @@ $brands_result = $conn->query($brands_sql);
         <div class="hero-overlay">
             <div class="hero-text">
                 <p class="hero-label">
-                    WELCOME BACK, <?php echo e(strtoupper($_SESSION['first_name'] ?? 'GUEST')); ?>
+                    WELCOME BACK, <?php echo e(strtoupper($username)); ?>
                 </p>
                 <h1 class="hero-heading">
                     ENGINEERED FOR<br>
