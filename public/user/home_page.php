@@ -5,7 +5,6 @@
  * File: public/user/Home.php
  * ==========================================================
  */
-
 session_start();
 
 // AUTH CHECK
@@ -47,16 +46,6 @@ LIMIT 3
 $gallery_result = $conn->query($gallery_sql);
 
 
-// ----------------------------------------------------------
-// License-type filter tabs
-// ----------------------------------------------------------
-$brands_sql = "
-SELECT DISTINCT license_type 
-FROM vehicles 
-ORDER BY license_type
-";
-
-$brands_result = $conn->query($brands_sql);
 ?>
 
 <link rel="stylesheet" href="../../assets/css/Homepage.css">
@@ -180,28 +169,7 @@ $brands_result = $conn->query($brands_sql);
             </div>
 
 
-            <!-- LICENSE TYPE FILTER BUTTONS -->
-            <div class="brand-filters">
 
-                <?php
-                if ($brands_result && $brands_result->num_rows > 0):
-
-                    while ($b = $brands_result->fetch_assoc()):
-                        ?>
-
-                                <a href="search.php?license_type=<?php echo urlencode($b['license_type']); ?>" class="brand-tab">
-
-                                    <?php echo e(strtoupper($b['license_type'])); ?>
-
-                                </a>
-
-                                <?php
-                    endwhile;
-
-                endif;
-                ?>
-
-            </div>
 
         </div>
     </section>
