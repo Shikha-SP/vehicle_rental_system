@@ -19,29 +19,17 @@ $booking = $stmt->get_result()->fetch_assoc();
 ?>
 
 
-<!DOCTYPE html>
-<html lang="en">
+<?php require_once '../../includes/header.php'; ?>
+<link rel="stylesheet" href="../../assets/css/bookingconfirmed.css">
+<script src="https://kit.fontawesome.com/ac1574deb1.js" crossorigin="anonymous"></script>
+<style>
+    /* make footer take 100% width */
+    .site-footer {
+        width: 100%;
+        box-sizing: border-box;
+    }
+</style>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://kit.fontawesome.com/ac1574deb1.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="../../assets/css/bookingconfirmed.css">
-    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
-    <link rel="stylesheet" href="../../assets/css/footer.css">
-    <title>Booking confirmed</title>
-    <style>
-        /* make footer take 100% width */
-        .site-footer {
-            width: 100%;
-            box-sizing: border-box;
-        }
-    </style>
-</head>
-
-<body>
-    <!-- header -->
-    <?php require '../../includes/paymentheader.php'; ?>
 
     <!-- MAIN CONTAINER -->
     <div class="container">

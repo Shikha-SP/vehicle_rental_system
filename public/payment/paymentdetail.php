@@ -200,20 +200,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
 ?>
 
 
-<!DOCTYPE html>
-<html lang="en">
+<?php require_once '../../includes/header.php'; ?>
+<link rel="stylesheet" href="../../assets/css/paymentdetail.css">
+<script src="https://kit.fontawesome.com/ac1574deb1.js" crossorigin="anonymous"></script>
 
-<head>
-    <meta charset="UTF-8">
-    <script src="https://kit.fontawesome.com/ac1574deb1.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="../../assets/css/paymentdetail.css">
-    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
-    <link rel="stylesheet" href="../../assets/css/footer.css">
-    <title>Payment Details</title>
-</head>
-
-<body>
-    <?php require '../../includes/paymentheader.php'; ?>
     <!-- Main Container -->
     <div id="payment-page">
 
