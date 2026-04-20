@@ -5,11 +5,6 @@ require_once '../../includes/functions.php';
 
 $booking_id = (int) ($_GET['id'] ?? 0);
 
-// if (!$booking_id) {
-//     die("Invalid booking.");
-// }
-
-// Fetch booking + vehicle info
 $sql = "
     SELECT b.*, v.model, v.image_path
     FROM bookings b
@@ -21,13 +16,6 @@ $stmt->bind_param("i", $booking_id);
 $stmt->execute();
 $booking = $stmt->get_result()->fetch_assoc();
 
-// bug
-// var_dump($booking);
-// exit;
-
-if (!$booking) {
-    die("Booking not found.");
-}
 ?>
 
 

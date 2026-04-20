@@ -142,21 +142,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
             $first_name = $user_data['first_name'] ?? '';
             $last_name = $user_data['last_name'] ?? '';
 
-            try
-            {  
+            try {
                 $invoice_data = [
-        'booking_id'    => $booking_id,
-        'first_name'    => $first_name,
-        'email'         => $email,
-        'model'         => $vehicle['model'],
-        'pickup_date'   => $pickup_date,
-        'dropoff_date'  => $dropoff_date,
-        'days'          => $days,
-        'price_per_day' => $vehicle['price_per_day'],
-        'total_price'   => $totalprice,
-    ];
+                    'booking_id' => $booking_id,
+                    'first_name' => $first_name,
+                    'email' => $email,
+                    'model' => $vehicle['model'],
+                    'pickup_date' => $pickup_date,
+                    'dropoff_date' => $dropoff_date,
+                    'days' => $days,
+                    'price_per_day' => $vehicle['price_per_day'],
+                    'total_price' => $totalprice,
+                ];
 
-    $pdf_string = generateInvoicePDF($invoice_data);
+                $pdf_string = generateInvoicePDF($invoice_data);
 
                 // send mail
                 $mail = createMailer();
@@ -178,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                         ";
                 $mail->AltBody = "Hi {$first_name}, Your booking for {$vehicle['model']} is confirmed.";
                 // Attach PDF from string (no temp file needed)
-    $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
+                $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
                 $mail->send();
             } catch (Exception $e) {
                 // Mail failed — log it, but don't block the booking
@@ -260,7 +259,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                             <label class="labels">Expiry Date</label><br>
                             <div class="expiry-dropdowns">
                                 <select name="expiry_month" id="expiry-month" class="input-field">
-                                    <option value="" disabled <?= empty($expiry_month) ? 'selected' : '' ?>>Month</option>
+                                    <option value="" disabled <?= empty($expiry_month) ? 'selected' : '' ?>>Month
+                                    </option>
                                     <?php for ($m = 1; $m <= 12; $m++): ?>
                                         <option value="<?= sprintf('%02d', $m) ?>" <?= ($expiry_month == sprintf('%02d', $m)) ? 'selected' : '' ?>>
                                             <?= date('F', mktime(0, 0, 0, $m, 1)) ?>
@@ -269,7 +269,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                                 </select>
                                 <select name="expiry_year" id="expiry-year" class="input-field">
                                     <option value="" disabled <?= empty($expiry_year) ? 'selected' : '' ?>>Year</option>
-                                    <?php for ($y = (int)date('Y'); $y <= (int)date('Y') + 10; $y++): ?>
+                                    <?php for ($y = (int) date('Y'); $y <= (int) date('Y') + 10; $y++): ?>
                                         <option value="<?= $y ?>" <?= ($expiry_year == $y) ? 'selected' : '' ?>>
                                             <?= $y ?>
                                         </option>
