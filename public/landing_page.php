@@ -2,17 +2,30 @@
 /**
  * ==========================================================
  * Landing Page (formerly landing-page.php)
- * File: public/user/Index.php
+ * File: public/landing_page.php
  * ==========================================================
  */
-include('../../config/db.php');
-include('../../includes/header.php');
-require_once('../../includes/functions.php');
+
+session_start();
+
+// Redirect if already logged in
+if (isset($_SESSION['user_id'])) {
+    if (!empty($_SESSION['is_admin'])) {
+        header("Location: admin/home_page.php");
+        exit;
+    } else {
+        header("Location: user/home_page.php");
+        exit;
+    }
+}
+include('../config/db.php');
+include('../includes/header.php');
+require_once('../includes/functions.php');
 ?>
 <!-- ======================================================
      External Stylesheets
 ====================================================== -->
-<link rel="stylesheet" href="../../assets/css/index.css">
+<link rel="stylesheet" href="../assets/css/index.css">
 
 <main class="dashboard-content">
     <!-- Hero Section -->
@@ -22,7 +35,7 @@ require_once('../../includes/functions.php');
 
         <!-- Hero Background Image (Uploaded car) -->
         <div class="hero-bg-wrapper">
-            <img src="../../assets/images/LandingPagedisplayCar.png" alt="Supercar hero background" class="hero-bg">
+            <img src="../assets/images/LandingPagedisplayCar.png" alt="Supercar hero background" class="hero-bg">
         </div>
 
         <div class="hero-content">
@@ -31,9 +44,9 @@ require_once('../../includes/functions.php');
             <p class="hero-desc">Beyond Transportation We Provide the key automotive excellence. Curated performance for
                 those who demand the pinnacle of engineering.</p>
             <div class="hero-buttons">
-                <a href="/vehicle_rental_system/public/authentication/login.php" class="btn btn-primary">SECURE THE
+                <a href="authentication/login.php" class="btn btn-primary">SECURE THE
                     FLEET</a>
-                <a href="/vehicle_rental_system/public/authentication/login.php" class="btn btn-secondary">EXPLORE
+                <a href="authentication/login.php" class="btn btn-secondary">EXPLORE
                     SPECS</a>
             </div>
         </div>
@@ -45,7 +58,7 @@ require_once('../../includes/functions.php');
         <div class="collections-grid">
             <!-- Item 1: Supercars -->
             <div class="collection-card card-tl">
-                <img src="../../assets/images/LandingPageD1.png" alt="Supercars image">
+                <img src="../assets/images/LandingPageD1.png" alt="Supercars image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: PERFORMANCE</span>
                     <h3 class="card-title">SUPERCARS</h3>
@@ -54,7 +67,7 @@ require_once('../../includes/functions.php');
 
             <!-- Item 2: Classics -->
             <div class="collection-card card-tr">
-                <img src="../../assets/images/LandingPageD2.png" alt="Classics image">
+                <img src="../assets/images/LandingPageD2.png" alt="Classics image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: HERITAGE</span>
                     <h3 class="card-title">CLASSICS</h3>
@@ -63,7 +76,7 @@ require_once('../../includes/functions.php');
 
             <!-- Item 3: Luxury SUVs -->
             <div class="collection-card card-bl">
-                <img src="../../assets/images/LandingPageD3.png" alt="Luxury SUVs image">
+                <img src="../assets/images/LandingPageD3.png" alt="Luxury SUVs image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: POWER</span>
                     <h3 class="card-title">LUXURY SUVS</h3>
@@ -72,7 +85,7 @@ require_once('../../includes/functions.php');
 
             <!-- Item 4: Custom Fleet -->
             <div class="collection-card card-br">
-                <img src="../../assets/images/LandingPageD4.png" alt="Custom Fleet image">
+                <img src="../assets/images/LandingPageD4.png" alt="Custom Fleet image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: BESPOKE</span>
                     <h3 class="card-title">CUSTOM SELECTION</h3>
@@ -116,7 +129,7 @@ require_once('../../includes/functions.php');
         <h2 class="section-heading text-center">OUR GLOBAL FOOTPRINT</h2>
 
         <div class="map-container">
-            <img src="../../assets/images/LandingPageMap.png" alt="World Map Silhouette">
+            <img src="../assets/images/LandingPageMap.png" alt="World Map Silhouette">
             <div class="map-dots">
                 <!-- Example geographic pins (using percentage positioning) -->
                 <div class="dot" style="top: 35%; left: 22%;"></div> <!-- North America -->
@@ -150,12 +163,12 @@ require_once('../../includes/functions.php');
                 pinnacle of velocity.</p>
         </div>
         <div class="cta-action-area">
-            <a href="/vehicle_rental_system/public/authentication/login.php" class="btn btn-white">DISCOVER CARS</a>
+            <a href="authentication/login.php" class="btn btn-white">DISCOVER CARS</a>
         </div>
         <!-- Decorative background element for CTA -->
         <!-- Since we don't have brake-caliper.png, using a pure CSS/styled approach or generic bg might be better, but adding the tag to fulfill structure -->
-        <img src="../../uploads/cal.png" alt="Brake Caliper Decor" class="cta-bg-image">
+        <img src="../uploads/cal.png" alt="Brake Caliper Decor" class="cta-bg-image">
     </section>
 </main>
 
-<?php include('../../includes/footer.php'); ?>
+<?php include('../includes/footer.php'); ?>
