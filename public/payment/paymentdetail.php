@@ -76,9 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
     if (empty($cardnumber)) {
         $errors['cardnumber'] = "Card number is required.";
     } elseif (!preg_match('/^\d{16}$/', $cardnumber_clean)) {
-        $errors['cardnumber'] = "Card number must be 16 digits.";
+        $errors['cardnumber'] = "Card number should be exactly 16 digits long.";
     } elseif (!isValidLuhn($cardnumber_clean)) {
-        $errors['cardnumber'] = "Invalid card number.";
+        $errors['cardnumber'] = "Invalid card number. Please check for typos and enter a valid 16-digit number.";
     }
 
     $card_type = getCardType($cardnumber_clean);

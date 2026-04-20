@@ -18,10 +18,9 @@ if (isset($_SESSION['user_id'])) {
         exit;
     }
 }
-
-include('../config/db.php');           // From public/ to config/
-include('../includes/header.php');      // From public/ to includes/
-require_once('../includes/functions.php'); // From public/ to includes/
+include('../config/db.php');
+include('../includes/header.php');
+require_once('../includes/functions.php');
 ?>
 <!-- ======================================================
      External Stylesheets
@@ -36,16 +35,19 @@ require_once('../includes/functions.php'); // From public/ to includes/
 
         <!-- Hero Background Image (Uploaded car) -->
         <div class="hero-bg-wrapper">
-            <img src="../uploads/hero-car.png" alt="Supercar hero background" class="hero-bg">
+            <img src="../assets/images/LandingPagedisplayCar.png" alt="Supercar hero background" class="hero-bg">
         </div>
 
         <div class="hero-content">
             <h4 class="hero-subtitle">ENGINEERED FOR ADRENALINE</h4>
             <h1 class="hero-title">THE <span class="text-red">KINETIC</span><br>GALLERY.</h1>
-            <p class="hero-desc">Beyond Transportation We Provide the key automotive excellence. Curated performance for those who demand the pinnacle of engineering.</p>
+            <p class="hero-desc">Beyond Transportation We Provide the key automotive excellence. Curated performance for
+                those who demand the pinnacle of engineering.</p>
             <div class="hero-buttons">
-                <a href="authentication/login.php" class="btn btn-primary">BOOK YOUR RIDE</a>
-                <a href="authentication/login.php" class="btn btn-secondary">EXPLORE SPECS</a>
+                <a href="authentication/login.php" class="btn btn-primary">SECURE THE
+                    FLEET</a>
+                <a href="authentication/login.php" class="btn btn-secondary">EXPLORE
+                    SPECS</a>
             </div>
         </div>
     </header>
@@ -56,7 +58,7 @@ require_once('../includes/functions.php'); // From public/ to includes/
         <div class="collections-grid">
             <!-- Item 1: Supercars -->
             <div class="collection-card card-tl">
-                <img src="../uploads/car1.png" alt="Supercars image">
+                <img src="../assets/images/LandingPageD1.png" alt="Supercars image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: PERFORMANCE</span>
                     <h3 class="card-title">SUPERCARS</h3>
@@ -65,7 +67,7 @@ require_once('../includes/functions.php'); // From public/ to includes/
 
             <!-- Item 2: Classics -->
             <div class="collection-card card-tr">
-                <img src="../uploads/car2.png" alt="Classics image">
+                <img src="../assets/images/LandingPageD2.png" alt="Classics image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: HERITAGE</span>
                     <h3 class="card-title">CLASSICS</h3>
@@ -74,7 +76,7 @@ require_once('../includes/functions.php'); // From public/ to includes/
 
             <!-- Item 3: Luxury SUVs -->
             <div class="collection-card card-bl">
-                <img src="../uploads/car3.png" alt="Luxury SUVs image">
+                <img src="../assets/images/LandingPageD3.png" alt="Luxury SUVs image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: POWER</span>
                     <h3 class="card-title">LUXURY SUVS</h3>
@@ -83,7 +85,7 @@ require_once('../includes/functions.php'); // From public/ to includes/
 
             <!-- Item 4: Custom Fleet -->
             <div class="collection-card card-br">
-                <img src="../uploads/car4.png" alt="Custom Fleet image">
+                <img src="../assets/images/LandingPageD4.png" alt="Custom Fleet image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: BESPOKE</span>
                     <h3 class="card-title">CUSTOM SELECTION</h3>
@@ -98,7 +100,8 @@ require_once('../includes/functions.php'); // From public/ to includes/
         <div class="feature-card border-accent">
             <div class="feature-icon"><i class="fa-solid fa-gauge-high"></i></div>
             <h3 class="feature-title">24/7 CONCIERGE</h3>
-            <p class="feature-desc">Personal liaison for logistics, route planning, and dedicated support across all time zones.</p>
+            <p class="feature-desc">Personal liaison for logistics, route planning, and dedicated support across all
+                time zones.</p>
             <span class="feature-number">01</span>
         </div>
 
@@ -106,7 +109,8 @@ require_once('../includes/functions.php'); // From public/ to includes/
         <div class="feature-card border-accent">
             <div class="feature-icon"><i class="fa-solid fa-earth-americas"></i></div>
             <h3 class="feature-title">GLOBAL NETWORK</h3>
-            <p class="feature-desc">Inter-connected hubs in major capitals ensuring your preferred machine is always waiting.</p>
+            <p class="feature-desc">Inter-connected hubs in major capitals ensuring your preferred machine is always
+                waiting.</p>
             <span class="feature-number">02</span>
         </div>
 
@@ -114,7 +118,8 @@ require_once('../includes/functions.php'); // From public/ to includes/
         <div class="feature-card border-accent">
             <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
             <h3 class="feature-title">Track Ready</h3>
-            <p class="feature-desc">Every vehicle is meticulously maintained by master technicians to factory-fresh performance standards.</p>
+            <p class="feature-desc">Every vehicle is meticulously maintained by master technicians to factory-fresh
+                performance standards.</p>
             <span class="feature-number">03</span>
         </div>
     </section>
@@ -124,7 +129,7 @@ require_once('../includes/functions.php'); // From public/ to includes/
         <h2 class="section-heading text-center">OUR GLOBAL FOOTPRINT</h2>
 
         <div class="map-container">
-            <img src="../uploads/map-bg.png" alt="World Map Silhouette">
+            <img src="../assets/images/LandingPageMap.png" alt="World Map Silhouette">
             <div class="map-dots">
                 <!-- Example geographic pins (using percentage positioning) -->
                 <div class="dot" style="top: 35%; left: 22%;"></div> <!-- North America -->
@@ -154,12 +159,14 @@ require_once('../includes/functions.php'); // From public/ to includes/
     <section class="cta">
         <div class="cta-content">
             <h2 class="cta-title">READY FOR THE <br>THROTTLE?</h2>
-            <p class="cta-desc">Join the inner circle of the world's most exclusive driving club. Experience the pinnacle of velocity.</p>
+            <p class="cta-desc">Join the inner circle of the world's most exclusive driving club. Experience the
+                pinnacle of velocity.</p>
         </div>
         <div class="cta-action-area">
             <a href="authentication/login.php" class="btn btn-white">DISCOVER CARS</a>
         </div>
         <!-- Decorative background element for CTA -->
+        <!-- Since we don't have brake-caliper.png, using a pure CSS/styled approach or generic bg might be better, but adding the tag to fulfill structure -->
         <img src="../uploads/cal.png" alt="Brake Caliper Decor" class="cta-bg-image">
     </section>
 </main>
