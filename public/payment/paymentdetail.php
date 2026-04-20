@@ -273,7 +273,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
 
                         <div class="form-group">
                             <label for="cvv">CVV / CVC</label><br>
-                            <input type="password" name="cvv" id="cvv" class="input-field" placeholder="***">
+                            <input type="password" name="cvv" id="cvv" class="input-field" placeholder="***" 
+                                maxlength="3" pattern="\d{3}" inputmode="numeric" required>
                             <?php if (!empty($errors['cvv'])): ?>
                                 <span class="field-error"><?= e($errors['cvv']) ?></span>
                             <?php endif; ?>
@@ -308,7 +309,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                         <div class="form-group">
                             <label for="zip" class="labels">Zip Code</label><br>
                             <input type="text" name="zip" id="zip" class="input-field" placeholder="44600"
-                                value="<?php echo htmlspecialchars($zip ?? ''); ?>">
+                                value="<?php echo htmlspecialchars($zip ?? ''); ?>"
+                                maxlength="5" pattern="\d{5}" inputmode="numeric" required>
                             <?php if (!empty($errors['zip'])): ?>
                                 <span class="field-error"><?= e($errors['zip']) ?></span>
                             <?php endif; ?>
@@ -437,8 +439,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
             value = value.substring(0, 16);
             this.value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
         });
-
-
+ 
+        // Restrict CVV to 3 digits
+        const cvvInput = document.getElementById('cvv');
+        cvvInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').substring(0, 3);
+        });
+ 
+        // Restrict Zip to 5 digits
+        const zipInput = document.getElementById('zip');
+        zipInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').substring(0, 5);
+        });
     </script>
 </body>
 
