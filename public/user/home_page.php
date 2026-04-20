@@ -220,12 +220,12 @@ $brands_result = $conn->query($brands_sql);
         <div class="container banner-flex">
 
             <div class="banner-text">
-                <h3>JOIN TD ELITE CLUB</h3>
-                <p>Get exclusive access to hypercars and premium service.</p>
+                <h3>Rent your vehicle</h3>
+                <p>Rent your vehicle and earn some money</p>
             </div>
 
-            <a href="signup.php" class="btn-white-outline">
-                Apply For Membership
+            <a href="../renter/list_car.php" class="btn-white-outline">
+                Rent and earn
             </a>
 
         </div>
