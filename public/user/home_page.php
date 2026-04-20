@@ -5,7 +5,6 @@
  * File: public/user/Home.php
  * ==========================================================
  */
-
 session_start();
 
 // AUTH CHECK
@@ -31,7 +30,7 @@ SELECT
     price_per_day, 
     fuel_capacity
 FROM vehicles
-WHERE status = 'available'
+WHERE status = 'approved'
 AND id NOT IN (
     SELECT vehicle_id 
     FROM bookings 
@@ -127,11 +126,11 @@ $brands_result = $conn->query($brands_sql);
 
                                     <div class="card-img-wrapper">
 
-                                        <?php if (!empty($car['image_path'])): ?>
-
-                                                <img src="../../uploads/<?php echo e($car['image_path']); ?>"
-                                                    alt="<?php echo e($car['model']); ?>">
-
+                                        <?php if (!empty($car['image_path'])): 
+                                            $imgPath = $car['image_path'];
+                                            $imgSrc = (strpos($imgPath, 'http') === 0) ? $imgPath : '../../' . $imgPath;
+                                        ?>
+                                                <img src="<?php echo e($imgSrc); ?>" alt="<?php echo e($car['model']); ?>">
                                         <?php else: ?>
 
                                                 <div class="no-img">NO IMAGE</div>
@@ -189,7 +188,7 @@ $brands_result = $conn->query($brands_sql);
                     while ($b = $brands_result->fetch_assoc()):
                         ?>
 
-                                <a href="search.php?license_type=<?php echo urlencode($b['license_type']); ?>" class="brand-tab">
+                                <a href="../vehicle/vehicles.php?license_type=<?php echo urlencode($b['license_type']); ?>" class="brand-tab">
 
                                     <?php echo e(strtoupper($b['license_type'])); ?>
 
@@ -202,7 +201,6 @@ $brands_result = $conn->query($brands_sql);
                 ?>
 
             </div>
-
         </div>
     </section>
 
