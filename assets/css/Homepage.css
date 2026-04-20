@@ -1,7 +1,6 @@
 /* =============================================================================
    Homepage.css — Vehicle Rental System
    Design: Cinematic dark theme, red accent var(--accent-red)
-   Matching reference layout exactly.
 ============================================================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -242,12 +241,11 @@ a {
     position: relative;
     display: flex;
     flex-direction: column;
-    transition: border-color 0.25s ease, transform 0.25s ease;
+    transition: border-color 0.25s ease;
 }
 
 .car-card:hover {
     border-color: var(--accent-red);
-    transform: translateY(-4px);
 }
 
 /* Type badge (DB: type field) */
@@ -280,11 +278,13 @@ a {
     width: 100%;
     max-height: 155px;
     object-fit: contain;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, filter 0.3s ease;
 }
 
 .car-card:hover .card-img-wrapper img {
-    transform: scale(1.03);
+    transform: scale(1.5);
+    /* Increase this number to zoom more 3 display car */
+    filter: drop-shadow(0 0 12px rgba(230, 32, 32, 0.6));
 }
 
 .no-img {
