@@ -24,7 +24,9 @@ $color        = isset($_GET['color'])        ? trim($_GET['color'])      : '';
 $sql = "SELECT v.*, COALESCE(u.first_name, 'Admin') AS first_name, u.email 
         FROM vehicles v 
         LEFT JOIN users u ON v.user_id = u.id 
-        WHERE v.status = 'approved'";
+        WHERE v.status = 'approved'
+        AND v.id NOT IN (SELECT vehicle_id FROM bookings WHERE status != 'cancelled' AND end_date >= CURDATE())
+        ";
 
 $conditions = [];
 $param_types = "";
