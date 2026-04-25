@@ -1,0 +1,52 @@
+# ----------------------
+# Composer
+# ----------------------
+/vendor/
+
+# ----------------------
+# Environment / Config
+# ----------------------
+.env
+.env.*
+/config/*.local.php
+
+# ----------------------
+# User uploads / runtime files
+# ----------------------
+uploads/
+
+# ----------------------
+# System files (Mac / Windows)
+# ----------------------
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# ----------------------
+# Logs
+# ----------------------
+*.log
+*.tmp
+
+# ----------------------
+# Node (if you ever use it)
+# ----------------------
+node_modules/
+
+# ----------------------
+# IDE / Editor files
+# ----------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ----------------------
+# OS generated files
+# ----------------------
+Desktop.ini
+
+# ----------------------
+# Git merge / temp files
+# ----------------------
+*.orig

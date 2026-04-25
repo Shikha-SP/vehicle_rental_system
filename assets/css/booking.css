@@ -1,0 +1,257 @@
+/* ============================================================
+   TD RENTALS — Payment & Booking Styles
+   Premium High-End Visuals
+   ============================================================ */
+
+.payment-page {
+    padding: 3rem 0 6rem;
+    background: var(--clr-bg);
+}
+
+.payment-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+/* ── Left Side: Form ── */
+.section-header {
+    margin-bottom: 2.5rem;
+}
+
+.section-header h2 {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+}
+
+.section-header p {
+    color: var(--clr-muted);
+    font-size: 16px;
+}
+
+/* ── Card UI ── */
+.card-display {
+    width: 100%;
+    max-width: 440px;
+    height: 250px;
+    background: linear-gradient(135deg, #1d1d1d 0%, #111 100%);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    position: relative;
+    margin-bottom: 3rem;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+}
+
+.card-display::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(232, 25, 44, 0.15) 0%, transparent 70%);
+}
+
+.card-chip {
+    width: 50px;
+    height: 38px;
+    background: linear-gradient(135deg, #ffd700 0%, #b8860b 100%);
+    border-radius: 6px;
+    margin-bottom: 2rem;
+}
+
+.card-number {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 24px;
+    letter-spacing: 0.15em;
+    color: #fff;
+    margin-bottom: 2rem;
+}
+
+.card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.card-bottom label {
+    display: block;
+    font-size: 9px;
+    color: var(--clr-muted);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+}
+
+.card-bottom div {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.card-brand {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 20px;
+    opacity: 0.8;
+}
+
+/* ── Form ── */
+.payment-form .form-row {
+    margin-bottom: 1.5rem;
+}
+
+.payment-form .col-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.payment-form .form-group label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--clr-muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.1em;
+}
+
+.payment-form input {
+    width: 100%;
+    background: #111;
+    border: 1px solid var(--clr-border);
+    padding: 14px;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.payment-form input:focus {
+    border-color: var(--clr-accent);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(232,25,44,0.1);
+}
+
+.btn-pay {
+    width: 100%;
+    background: var(--clr-accent);
+    color: #fff;
+    border: none;
+    padding: 18px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 1rem;
+}
+
+.btn-pay:hover {
+    background: var(--clr-accent-hv);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+.encryption-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--clr-muted);
+    margin-top: 1.5rem;
+}
+
+/* ── Right Side: Summary ── */
+.summary-card {
+    background: #111;
+    border: 1px solid var(--clr-border);
+    padding: 2rem;
+    border-radius: 12px;
+    position: sticky;
+    top: 100px;
+}
+
+.summary-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--clr-border);
+    padding-bottom: 1rem;
+}
+
+.vehicle-mini {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.vehicle-mini img {
+    width: 80px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.vehicle-mini strong { display: block; font-size: 16px; }
+.vehicle-mini span { font-size: 12px; color: var(--clr-muted); }
+
+.summary-details {
+    padding: 1.5rem 0;
+    border-top: 1px dashed var(--clr-border);
+    border-bottom: 1px dashed var(--clr-border);
+}
+
+.detail-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 14px;
+}
+
+.detail-line:last-child { margin-bottom: 0; }
+.detail-line span { color: var(--clr-muted); }
+
+.price-breakdown {
+    padding-top: 1.5rem;
+}
+
+.price-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.price-line.grand-total {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--clr-border);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--clr-accent);
+}
+
+/* ── Mobile ── */
+@media (max-width: 1000px) {
+    .payment-grid {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+    .summary-sidebar { order: -1; }
+    .summary-card { position: static; }
+}

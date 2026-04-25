@@ -1,0 +1,425 @@
+/* ============================================================
+   TD RENTALS — SETTINGS PAGE
+   Dark automotive theme matching login.css
+   ============================================================ */
+
+/* Settings Container */
+.settings-page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 24px;
+    position: relative;
+    z-index: 10;
+}
+
+/* Settings Header */
+.settings-page-header {
+    margin-bottom: 48px;
+}
+
+.settings-page-header__rule {
+    width: 48px;
+    height: 3px;
+    background: var(--clr-accent);
+    border-radius: 2px;
+    margin-bottom: 20px;
+}
+
+.settings-page-header h1 {
+    /* font-family: var(--font-display); */
+    font-weight: 800;
+    font-size: 48px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.settings-page-header h1 span {
+    color: var(--clr-accent);
+}
+
+.settings-page-header p {
+    color: var(--clr-muted);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* Settings Grid Layout */
+.settings-page-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 40px;
+}
+
+/* Sidebar Navigation */
+.settings-page-nav {
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.settings-page-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    color: var(--clr-muted);
+    text-decoration: none;
+    /* font-family: var(--font-display); */
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: all 0.22s ease;
+    border-left: 3px solid transparent;
+}
+
+.settings-page-nav-item i {
+    width: 20px;
+    font-size: 16px;
+}
+
+.settings-page-nav-item:hover {
+    background: rgba(232, 25, 44, 0.08);
+    color: var(--clr-text);
+}
+
+.settings-page-nav-item.active {
+    background: rgba(232, 25, 44, 0.12);
+    color: var(--clr-accent);
+    border-left-color: var(--clr-accent);
+}
+
+.settings-page-nav-item.delete-item {
+    color: #ff6b6b;
+}
+
+.settings-page-nav-item.delete-item:hover {
+    background: rgba(232, 25, 44, 0.12);
+}
+
+.settings-page-nav-item.delete-item.active {
+    background: rgba(232, 25, 44, 0.15);
+    color: #ff6b6b;
+}
+
+/* Settings Content Area */
+.settings-page-card {
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: 4px;
+    padding: 32px;
+}
+
+.settings-page-card h2 {
+    /* font-family: var(--font-display); */
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: 0.02em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.settings-page-card h2 i {
+    color: var(--clr-accent);
+    font-size: 24px;
+}
+
+.settings-page-card__sub {
+    color: var(--clr-muted);
+    font-size: 14px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--clr-border);
+}
+
+/* Form Styles */
+.settings-page-form-group {
+    margin-bottom: 24px;
+}
+
+.settings-page-form-group label {
+    display: block;
+    /* font-family: var(--font-display); */
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--clr-muted);
+    margin-bottom: 8px;
+}
+
+.settings-page-form-group input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--clr-border);
+    border-radius: 4px;
+    color: var(--clr-text);
+    /* font-family: var(--font-body); */
+    font-size: 15px;
+    padding: 14px 16px;
+    outline: none;
+    transition: all 0.22s ease;
+}
+
+.settings-page-form-group input:focus {
+    border-color: var(--clr-accent);
+    box-shadow: 0 0 0 3px rgba(232, 25, 44, 0.18);
+    background: #1a1a1a;
+}
+
+.settings-page-form-group input::placeholder {
+    color: #444;
+}
+
+.settings-page-form-group small {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--clr-muted);
+}
+
+/* Button Styles */
+.settings-page-btn-primary, 
+.settings-page-btn-secondary, 
+.settings-page-btn-danger {
+    padding: 14px 28px;
+    /* font-family: var(--font-display); */
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.settings-page-btn-primary {
+    background: linear-gradient(135deg, #c82020 0%, #e8192c 100%);
+    color: #fff;
+}
+
+.settings-page-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(232, 25, 44, 0.3);
+}
+
+.settings-page-btn-secondary {
+    background: transparent;
+    border: 1px solid var(--clr-border);
+    color: var(--clr-muted);
+    margin-left: 12px;
+}
+
+.settings-page-btn-secondary:hover {
+    border-color: var(--clr-accent);
+    color: var(--clr-text);
+}
+
+.settings-page-btn-danger {
+    background: rgba(232, 25, 44, 0.15);
+    border: 1px solid rgba(232, 25, 44, 0.5);
+    color: #ff6b6b;
+}
+
+.settings-page-btn-danger:hover {
+    background: rgba(232, 25, 44, 0.25);
+    transform: translateY(-1px);
+}
+
+.settings-page-form-actions {
+    margin-top: 32px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Delete Warning Box */
+.settings-page-delete-warning {
+    background: rgba(232, 25, 44, 0.08);
+    border: 1px solid rgba(232, 25, 44, 0.25);
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.settings-page-delete-warning h3 {
+    /* font-family: var(--font-display); */
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #ff6b6b;
+}
+
+.settings-page-delete-warning ul {
+    margin-left: 20px;
+    color: var(--clr-muted);
+    font-size: 14px;
+}
+
+.settings-page-delete-warning li {
+    margin: 8px 0;
+}
+
+.settings-page-warning-text {
+    color: #ff8080;
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.settings-page-code {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 6px;
+    border-radius: 3px;
+    /* font-family: monospace; */
+    color: var(--clr-accent);
+}
+
+/* User Info Display */
+.settings-page-user-info {
+    background: rgba(232, 25, 44, 0.05);
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.settings-page-user-info__details h3 {
+    /* font-family: var(--font-display); */
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.settings-page-user-info__details p {
+    color: var(--clr-muted);
+    font-size: 13px;
+}
+
+.settings-page-user-info__badge {
+    background: rgba(232, 25, 44, 0.12);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: var(--clr-accent);
+    /* font-family: var(--font-display); */
+    letter-spacing: 0.08em;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .settings-page-container {
+        padding: 40px 20px;
+    }
+    
+    .settings-page-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .settings-page-header h1 {
+        font-size: 36px;
+    }
+    
+    .settings-page-card {
+        padding: 24px;
+    }
+    
+    .settings-page-form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .settings-page-btn-secondary {
+        margin-left: 0;
+        text-align: center;
+    }
+}
+
+/* Prevent header overlap */
+.settings-page-main-content {
+    padding-top: 20px;
+}
+
+/* Add to settings.css */
+.settings-notification {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+}
+
+.settings-notification-content {
+    padding: 15px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.settings-notification-success .settings-notification-content {
+    background: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.settings-notification-error .settings-notification-content {
+    background: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3545;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.settings-notification {
+    transition: opacity 0.3s ease-out;
+}
+
+/* ============================================================
+   LIGHT MODE OVERRIDES
+   ============================================================ */
+html[data-theme="light"] .settings-page-form-group input {
+    background: #ffffff !important;
+    color: #111111 !important;
+}
+
+html[data-theme="light"] .settings-page-form-group input:focus {
+    background: #ffffff !important;
+    color: #111111 !important;
+}
+
+/* Fix for browser autofill overriding background/text colors */
+html[data-theme="light"] .settings-page-form-group input:-webkit-autofill,
+html[data-theme="light"] .settings-page-form-group input:-webkit-autofill:hover, 
+html[data-theme="light"] .settings-page-form-group input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+    -webkit-text-fill-color: #111111 !important;
+}
+
+html[data-theme="light"] .settings-page-form-group input::placeholder {
+    color: #888888;
+}
+
+html[data-theme="light"] .settings-page-code {
+    background: #e9ecef;
+    color: var(--clr-accent);
+}

@@ -1,0 +1,455 @@
+body {
+  background-color: #131313;
+  color: #ffffff; /* make text color white */
+}
+.subtitle
+{
+  color: #F3B7AE;
+  font-size: 15px;
+  margin-top: 20px;
+}
+.section-title {
+  color: #e4e2e1;
+}
+.labels {
+  color: #6f6f6f;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.checkbox-group {
+  color: #959595;
+}
+.security-note {
+  color: #585858;
+}
+.summary {
+  color: #686868;
+}
+
+.note-box {
+  background-color: #262525;
+  color: #9d9d9d;
+}
+.input-field {
+  background-color: #353534;
+  color: whitesmoke;
+  font-family: 'Arial', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  padding: 18px 20px;
+  width: 100%;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  box-sizing: border-box;
+  caret-color: #e3000f;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+#pay-button {
+  background-color: #c8332d;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 20px 40px;
+  width: 80%;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+#pay-button:hover {
+  background-color: #c0000d;
+}
+
+
+
+#summary-section {
+  margin-top: 20px;
+  background-color: #1d1b1b;
+}
+/* make two sections side by side */
+#payment-page {
+
+  display: flex;
+  gap: 70px;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px 1px;
+  box-sizing: border-box;
+}
+
+#payment-form-section {
+  flex: 1.2;
+  min-width: 0;
+}
+#summary-section {
+  flex: 0.8;
+  min-width: 320px;
+  position: sticky;
+  top: 24px;
+}
+
+.icon {
+  color: #f4b7ae;
+}
+
+.car-info
+{
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  border-radius: 6px 6px 0 0;
+  background-color: #1a2a35;
+}
+/* The car image  */
+.car-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Dark gradient overlay at bottom */
+.car-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 40%,
+    rgba(0, 0, 0, 0.75) 100%
+  );
+}
+
+/* Car name title */
+.car-title {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  color: #ffffff;
+  font-family: 'Arial Black', Arial, sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+}
+/* Main panel container */
+.booking-panel {
+  background-color: #1e1e1e;
+  padding: 24px;
+  border-radius: 0 0 6px 6px;
+}
+
+/* ── RESERVATION DATES ROW ── */
+.booking-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.booking-meta-label {
+  color: #666666;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.booking-meta-value {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── PRICE BREAKDOWN ── */
+.price-breakdown-label {
+  color: #666666;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.price-row-name {
+  color: #aaaaaa;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.price-row-amount {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Divider */
+.price-divider {
+  border: none;
+  border-top: 1px solid #2e2e2e;
+  margin: 16px 0;
+}
+
+/* ── TOTAL DUE ROW ── */
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.total-label {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.total-amount {
+  color: #e3000f;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+/* ── SPEC BADGES ROW ── */
+.spec-badges {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.spec-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #2a2a2a;
+  color: #cccccc;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  border-radius: 4px;
+}
+
+.spec-badge svg {
+  width: 13px;
+  height: 13px;
+  opacity: 0.8;
+}
+
+/* ── NOTICE BOX ── */
+.notice-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background-color: #252525;
+  border-left: 3px solid #555555;
+  border-radius: 4px;
+  padding: 14px 16px;
+}
+
+.notice-icon {
+  color: #888888;
+  font-size: 16px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.notice-text {
+  color: #888888;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.field-error {
+    display: block;
+    color: #ff8080;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-top: 6px;
+    padding-left: 2px;
+}
+
+/* Highlight the input that has an error */
+.input-field.input-error {
+    box-shadow: 0 0 0 1.5px rgba(224, 48, 48, 0.6);
+    background-color: rgba(224, 48, 48, 0.07);
+}
+
+/* ── EXPIRY DATE DROPDOWNS ── */
+.expiry-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+
+.expiry-dropdowns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.expiry-dropdowns select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #F5F5F5;
+  background: #353534;
+  border: 1px solid #353534;
+  border-radius: 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.expiry-dropdowns select:hover {
+  border-color: #9ca3af;
+}
+
+.expiry-dropdowns select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* ============================================================
+   MANUAL LIGHT MODE FIXES
+   ============================================================ */
+
+html[data-theme="light"] body {
+  background-color: #f7f7f7;
+  color: #111111;
+}
+
+html[data-theme="light"] .section-title {
+  color: #222222;
+}
+
+html[data-theme="light"] .labels,
+html[data-theme="light"] .expiry-label {
+  color: #555555;
+}
+
+html[data-theme="light"] .input-field,
+html[data-theme="light"] .expiry-dropdowns select {
+  background-color: #ffffff;
+  color: #111111;
+  border: 1px solid #cccccc;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+html[data-theme="light"] .input-field:focus,
+html[data-theme="light"] .expiry-dropdowns select:focus {
+  border-color: #6366f1;
+}
+
+html[data-theme="light"] #summary-section {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+html[data-theme="light"] .booking-panel {
+  background-color: #ffffff;
+  border-radius: 0 0 6px 6px;
+}
+
+html[data-theme="light"] .booking-meta-label, 
+html[data-theme="light"] .price-breakdown-label {
+  color: #555555;
+}
+
+html[data-theme="light"] .booking-meta-value {
+  color: #111111;
+}
+
+html[data-theme="light"] .price-row-name {
+  color: #555555;
+}
+
+html[data-theme="light"] .price-row-amount {
+  color: #111111;
+}
+
+html[data-theme="light"] .price-divider {
+  border-top: 1px solid #e0e0e0;
+}
+
+html[data-theme="light"] .total-label {
+  color: #111111;
+}
+
+html[data-theme="light"] .spec-badge {
+  background-color: #f0f0f0;
+  color: #333333;
+}
+
+html[data-theme="light"] .notice-box {
+  background-color: #f9f9f9;
+  border-left: 3px solid #cccccc;
+}
+
+html[data-theme="light"] .notice-icon, 
+html[data-theme="light"] .notice-text {
+  color: #555555;
+}
+
+html[data-theme="light"] .security-note {
+  color: #666666;
+}
+
+html[data-theme="light"] .subtitle {
+  color: #c8332d;
+}
+
+html[data-theme="light"] .car-info {
+  background-color: #f0f0f0;
+}
+
+html[data-theme="light"] .title {
+  color: #111111;
+}
+
+html[data-theme="light"] .icon {
+  color: #c8332d;
+}

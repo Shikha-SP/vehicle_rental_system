@@ -635,3 +635,53 @@ h4 {
         display: none;
     }
 }
+
+/* ============================================================
+   LIGHT MODE OVERRIDES
+   ============================================================ */
+html[data-theme="light"] body {
+    background-color: #f7f7f7;
+    color: #111111;
+}
+
+html[data-theme="light"] .hero {
+    background: radial-gradient(circle at 60% 50%, #f0f2f5, #e0e4e8 70%);
+}
+
+html[data-theme="light"] .hero-desc {
+    color: #444444;
+}
+
+html[data-theme="light"] .map-container img {
+    filter: invert(1) grayscale(100%);
+    opacity: 0.25;
+}
+
+html[data-theme="light"] .section-heading {
+    color: #111111;
+}
+
+html[data-theme="light"] .feature-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+}
+
+html[data-theme="light"] .feature-number {
+    color: rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme="light"] .stat-num {
+    color: #111111;
+}
+
+html[data-theme="light"] .stat-label {
+    color: #666666;
+}
+
+html[data-theme="light"] .feature-title {
+    color: #111111;
+}
+
+html[data-theme="light"] .feature-desc {
+    color: #555555;
+}

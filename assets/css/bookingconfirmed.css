@@ -1,0 +1,189 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  background: linear-gradient(145deg, #101010 0%, #1a1a1a 100%);
+  font-family: "Inter", sans-serif;
+  display: block;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 0;
+  color: #e4e2e1;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+/* ── HERO SECTION ── */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  min-height: 70vh;
+  padding: 20px 0 20px 40px;
+}
+
+.hero-left {
+  flex: 1;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.tagline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #f4b7ae;
+}
+.highlight {
+  color: #d03530;
+  display: block;
+}
+.hero-description {
+  color: #b5b4ba;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.7;
+  max-width: 420px;
+}
+
+/* ── BUTTONS ── */
+.hero-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+.btnn {
+  padding: 16px 28px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.btnn-primary {
+  display: inline-block;
+  text-decoration: none;
+  background-color: #e8192c;
+  color: #ffffff;
+}
+
+
+/* ── RIGHT SIDE ── */
+.hero-right {
+  flex: 1;
+  max-width: 580px;
+  margin-right: 0;
+}
+
+/* ── CONFIRMATION CARD ── */
+.confirmation-card {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  border-radius: 10px 0 0 10px; /* only round left side */
+  overflow: hidden;
+}
+.car-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Dark gradient overlay */
+.car-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.05) 40%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+}
+/* Confirmation + Status row at bottom */
+.confirmation-card .confirmation-item {
+  position: absolute;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.confirmation-card .confirmation-item:first-of-type {
+  left: 24px;
+}
+
+.confirmation-card .confirmation-item:last-of-type {
+  left: 200px;
+}
+.confirmation-card .label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #a3a3a3;
+}
+.confirmation-card .value {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #e4e2e1;
+  text-transform: uppercase;
+}
+
+.confirmation-card .value-status {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #f4b7ae;
+  text-transform: uppercase;
+}
+
+.location-card {
+  flex: 1;
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 25px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ============================================================
+   MANUAL LIGHT MODE FIXES
+   ============================================================ */
+
+html[data-theme="light"] body {
+  background: #f7f7f7 !important;
+  color: #111111 !important;
+}
+
+html[data-theme="light"] .tagline {
+  color: #c8332d;
+}
+
+html[data-theme="light"] .hero-description {
+  color: #555555;
+}
+
+html[data-theme="light"] .location-card {
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}

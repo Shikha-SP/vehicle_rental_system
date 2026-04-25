@@ -13,12 +13,21 @@ if (!isset($_SESSION['user_id']) || (!empty($_SESSION['is_admin']))) {
     exit;
 }
 
-$username = $_SESSION['first_name'] ?? 'Guest';
-
 // DB + INCLUDES
 include('../../config/db.php');
 include('../../includes/header.php');
 require_once('../../includes/functions.php');
+
+$user_id = $_SESSION['user_id'];
+
+// Fetch user data for the welcome message
+$user_query = "SELECT first_name FROM users WHERE id = ?";
+$stmt = $conn->prepare($user_query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$user_result = $stmt->get_result();
+$user_data = $user_result->fetch_assoc();
+$username = $user_data['first_name'] ?? 'Guest';
 
 // Gallery vehicles — booking-safe version
 $gallery_sql = "
@@ -30,7 +39,7 @@ SELECT
     price_per_day, 
     fuel_capacity
 FROM vehicles
-WHERE status = 'available'
+WHERE status = 'approved'
 AND id NOT IN (
     SELECT vehicle_id 
     FROM bookings 
@@ -46,6 +55,16 @@ LIMIT 3
 $gallery_result = $conn->query($gallery_sql);
 
 
+// ----------------------------------------------------------
+// License-type filter tabs
+// ----------------------------------------------------------
+$brands_sql = "
+SELECT DISTINCT license_type 
+FROM vehicles 
+ORDER BY license_type
+";
+
+$brands_result = $conn->query($brands_sql);
 ?>
 
 <link rel="stylesheet" href="../../assets/css/Homepage.css">
@@ -65,7 +84,7 @@ $gallery_result = $conn->query($gallery_sql);
         <div class="hero-overlay">
             <div class="hero-text">
                 <p class="hero-label">
-                    WELCOME BACK, <?php echo e(strtoupper($_SESSION['first_name'] ?? 'GUEST')); ?>
+                    WELCOME BACK, <?php echo e(strtoupper($username)); ?>
                 </p>
                 <h1 class="hero-heading">
                     ENGINEERED FOR<br>
@@ -116,11 +135,11 @@ $gallery_result = $conn->query($gallery_sql);
 
                                     <div class="card-img-wrapper">
 
-                                        <?php if (!empty($car['image_path'])): ?>
-
-                                                <img src="../../uploads/<?php echo e($car['image_path']); ?>"
-                                                    alt="<?php echo e($car['model']); ?>">
-
+                                        <?php if (!empty($car['image_path'])): 
+                                            $imgPath = $car['image_path'];
+                                            $imgSrc = (strpos($imgPath, 'http') === 0) ? $imgPath : '../../' . $imgPath;
+                                        ?>
+                                                <img src="<?php echo e($imgSrc); ?>" alt="<?php echo e($car['model']); ?>">
                                         <?php else: ?>
 
                                                 <div class="no-img">NO IMAGE</div>
@@ -169,8 +188,28 @@ $gallery_result = $conn->query($gallery_sql);
             </div>
 
 
+            <!-- LICENSE TYPE FILTER BUTTONS -->
+            <div class="brand-filters">
 
+                <?php
+                if ($brands_result && $brands_result->num_rows > 0):
 
+                    while ($b = $brands_result->fetch_assoc()):
+                        ?>
+
+                                <a href="../vehicle/vehicles.php?license_type=<?php echo urlencode($b['license_type']); ?>" class="brand-tab">
+
+                                    <?php echo e(strtoupper($b['license_type'])); ?>
+
+                                </a>
+
+                                <?php
+                    endwhile;
+
+                endif;
+                ?>
+
+            </div>
         </div>
     </section>
 
@@ -181,12 +220,12 @@ $gallery_result = $conn->query($gallery_sql);
         <div class="container banner-flex">
 
             <div class="banner-text">
-                <h3>JOIN TD ELITE CLUB</h3>
-                <p>Get exclusive access to hypercars and premium service.</p>
+                <h3>Rent your vehicle</h3>
+                <p>Rent your vehicle and earn some money</p>
             </div>
 
-            <a href="signup.php" class="btn-white-outline">
-                Apply For Membership
+            <a href="../renter/list_car.php" class="btn-white-outline">
+                Rent and earn
             </a>
 
         </div>
