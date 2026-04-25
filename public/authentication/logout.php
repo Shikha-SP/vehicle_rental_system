@@ -37,6 +37,14 @@ if (isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
     <!-- CSS -->
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/logout.css">
+
+    <!-- Theme Initialization Script (Prevents FOUC) -->
+    <script>
+      (function() {
+        const theme = localStorage.getItem('td-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
 </head>
 <body>
     <!-- Aesthetic UI Elements: Animated ambient background specifically designed to maintain the application's premium aesthetic during an exit action -->

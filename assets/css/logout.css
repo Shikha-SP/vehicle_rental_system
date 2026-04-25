@@ -137,3 +137,44 @@ body, html {
     background: #2a2a2a;
     border-color: #444;
 }
+
+/* ============================================================
+   LIGHT MODE OVERRIDES
+   ============================================================ */
+html[data-theme="light"],
+html[data-theme="light"] body {
+    background-color: #f0f2f5;
+}
+
+html[data-theme="light"] .overlay {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+html[data-theme="light"] .grid-overlay {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+}
+
+html[data-theme="light"] .logout-box {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .logout-box h2 {
+    color: #111111 !important;
+}
+
+html[data-theme="light"] .logout-box p {
+    color: #555555;
+}
+
+html[data-theme="light"] .btn-no {
+    background: #ffffff;
+    color: #333333;
+    border-color: #dddddd;
+}
+
+html[data-theme="light"] .btn-no:hover {
+    background: #f1f5f9;
+    border-color: #cccccc;
+}

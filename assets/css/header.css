@@ -52,17 +52,19 @@ header {
   top: 0;
   z-index: 1000;
   width: 100%;
-  height: var(--nav-h);
-  background: #181818;
+  min-height: var(--nav-h);
+  background: var(--clr-surface);
   border-bottom: 1px solid var(--clr-border);
   backdrop-filter: blur(12px);
+  font-family: var(--font-body);
+  font-size: 15px;
 }
 
 /* ── Nav ── */
 header nav {
   display: flex;
   align-items: center;
-  height: 100%;
+  min-height: var(--nav-h);
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 32px;
@@ -261,9 +263,13 @@ header nav {
     padding: 0 20px;
   }
 
+  .brand { order: 1; }
+  .theme-toggle { order: 2; margin-left: auto; }
+  
   .nav-toggle {
     display: flex;
-    margin-left: auto;
+    order: 3;
+    margin-left: 16px;
   }
 
   .nav-links,
@@ -273,6 +279,7 @@ header nav {
     flex-direction: column;
     padding: 12px 0;
     border-top: 1px solid var(--clr-border);
+    order: 4;
   }
 
   .nav-links.open,
@@ -316,3 +323,87 @@ header nav {
 .back:hover {
     color: #ffffff;
 }
+
+/* ============================================================
+   🌞 THEME TOGGLE & LIGHT MODE
+   ============================================================ */
+
+.theme-toggle {
+  background: none;
+  border: none;
+  color: var(--clr-text);
+  cursor: pointer;
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s;
+}
+
+.theme-toggle:hover {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.theme-toggle .moon-icon { display: none; }
+.theme-toggle .sun-icon { display: block; }
+
+html[data-theme="light"] .theme-toggle .moon-icon { display: block; }
+html[data-theme="light"] .theme-toggle .sun-icon { display: none; }
+
+/* Light Mode Overrides */
+html[data-theme="light"] {
+  /* Header & Global Variables */
+  --clr-bg:        #f0f2f5;
+  --clr-surface:   #ffffff;
+  --clr-border:    rgba(0, 0, 0, 0.1);
+  --clr-text:      #111111;
+  --clr-muted:     #555555;
+  
+  /* Homepage.css Variables */
+  --bg-dark:       #f0f2f5;
+  --text-main:     #111111;
+  --card-bg:       #ffffff;
+  --card-hover:    #f9f9f9;
+  --nav-text:      #444444;
+
+  /* vehicles.css Variables */
+  --bg:            #f0f2f5;
+  --bg-card:       #ffffff;
+  --bg-input:      #ffffff;
+  --border:        #dddddd;
+  --text:          #111111;
+  --text-label:    #444444;
+  
+  background-color: var(--clr-bg);
+  color: var(--clr-text);
+}
+
+html[data-theme="light"] .btn-ghost {
+  color: var(--clr-text);
+  border-color: var(--clr-border);
+}
+html[data-theme="light"] .btn-ghost:hover {
+  background: rgba(0,0,0,0.05);
+}
+html[data-theme="light"] .dropdown {
+  background: var(--clr-surface);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+html[data-theme="light"] .dropdown a:hover {
+  background: rgba(0,0,0,0.05);
+}
+html[data-theme="light"] .nav-toggle span {
+  background: var(--clr-text);
+}
+
+/* Force light backgrounds on hardcoded dark elements from other pages */
+html[data-theme="light"] .hero-section { background: var(--clr-bg); }
+html[data-theme="light"] .hero-gradient { background: linear-gradient(to right, rgba(240,242,245,0.95) 0%, rgba(240,242,245,0.5) 40%, transparent 70%); }
+html[data-theme="light"] .vehicles-search-section { background: rgba(255,255,255,0.95); }
+html[data-theme="light"] .car-card { background: var(--clr-surface); border-color: var(--clr-border); }
+html[data-theme="light"] .card-img-wrapper { background: var(--clr-bg); }
+html[data-theme="light"] .booking-card { background: rgba(255,255,255,0.9); }
+html[data-theme="light"] .specs, html[data-theme="light"] .card-specs-row { border-color: var(--clr-border); }
+html[data-theme="light"] .section-header { border-color: var(--clr-border); }

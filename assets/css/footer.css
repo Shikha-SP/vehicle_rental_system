@@ -5,6 +5,7 @@
     color: #f5f5f5;
     font-family: 'Barlow', sans-serif;
     position: relative;
+    border-top: 1px solid rgba(224, 77, 77, 0.25);
 }
 
 .footer-brand {
@@ -65,4 +66,34 @@
 .footer-social a:hover {
     color: #ff4d4d;
     transform: translateY(-2px);
+}
+
+/* ============================================================
+   LIGHT MODE OVERRIDES
+   ============================================================ */
+html[data-theme="light"] .site-footer {
+    background: linear-gradient(135deg, #e8ecf0, #f4f6f8);
+    color: #111111;
+    border-top: 1px solid #cbd5e1;
+}
+
+html[data-theme="light"] .footer-tagline {
+    color: #1e293b;
+}
+
+html[data-theme="light"] .footer-links a {
+    color: #1e293b;
+}
+
+html[data-theme="light"] .footer-links a:hover {
+    color: #000000;
+    background-color: rgba(224, 48, 48, 0.08);
+}
+
+html[data-theme="light"] .footer-copy {
+    color: #334155;
+}
+
+html[data-theme="light"] .footer-social a {
+    color: #1e293b;
 }
