@@ -13,6 +13,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/footer.css">
+    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/loading.css">
 </head>
 <body>
 

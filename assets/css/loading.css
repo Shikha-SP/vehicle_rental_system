@@ -1,0 +1,212 @@
+/* ============================================================
+   TD RENTALS — Loading Indicators
+   Matches: --bg-dark #09090b, --accent-red #e62020, Inter font
+   ============================================================ */
+
+/* ── 1. FULL-PAGE OVERLAY (page transitions & form submits) ── */
+#td-page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(9, 9, 11, 0.92);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+#td-page-loader.active {
+  opacity: 1;
+  pointer-events: all;
+}
+#td-page-loader .loader-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 0.1em;
+  color: #fff;
+}
+#td-page-loader .loader-logo span {
+  color: #e62020;
+}
+#td-page-loader .loader-bar-track {
+  width: 180px;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 99px;
+  overflow: hidden;
+}
+#td-page-loader .loader-bar-fill {
+  height: 100%;
+  width: 40%;
+  background: #e62020;
+  border-radius: 99px;
+  animation: td-bar-slide 1.1s ease-in-out infinite;
+}
+#td-page-loader .loader-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #666;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@keyframes td-bar-slide {
+  0%   { transform: translateX(-120%); }
+  50%  { transform: translateX(80%); }
+  100% { transform: translateX(280%); }
+}
+
+/* ── 2. BUTTON SPINNER (inline on submit buttons) ── */
+.td-btn-loading {
+  position: relative;
+  pointer-events: none !important;
+  opacity: 0.75;
+}
+.td-btn-loading .td-btn-text { visibility: hidden; }
+.td-btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: td-spin 0.65s linear infinite;
+}
+
+@keyframes td-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ── 3. SKELETON CARDS (vehicle listing grids) ── */
+.td-skeleton {
+  background: #141416;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #1e1e20;
+}
+.td-skeleton-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: #1a1a1c;
+}
+.td-skeleton-body {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.td-skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: #1a1a1c;
+}
+.td-skeleton-line.short { width: 45%; }
+.td-skeleton-line.medium { width: 70%; }
+.td-skeleton-line.full { width: 100%; }
+
+/* shimmer animation */
+.td-skeleton-img,
+.td-skeleton-line {
+  background: linear-gradient(90deg,
+    #141416 25%,
+    #1e1e22 50%,
+    #141416 75%
+  );
+  background-size: 200% 100%;
+  animation: td-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes td-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── 4. INLINE CONTENT SPINNER (search/filter results) ── */
+.td-spinner-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 0;
+  gap: 12px;
+  color: #555;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+}
+.td-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #222;
+  border-top-color: #e62020;
+  border-radius: 50%;
+  animation: td-spin 0.65s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── 5. TOP PROGRESS BAR (navigation between pages) ── */
+#td-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: #e62020;
+  box-shadow: 0 0 8px rgba(230,32,32,0.6);
+  z-index: 999999;
+  transition: width 0.3s ease, opacity 0.4s ease;
+  pointer-events: none;
+}
+#td-progress-bar.done {
+  width: 100% !important;
+  opacity: 0;
+}
+
+/* ── 6. IMAGE LAZY LOAD placeholder ── */
+img.td-lazy {
+  background: linear-gradient(90deg,
+    #141416 25%,
+    #1e1e22 50%,
+    #141416 75%
+  );
+  background-size: 200% 100%;
+  animation: td-shimmer 1.4s ease-in-out infinite;
+}
+img.td-lazy.loaded {
+  animation: none;
+  background: none;
+}
+
+/* ── 7. VEHICLE CARD IMAGE SHIMMER ── */
+.td-img-shimmer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #141416 0%,
+    #141416 25%,
+    #2a2a2e 50%,
+    #141416 75%,
+    #141416 100%
+  );
+  background-size: 300% 100%;
+  animation: td-shimmer 1.6s ease-in-out infinite;
+  z-index: 1;
+}
+
+.td-img-real {
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  z-index: 2;
+}

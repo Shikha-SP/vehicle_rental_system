@@ -37,6 +37,7 @@ if (isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
     <!-- CSS -->
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/logout.css">
+    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/loading.css">
 </head>
 <body>
     <!-- Aesthetic UI Elements: Animated ambient background specifically designed to maintain the application's premium aesthetic during an exit action -->
@@ -74,5 +75,6 @@ if (isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
             <a href="<?= htmlspecialchars($return_url) ?>" class="btn-no">Stay Logged In</a>
         </div>
     </div>
+<script src="/vehicle_rental_collab_project/assets/js/loading.js"></script>
 </body>
 </html>

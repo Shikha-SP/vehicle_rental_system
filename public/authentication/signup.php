@@ -286,6 +286,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             display: block;
         }
     </style>
+    <link rel="stylesheet" href="../../assets/css/loading.css">
 </head>
 <body>
 
@@ -758,5 +759,6 @@ if (step1Form && document.getElementById('password')) {
 }
 </script>
 
+<script src="../../assets/js/loading.js"></script>
 </body>
 </html>

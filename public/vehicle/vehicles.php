@@ -232,9 +232,12 @@ sort($fuel_types);
                                 }
                             ?>
                                 <div class="vehicle-image-wrapper">
+                                    <div class="td-img-shimmer"></div>
                                     <img src="<?= htmlspecialchars($imgSrc) ?>"
-                                         alt="<?= htmlspecialchars($vehicle['model']) ?>" class="vehicle-image"
-                                         onerror="this.closest('.vehicle-image-wrapper').style.display='none'">
+                                         alt="<?= htmlspecialchars($vehicle['model']) ?>" class="vehicle-image td-img-real"
+                                         loading="lazy"
+                                         onerror="this.previousElementSibling.style.display='none'; this.closest('.vehicle-image-wrapper').style.display='none';"
+                                         style="opacity:0;">
                                     <div class="vehicle-badge">Available</div>
                                 </div>
                             <?php endif; ?>

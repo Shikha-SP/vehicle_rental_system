@@ -97,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — TD Rentals</title>
     <link rel="stylesheet" href="../../assets/css/login.css">
+    <link rel="stylesheet" href="../../assets/css/loading.css">
 </head>
 <body>
 
@@ -240,5 +241,6 @@ function togglePw() {
 }
 </script>
 
+<script src="../../assets/js/loading.js"></script>
 </body>
 </html>
