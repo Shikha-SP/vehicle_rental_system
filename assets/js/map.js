@@ -4,10 +4,11 @@ document.addEventListener("DOMContentLoaded", function () {
     var shopLat = 27.7124;
     var shopLng = 85.3309;
 
+
     // Initialize the map
     var map = L.map('showroom-map').setView([shopLat, shopLng], 16);
 
-    var geoapifyUrl = '/vehicle_rental_system/ajax/map_proxy.php?z={z}&x={x}&y={y}';
+    var geoapifyUrl = '/vehicle_rental_collab_project/ajax/map_proxy.php?z={z}&x={x}&y={y}';
 
     L.tileLayer(geoapifyUrl, {
         attribution: 'Powered by <a href="https://www.geoapify.com/">Geoapify</a> | &copy; OpenStreetMap contributors',

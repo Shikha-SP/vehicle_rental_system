@@ -64,12 +64,14 @@ if (isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
         <!-- Contextual warning emphasizing the risk of data loss on active forms -->
         <p>You are about to end your session. Any unsaved booking progress may be lost.</p>
         
-        <!-- Destructive vs Safe Action Routing -->
+        <?php 
+        $return_url = $_GET['return'] ?? '../user/home_page.php';
+        ?>
         <div class="btn-group">
             <!-- Appends the required security parameter `?confirm=yes` to trigger server-side destruction -->
             <a href="logout.php?confirm=yes" class="btn-yes">Logout</a>
-            <!-- Safe exit path returning user to their dashboard intact -->
-            <a href="../user/home_page.php" class="btn-no">Stay Logged In</a>
+            <!-- Safe exit path returning user to their original page intact -->
+            <a href="<?= htmlspecialchars($return_url) ?>" class="btn-no">Stay Logged In</a>
         </div>
     </div>
 </body>

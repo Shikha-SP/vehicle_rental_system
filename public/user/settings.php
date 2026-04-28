@@ -7,8 +7,8 @@
  */
 session_start();
 
-// Ensure the user is logged in and is NOT an admin
-if (!isset($_SESSION['user_id']) || (!empty($_SESSION['is_admin']))) {
+// Ensure the user is logged in
+if (!isset($_SESSION['user_id'])) {
     header("Location: ../landing_page.php");
     exit;
 }
@@ -71,10 +71,12 @@ require_once '../../includes/header.php';
                         <i class="fas fa-user-edit"></i>
                         <span>Change Name</span>
                     </a>
+                    <?php if (empty($_SESSION['is_admin'])): ?>
                     <a href="settings.php?section=delete" class="settings-page-nav-item delete-item <?= $active_section === 'delete' ? 'active' : '' ?>">
                         <i class="fas fa-trash-alt"></i>
                         <span>Delete Account</span>
                     </a>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -150,7 +152,7 @@ require_once '../../includes/header.php';
                         </form>
                     </div>
                 
-                <?php elseif ($active_section === 'delete'): ?>
+                <?php elseif ($active_section === 'delete' && empty($_SESSION['is_admin'])): ?>
                     <!-- Delete Account Form -->
                     <div class="settings-page-card">
                         <h2><i class="fas fa-trash-alt"></i> Delete Account</h2>
@@ -217,6 +219,7 @@ require_once '../../includes/header.php';
                             </div>
                         </div>
                         
+                        <?php if (empty($_SESSION['is_admin'])): ?>
                         <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--clr-border);">
                             <h3 style="font-family: var(--font-display); font-size: 18px; margin-bottom: 16px; color: #ff6b6b;">Danger Zone</h3>
                             <a href="settings.php?section=delete" class="settings-page-btn-danger" style="text-decoration: none; display: inline-block;">
@@ -226,6 +229,7 @@ require_once '../../includes/header.php';
                                 Once you delete your account, there is no going back. Please be certain.
                             </p>
                         </div>
+                        <?php endif; ?>
                     </div>
                 <?php endif; ?>
             </div>

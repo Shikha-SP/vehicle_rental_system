@@ -5,14 +5,13 @@ requireAdmin();
 $totalBookingsResult = $conn->query("SELECT COUNT(*) FROM bookings");
 $totalBookings = $totalBookingsResult ? $totalBookingsResult->fetch_row()[0] : 0;
 
-$totalRevenueResult = $conn->query("SELECT COALESCE(SUM(total_price),0) FROM bookings WHERE status != 'cancelled'");
+$totalRevenueResult = $conn->query("SELECT COALESCE(SUM(total_price), 0) FROM bookings");
 $totalRevenue = $totalRevenueResult ? $totalRevenueResult->fetch_row()[0] : 0;
 
 $totalUsersResult = $conn->query("SELECT COUNT(*) FROM users");
 $totalUsers = $totalUsersResult ? $totalUsersResult->fetch_row()[0] : 0;
 
-$confirmedCountResult = $conn->query("SELECT COUNT(*) FROM bookings WHERE status = 'confirmed'");
-$confirmedCount = $confirmedCountResult ? $confirmedCountResult->fetch_row()[0] : 0;
+$confirmedCount = $totalBookings;
 
 $users = [];
 $uRes = $conn->query("SELECT * FROM users ORDER BY created_at DESC LIMIT 50");
@@ -69,7 +68,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <?php foreach ($users as $u):
               $uBookings = array_filter($bookings, fn($b) => $b['customer_email'] === $u['email']);
               $uCount    = count($uBookings);
-              $uRevenue  = array_sum(array_column(array_filter($uBookings, fn($b) => $b['status'] !== 'cancelled'), 'total_price'));
+              $uRevenue  = array_sum(array_column($uBookings, 'total_price'));
               $statusClass = $u['is_verified'] ? 'b-verified' : 'b-pending';
               $statusLabel = $u['is_verified'] ? 'Verified'   : 'Standard';
             ?>

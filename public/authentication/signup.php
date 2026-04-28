@@ -68,6 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($first_name))   $errors[] = "First name is required.";
         if (empty($last_name))    $errors[] = "Last name is required.";
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email is required.";
+        if (empty($phone))        $errors[] = "Phone number is required.";
+        if (empty($address))      $errors[] = "Address is required.";
         
         // Enforce robust password requirements to protect user accounts
         if (empty($password)) {

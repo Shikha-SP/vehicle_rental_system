@@ -24,11 +24,7 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Check for admin restriction (matching your original logic)
-if (!empty($_SESSION['is_admin'])) {
-    echo json_encode(['success' => false, 'message' => 'Admin accounts cannot be modified via this endpoint.']);
-    exit;
-}
+// Validation allows admins to update their name since we opened settings to them.
 
 $user_id = $_SESSION['user_id'];
 

@@ -2,7 +2,12 @@ body {
   background-color: #131313;
   color: #ffffff; /* make text color white */
 }
-
+.subtitle
+{
+  color: #F3B7AE;
+  font-size: 15px;
+  margin-top: 20px;
+}
 .section-title {
   color: #e4e2e1;
 }
@@ -47,9 +52,9 @@ body {
 #pay-button {
   background-color: #c8332d;
   color: #ffffff;
-  font-family: "Arial Black", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 20px 40px;
@@ -61,6 +66,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 12px;
+  margin-top: 20px;
 }
 
 #pay-button:hover {
@@ -70,6 +76,7 @@ body {
 
 
 #summary-section {
+  margin-top: 20px;
   background-color: #1d1b1b;
 }
 /* make two sections side by side */
@@ -302,4 +309,45 @@ body {
 .input-field.input-error {
     box-shadow: 0 0 0 1.5px rgba(224, 48, 48, 0.6);
     background-color: rgba(224, 48, 48, 0.07);
+}
+
+/* ── EXPIRY DATE DROPDOWNS ── */
+.expiry-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+
+.expiry-dropdowns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.expiry-dropdowns select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #F5F5F5;
+  background: #353534;
+  border: 1px solid #353534;
+  border-radius: 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23888' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.expiry-dropdowns select:hover {
+  border-color: #9ca3af;
+}
+
+.expiry-dropdowns select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }

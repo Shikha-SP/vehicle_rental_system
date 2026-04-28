@@ -84,4 +84,33 @@ function show404()
     }
     exit();
 }
+// Luhn algorithm for credit card validation
+function isValidLuhn($number) {
+    $number = preg_replace('/\D/', '', $number); // remove spaces
+    $sum = 0;
+    $alternate = false;
+    
+    for ($i = strlen($number) - 1; $i >= 0; $i--) {
+        $n = intval($number[$i]);
+        
+        if ($alternate) {
+            $n *= 2;
+            if ($n > 9) {
+                $n -= 9;
+            }
+        }
+        
+        $sum += $n;
+        $alternate = !$alternate;
+    }
+    
+    return ($sum % 10 == 0);
+}
+
+function getCardType($number) {
+    if (preg_match('/^4/', $number)) return 'Visa';
+    if (preg_match('/^5[1-5]/', $number)) return 'Mastercard';
+    return 'Unknown';
+}
+
 ?>

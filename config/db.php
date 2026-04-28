@@ -44,7 +44,6 @@ CREATE TABLE IF NOT EXISTS users (
 )");
 
 // Step 5: Create 'vehicles' table
-// Step 5: Create 'vehicles' table
 $conn->query("
 CREATE TABLE IF NOT EXISTS vehicles (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -74,7 +73,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,
-    status ENUM('pending','confirmed','completed') DEFAULT 'pending',
+    status ENUM('confirmed', 'cancelled', 'completed') DEFAULT 'confirmed',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
@@ -91,6 +90,26 @@ CREATE TABLE IF NOT EXISTS password_resets (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 )");
 
+$conn->query("
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    booking_id INT NOT NULL,
+    user_id INT NOT NULL,
+
+    amount DECIMAL(10,2) NOT NULL,
+    payment_method VARCHAR(50) DEFAULT 'card',
+
+    card_last4 VARCHAR(4),         -- last 4 digits only (security)
+    card_type VARCHAR(20),         -- Visa, Mastercard
+
+    transaction_ref VARCHAR(100),  -- fake reference ID
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (booking_id) REFERENCES bookings(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);");
 // confirmation
-//echo "Database and tables are ready.";
+// echo "Database and tables are ready.";
 ?>

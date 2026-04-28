@@ -5,11 +5,10 @@ requireAdmin();
 $totalBookingsResult = $conn->query("SELECT COUNT(*) FROM bookings");
 $totalBookings = $totalBookingsResult ? $totalBookingsResult->fetch_row()[0] : 0;
 
-$totalRevenueResult = $conn->query("SELECT COALESCE(SUM(total_price),0) FROM bookings WHERE status != 'cancelled'");
+$totalRevenueResult = $conn->query("SELECT COALESCE(SUM(total_price),0) FROM bookings");
 $totalRevenue = $totalRevenueResult ? $totalRevenueResult->fetch_row()[0] : 0;
 
-$pendingCountResult = $conn->query("SELECT COUNT(*) FROM bookings WHERE status = 'pending'");
-$pendingCount = $pendingCountResult ? $pendingCountResult->fetch_row()[0] : 0;
+$pendingCount = 0; // Booking status removed
 
 $auditLogs = [];
 $logRes = $conn->query("SELECT * FROM audit_logs ORDER BY created_at DESC LIMIT 50");
