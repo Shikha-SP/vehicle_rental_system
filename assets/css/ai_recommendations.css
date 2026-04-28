@@ -1,0 +1,143 @@
+/* ============================================================
+   AI RECOMMENDATIONS STYLES
+   ============================================================ */
+
+.ai-recommendations {
+    margin-top: 5rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--clr-border);
+}
+
+.ai-header {
+    margin-bottom: 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.ai-header h2 {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+
+.ai-header p {
+    color: var(--clr-muted);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.rec-card {
+    background: var(--clr-surface);
+    border: 1px solid var(--clr-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+.rec-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--clr-accent);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.rec-image {
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+}
+
+.rec-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.rec-card:hover .rec-image img {
+    transform: scale(1.08);
+}
+
+.rec-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+}
+
+.rec-info {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.rec-info h3 {
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem 0;
+    color: #fff;
+}
+
+.rec-meta {
+    display: flex;
+    gap: 12px;
+    color: var(--clr-muted);
+    font-size: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.rec-price {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rec-price .amount {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--clr-accent);
+}
+
+.rec-price .unit {
+    font-size: 12px;
+    color: var(--clr-muted);
+}
+
+.ai-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    color: #fff;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+}
+
+.ai-tag i {
+    font-size: 12px;
+}
