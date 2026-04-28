@@ -135,15 +135,14 @@ $brands_result = $conn->query($brands_sql);
 
                             <div class="card-img-wrapper">
 
-                                <?php if (!empty($car['image_path'])):
-                                    $imgPath = $car['image_path'];
-                                    $imgSrc = (strpos($imgPath, 'http') === 0) ? $imgPath : '../../' . $imgPath;
+                                <?php
+                                $imgSrc = getImageUrl($car['image_path']);
+
+                                if ($imgSrc):
                                     ?>
                                     <img src="<?php echo e($imgSrc); ?>" alt="<?php echo e($car['model']); ?>">
                                 <?php else: ?>
-
                                     <div class="no-img">NO IMAGE</div>
-
                                 <?php endif; ?>
 
                             </div>

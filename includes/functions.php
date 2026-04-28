@@ -112,5 +112,30 @@ function getCardType($number) {
     if (preg_match('/^5[1-5]/', $number)) return 'Mastercard';
     return 'Unknown';
 }
+function getImageUrl($path)
+{
+    if (empty($path) || $path === '0') {
+        return null;
+    }
 
+    // If already a full URL, return as-is
+    if (strpos($path, 'http') === 0) {
+        return $path;
+    }
+
+    // Strip any leading slash from stored path so we don't double-slash
+    $path = ltrim($path, '/');
+
+    // If the path doesn't start with Uploads/ or assets/, assume it's a legacy vehicle image
+    // Check both lowercase and uppercase for robustness
+    $lowPath = strtolower($path);
+    if (strpos($lowPath, 'uploads/') !== 0 && strpos($lowPath, 'assets/') !== 0) {
+        $path = 'Uploads/Vehicles/' . $path;
+    }
+
+    $scriptParts = explode('/', trim($_SERVER['SCRIPT_NAME'], '/'));
+    $projectRoot = isset($scriptParts[0]) ? '/' . $scriptParts[0] : '';
+
+    return $projectRoot . '/' . $path;
+}
 ?>
