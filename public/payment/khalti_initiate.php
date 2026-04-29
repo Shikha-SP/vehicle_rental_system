@@ -1,0 +1,103 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once '../../config/db.php';
+require_once '../../includes/functions.php';
+$khalti_config = require_once '../../config/khalti.php';
+
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    die("User not logged in.");
+}
+
+$user_id = $_SESSION['user_id'];
+$vehicle_id = $_SESSION['payment_vehicle_id'] ?? 0;
+$pickup_date = $_SESSION['payment_pickup'] ?? '';
+$dropoff_date = $_SESSION['payment_dropoff'] ?? '';
+$days = $_SESSION['payment_days'] ?? 0;
+
+if (!$vehicle_id) {
+    header('Location: ../vehicle/vehicles.php');
+    exit;
+}
+
+// Fetch vehicle and user details
+$sql = "SELECT v.model, v.price_per_day, u.email, u.first_name, u.phone_number 
+        FROM vehicles v 
+        JOIN users u ON u.id = ? 
+        WHERE v.id = ? LIMIT 1";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ii", $user_id, $vehicle_id);
+$stmt->execute();
+$data = $stmt->get_result()->fetch_assoc();
+
+if (!$data) {
+    die("Vehicle or User not found.");
+}
+
+$basicprice = 500; // From paymentdetail.php
+$total_price_npr = ($data['price_per_day'] * $days) + $basicprice;
+$amount_paisa = $total_price_npr * 100; // Khalti expects amount in paisa
+
+// Generate a unique purchase order ID
+$purchase_order_id = "BOOK-" . $user_id . "-" . $vehicle_id . "-" . time();
+
+$admin_sql = "SELECT first_name, email, phone_number FROM users WHERE is_admin = 1 LIMIT 1";
+$admin_stmt = $conn->prepare($admin_sql);
+$admin_stmt->execute();
+$admin_data = $admin_stmt->get_result()->fetch_assoc();
+
+$post_data = [
+    'return_url' => $khalti_config['return_url'],
+    'website_url' => $khalti_config['website_url'],
+    'amount' => (int)$amount_paisa,
+    'purchase_order_id' => $purchase_order_id,
+    'purchase_order_name' => "Rental: " . $data['model'],
+    'customer_info' => [
+        'name' => $admin_data['first_name'] ?? 'Admin',
+        'email' => $admin_data['email'] ?? 'admin@tdrentals.com',
+        'phone' => $admin_data['phone_number'] ?? '9800000000'
+    ]
+];
+
+$curl = curl_init();
+curl_setopt_array($curl, array(
+    CURLOPT_URL => $khalti_config['base_url'] . 'epayment/initiate/',
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_ENCODING => '',
+    CURLOPT_MAXREDIRS => 10,
+    CURLOPT_TIMEOUT => 0,
+    CURLOPT_FOLLOWLOCATION => true,
+    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    CURLOPT_CUSTOMREQUEST => 'POST',
+    CURLOPT_POSTFIELDS => json_encode($post_data),
+    CURLOPT_HTTPHEADER => array(
+        'Authorization: Key ' . $khalti_config['secret_key'],
+        'Content-Type: application/json',
+    ),
+));
+
+$response = curl_exec($curl);
+$err = curl_error($curl);
+curl_close($curl);
+
+if ($err) {
+    die("cURL Error #:" . $err);
+}
+
+$response_data = json_decode($response, true);
+
+if (isset($response_data['payment_url'])) {
+    // Save some data in session to verify later
+    $_SESSION['khalti_purchase_order_id'] = $purchase_order_id;
+    $_SESSION['khalti_amount'] = $total_price_npr;
+    
+    // Redirect to Khalti
+    header("Location: " . $response_data['payment_url']);
+    exit;
+} else {
+    echo "Khalti Error: " . ($response_data['detail'] ?? 'Unknown error');
+    echo "<pre>"; print_r($response_data); echo "</pre>";
+}

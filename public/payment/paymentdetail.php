@@ -328,6 +328,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
             </button>
         </form>
 
+        <div class="payment-divider">
+            <span>OR PAY WITH</span>
+        </div>
+
+        <div class="khalti-section">
+            <a href="khalti_initiate.php" id="khalti-button">
+                <img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo">
+                PAY NPR <?= number_format($totalprice, 0) ?>
+            </a>
+        </div>
+
         <!-- Security Note -->
         <p class="security-note">
             Your transaction is encrypted and secured via TLS 1.3 protocol.
@@ -338,14 +349,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
     <!-- Right Section: Summary -->
     <div id="summary-section">
 
-        <div class="car-info">
-            <img class="car-image"
+<div class="car-info">
+    <img class="car-image"
                 src="../../<?= htmlspecialchars($vehicle['image_path'] ?? 'assets/images/car_1775474575.jpg') ?>"
                 alt="">
-            <div class="car-image-overlay"></div>
+    <div class="car-image-overlay"></div>
             <!-- <h2 class="car-title">2024 Ferrari SF90</h2> -->
-            <h2 class="car-title"><?= htmlspecialchars($vehicle['model']) ?></h2>
-        </div>
+    <h2 class="car-title"><?= htmlspecialchars($vehicle['model']) ?></h2>
+</div>
 
         <div class="booking-panel">
 
