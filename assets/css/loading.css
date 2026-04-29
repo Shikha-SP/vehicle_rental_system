@@ -1,0 +1,159 @@
+/* ============================================================
+   TD RENTALS — Loading Indicators
+   ============================================================ */
+
+/* ── Top progress bar ─────────────────────────────────────── */
+#td-progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 0%;
+  height: 3px;
+  background: var(--primary, hsl(0,72%,51%));
+  z-index: 99999;
+  transition: width 0.3s ease, opacity 0.4s ease;
+  box-shadow: 0 0 8px var(--primary, hsl(0,72%,51%));
+}
+#td-progress-bar.done {
+  width: 100% !important;
+  opacity: 0;
+}
+
+/* ── Full-page overlay ────────────────────────────────────── */
+#td-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+}
+#td-overlay.active {
+  display: flex;
+}
+#td-overlay-msg {
+  color: hsl(0,0%,90%);
+  font-family: var(--font-body, 'Inter', sans-serif);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+#td-overlay-spinner {
+  width: 44px; height: 44px;
+  border: 3px solid rgba(255,255,255,0.15);
+  border-top-color: var(--primary, hsl(0,72%,51%));
+  border-radius: 50%;
+  animation: td-spin 0.7s linear infinite;
+}
+
+/* ── Button spinner ───────────────────────────────────────── */
+.td-btn-spinner {
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: td-spin 0.6s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* ── Inline spinner (search / filter) ────────────────────── */
+.td-inline-spinner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--fg-muted, hsl(0,0%,55%));
+  padding: 0.4rem 0;
+}
+.td-inline-spinner::before {
+  content: '';
+  display: inline-block;
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-top-color: var(--primary, hsl(0,72%,51%));
+  border-radius: 50%;
+  animation: td-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Skeleton shimmer card ────────────────────────────────── */
+.td-skeleton-card {
+  background: hsl(0,0%,11%);
+  border: 1px solid hsl(0,0%,20%);
+  border-radius: 12px;
+  overflow: hidden;
+  animation: td-fadeIn 0.3s ease;
+}
+.td-skeleton-img {
+  width: 100%; height: 200px;
+  background: linear-gradient(90deg,
+    hsl(0,0%,14%) 25%,
+    hsl(0,0%,20%) 50%,
+    hsl(0,0%,14%) 75%);
+  background-size: 200% 100%;
+  animation: td-shimmer 1.4s infinite;
+}
+.td-skeleton-body {
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.td-skeleton-line {
+  height: 13px;
+  border-radius: 6px;
+  background: linear-gradient(90deg,
+    hsl(0,0%,16%) 25%,
+    hsl(0,0%,22%) 50%,
+    hsl(0,0%,16%) 75%);
+  background-size: 200% 100%;
+  animation: td-shimmer 1.4s infinite;
+}
+.td-skeleton-line.short  { width: 55%; }
+.td-skeleton-line.xshort { width: 35%; }
+
+/* ── Image lazy shimmer ───────────────────────────────────── */
+.td-img-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: hsl(0,0%,14%);
+}
+.td-img-shimmer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent 25%,
+    rgba(255,255,255,0.06) 50%,
+    transparent 75%);
+  background-size: 200% 100%;
+  animation: td-shimmer 1.4s infinite;
+}
+.td-img-shimmer img {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  position: relative;
+  z-index: 1;
+}
+.td-img-shimmer img.loaded {
+  opacity: 1;
+}
+.td-img-shimmer.done::before { display: none; }
+
+/* ── Keyframes ────────────────────────────────────────────── */
+@keyframes td-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes td-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes td-fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
