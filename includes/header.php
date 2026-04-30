@@ -12,7 +12,7 @@ if (session_status() === PHP_SESSION_NONE) {
     <title>TD Rentals</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/loading.css">
+    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/loading.css?v=<?= time() ?>">
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/footer.css">
 </head>
@@ -148,4 +148,4 @@ window.onclick = function(e) {
 }
 </script>
 
-<script src="/vehicle_rental_collab_project/assets/js/loading.js"></script>
+<script src="/vehicle_rental_collab_project/assets/js/loading.js?v=<?= time() ?>"></script>

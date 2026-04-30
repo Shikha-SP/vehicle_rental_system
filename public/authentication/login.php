@@ -97,8 +97,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — TD Rentals</title>
     <link rel="stylesheet" href="../../assets/css/login.css">
+    <link rel="stylesheet" href="../../assets/css/loading.css?v=<?= time() ?>">
 </head>
 <body>
+
+<!-- Loading Overlay UI -->
+<div id="td-progress-bar"></div>
+<div id="td-overlay">
+  <div class="loader-logo">TD <span>RENTALS</span></div>
+  <div class="loader-bar-track"><div class="loader-bar-fill"></div></div>
+  <div id="td-overlay-msg">Loading…</div>
+</div>
 
 <div class="login-page">
 
@@ -240,5 +249,6 @@ function togglePw() {
 }
 </script>
 
+<script src="../../assets/js/loading.js?v=<?= time() ?>"></script>
 </body>
 </html>

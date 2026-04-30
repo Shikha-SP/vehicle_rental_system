@@ -1,12 +1,12 @@
 /* ============================================================
-   TD RENTALS — Loading Indicators (loading.js)
+   TD RENTALS — Loading Indicators 
    ============================================================ */
 
 (function () {
   'use strict';
 
-  const MIN_DELAY_MS = 1500; // Enforce 1.5 second minimum display
-  const MIN_SHIMMER_MS = 1000;
+  const MIN_DELAY_MS = 300;
+  const MIN_SHIMMER_MS = 300;
 
   /* ── 1. Top progress bar ──────────────────────────────────── */
   function startProgressBar() {
@@ -96,10 +96,14 @@
 
   /* ── 5. Form Submissions ─────────────────────────────────── */
   document.addEventListener('submit', function (e) {
+    if (e.defaultPrevented) return; // Respect other scripts that blocked submission
     const form = e.target;
     if (form.dataset.noLoading) return;
     if (form.dataset.isSubmitting === 'true') return; // Prevent double-submit loops
-    if (!form.checkValidity()) return;
+
+    // If the form relies on native validation (no 'novalidate' attribute), let the browser handle errors
+    const hasNoValidate = form.hasAttribute('novalidate');
+    if (!hasNoValidate && !form.checkValidity()) return;
 
     // Intercept form submission to enforce artificial delay
     e.preventDefault();

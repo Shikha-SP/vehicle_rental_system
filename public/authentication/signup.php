@@ -289,6 +289,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
+<!-- Loading Overlay UI -->
+<div id="td-progress-bar"></div>
+<div id="td-overlay">
+  <div class="loader-logo">TD <span>RENTALS</span></div>
+  <div class="loader-bar-track"><div class="loader-bar-fill"></div></div>
+  <div id="td-overlay-msg">Loading…</div>
+</div>
+
 <div class="signup-page">
 
     <nav class="signup-nav">
@@ -790,5 +798,6 @@ if (step1Form && document.getElementById('password')) {
 }
 </script>
 
+<script src="../../assets/js/loading.js?v=<?= time() ?>"></script>
 </body>
 </html>
