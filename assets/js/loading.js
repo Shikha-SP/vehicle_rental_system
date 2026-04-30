@@ -1,27 +1,28 @@
 /* ============================================================
    TD RENTALS — Loading Indicators (loading.js)
-   Handles: progress bar, overlay, button spinners,
-            inline spinner, skeleton cards, image shimmer
    ============================================================ */
 
 (function () {
   'use strict';
 
-  /* ── 1. Top progress bar ──────────────────────────────────── */
-  const bar = document.getElementById('td-progress-bar');
+  const MIN_DELAY_MS = 1500; // Enforce 1.5 second minimum display
+  const MIN_SHIMMER_MS = 1000;
 
-  function progressStart() {
+  /* ── 1. Top progress bar ──────────────────────────────────── */
+  function startProgressBar() {
+    const bar = document.getElementById('td-progress-bar');
     if (!bar) return;
     bar.style.transition = 'none';
-    bar.style.opacity    = '1';
-    bar.style.width      = '0%';
+    bar.style.opacity = '1';
+    bar.style.width = '0%';
     requestAnimationFrame(() => {
       bar.style.transition = 'width 0.4s ease';
-      bar.style.width      = '70%';
+      bar.style.width = '70%';
     });
   }
 
-  function progressDone() {
+  function finishProgressBar() {
+    const bar = document.getElementById('td-progress-bar');
     if (!bar) return;
     bar.style.width = '100%';
     setTimeout(() => { bar.classList.add('done'); }, 300);
@@ -31,115 +32,179 @@
     }, 750);
   }
 
-  /* Start bar on navigation links (not hash, not target=_blank) */
-  document.querySelectorAll('a[href]').forEach(a => {
-    const href = a.getAttribute('href') || '';
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
     if (
       href.startsWith('#') ||
       href.startsWith('javascript') ||
       a.target === '_blank' ||
-      href === '' ||
+      a.hostname !== window.location.hostname ||
       a.classList.contains('no-progress')
     ) return;
-    a.addEventListener('click', () => progressStart());
+    startProgressBar();
   });
-
-  /* Stop bar when page finishes loading */
-  window.addEventListener('load', () => progressDone());
-  /* Also hide on DOMContentLoaded for fast pages */
-  document.addEventListener('DOMContentLoaded', () => progressDone());
 
   /* ── 2. Full-page overlay helpers ────────────────────────── */
-  const overlay    = document.getElementById('td-overlay');
-  const overlayMsg = document.getElementById('td-overlay-msg');
+  function showOverlay(submitter) {
+    const overlay = document.getElementById('td-overlay');
+    const msgEl = document.getElementById('td-overlay-msg');
+    if (!overlay) return;
 
-  window.TDLoading = {
-    show: function (msg) {
-      if (!overlay) return;
-      if (overlayMsg) overlayMsg.textContent = msg || 'Loading…';
-      overlay.classList.add('active');
-    },
-    hide: function () {
-      if (!overlay) return;
-      overlay.classList.remove('active');
+    let msg = getFormMessage();
+    if (submitter && submitter.classList.contains('reject-btn')) {
+      msg = 'Rejecting vehicle…';
     }
-  };
 
-  /* ── 3. Form submissions → overlay + button spinner ──────── */
-  document.querySelectorAll('form').forEach(form => {
-    /* Skip forms that opt out */
-    if (form.dataset.noLoading) return;
+    if (msgEl) msgEl.textContent = msg;
 
-    form.addEventListener('submit', function (e) {
-      /* Don't show overlay if HTML5 validation will stop submission */
-      if (!form.checkValidity()) return;
+    // Ensure smooth CSS transition
+    overlay.style.transition = 'opacity 0.4s ease, visibility 0.4s ease';
+    overlay.classList.add('active');
+  }
 
-      const submitBtn  = form.querySelector('[type="submit"]');
-      const btnVal     = submitBtn ? (submitBtn.value || submitBtn.textContent.trim()) : '';
-      const customMsg  = form.dataset.loadingMsg || inferMsg(btnVal);
+  function hideOverlay() {
+    const overlay = document.getElementById('td-overlay');
+    if (!overlay || !overlay.classList.contains('active')) return;
+    overlay.classList.remove('active'); // CSS handles the 0.4s fade-out
+  }
 
-      /* Button spinner + disable */
-      if (submitBtn) {
-        const spinner = document.createElement('span');
-        spinner.className = 'td-btn-spinner';
-        submitBtn.prepend(spinner);
-        submitBtn.disabled = true;
-      }
-
-      /* Full-page overlay */
-      window.TDLoading.show(customMsg);
-    });
-  });
-
-  function inferMsg(btnText) {
-    const t = btnText.toLowerCase();
-    if (t.includes('pay'))      return 'Processing payment…';
-    if (t.includes('book'))     return 'Confirming booking…';
-    if (t.includes('login') || t.includes('log in')) return 'Signing you in…';
-    if (t.includes('register') || t.includes('sign up')) return 'Creating your account…';
-    if (t.includes('submit'))   return 'Submitting…';
-    if (t.includes('save'))     return 'Saving changes…';
-    if (t.includes('upload'))   return 'Uploading…';
-    if (t.includes('list'))     return 'Listing your vehicle…';
-    if (t.includes('approve'))  return 'Approving vehicle…';
-    if (t.includes('reject'))   return 'Rejecting vehicle…';
-    if (t.includes('delete'))   return 'Deleting…';
-    if (t.includes('update'))   return 'Updating…';
-    if (t.includes('search') || t.includes('filter') || t.includes('apply')) return 'Searching…';
+  /* ── 3. Contextual Messages ──────────────────────────────── */
+  function getFormMessage() {
+    const path = window.location.pathname.toLowerCase();
+    if (path.includes('payment')) return 'Processing payment…';
+    if (path.includes('login')) return 'Signing you in…';
+    if (path.includes('signup')) return 'Creating your account…';
+    if (path.includes('list_car')) return 'Listing your vehicle…';
+    if (path.includes('edit')) return 'Saving changes…';
+    if (path.includes('review')) return 'Approving vehicle…';
     return 'Please wait…';
   }
 
-  /* ── 4. Inline spinner for search/filter forms ───────────── */
-  document.querySelectorAll('form.search-filters-form, form[data-inline-loading]').forEach(form => {
-    const resultArea = document.querySelector(
-      form.dataset.resultsTarget || '.vehicles-content, .results-area'
-    );
-
-    form.addEventListener('submit', function () {
-      if (!form.checkValidity()) return;
-
-      /* If a results area exists, show inline spinner there */
-      if (resultArea) {
-        const spinner = document.createElement('div');
-        spinner.className = 'td-inline-spinner';
-        spinner.id = 'td-search-spinner';
-        spinner.textContent = 'Finding vehicles…';
-        resultArea.prepend(spinner);
-      }
-      /* No full-page overlay for filter forms (already handled above) */
-    });
-  });
-
-  /* ── 5. Skeleton cards for vehicle listings ──────────────── */
-  const vehiclesGrid = document.querySelector('.vehicles-grid');
-  if (vehiclesGrid && vehiclesGrid.children.length === 0) {
-    renderSkeletons(vehiclesGrid, 6);
+  /* ── 4. Button spinner ───────────────────────────────────── */
+  function addButtonSpinner(btn) {
+    if (!btn) return;
+    btn.classList.add('td-btn-loading');
   }
 
-  function renderSkeletons(container, count) {
-    for (let i = 0; i < count; i++) {
+  function removeButtonSpinners() {
+    document.querySelectorAll('.td-btn-loading').forEach(btn => {
+      btn.classList.remove('td-btn-loading');
+    });
+  }
+
+  /* ── 5. Form Submissions ─────────────────────────────────── */
+  document.addEventListener('submit', function (e) {
+    const form = e.target;
+    if (form.dataset.noLoading) return;
+    if (form.dataset.isSubmitting === 'true') return; // Prevent double-submit loops
+    if (!form.checkValidity()) return;
+
+    // Intercept form submission to enforce artificial delay
+    e.preventDefault();
+    form.dataset.isSubmitting = 'true';
+
+    let clickedBtn = form.querySelector('[type="submit"]');
+    if (e.submitter && e.submitter.tagName === 'BUTTON') {
+      clickedBtn = e.submitter;
+    }
+
+    if (form.method.toUpperCase() === 'GET') {
+      const resultArea = document.querySelector(
+        form.dataset.resultsTarget || '.vehicles-content, .results-area'
+      );
+
+      if (clickedBtn) addButtonSpinner(clickedBtn);
+
+      if (resultArea) {
+        let spinner = document.getElementById('td-search-spinner');
+        if (!spinner) {
+          spinner = document.createElement('div');
+          spinner.className = 'td-inline-spinner';
+          spinner.id = 'td-search-spinner';
+          spinner.textContent = 'Finding vehicles…';
+          resultArea.prepend(spinner);
+        }
+
+        const grid = document.querySelector('.vehicles-grid');
+        if (grid) {
+          const realCards = grid.querySelectorAll('.vehicle-card');
+          realCards.forEach(card => card.style.display = 'none');
+          for (let i = 0; i < 6; i++) {
+            const card = document.createElement('div');
+            card.className = 'td-skeleton td-search-skeleton';
+            card.innerHTML = `<div class="td-skeleton-img"></div><div class="td-skeleton-body"><div class="td-skeleton-line"></div><div class="td-skeleton-line short"></div><div class="td-skeleton-line xshort"></div><div class="td-skeleton-line short"></div></div>`;
+            grid.appendChild(card);
+          }
+        }
+      }
+
+      // Wait exactly MIN_DELAY_MS before executing the request
+      setTimeout(() => {
+        if (clickedBtn && clickedBtn.name) {
+          const hidden = document.createElement('input');
+          hidden.type = 'hidden';
+          hidden.name = clickedBtn.name;
+          hidden.value = clickedBtn.value;
+          form.appendChild(hidden);
+        }
+        form.submit();
+
+        // Restore state cleanly in case the submission doesn't navigate (e.g. file download)
+        removeButtonSpinners();
+        const inlineSpinner = document.getElementById('td-search-spinner');
+        if (inlineSpinner) inlineSpinner.remove();
+        const grid = document.querySelector('.vehicles-grid');
+        if (grid) {
+          document.querySelectorAll('.td-search-skeleton').forEach(sk => sk.remove());
+          grid.querySelectorAll('.vehicle-card').forEach(c => c.style.display = '');
+        }
+        form.dataset.isSubmitting = 'false';
+      }, MIN_DELAY_MS);
+
+      return;
+    }
+
+    // Handle POST forms (Login, Signup, Admin Approvals)
+    if (clickedBtn) addButtonSpinner(clickedBtn);
+    showOverlay(clickedBtn);
+
+    // Enforce synchronous 1.5s delay before backend execution
+    setTimeout(() => {
+      if (clickedBtn && clickedBtn.name) {
+        const hidden = document.createElement('input');
+        hidden.type = 'hidden';
+        hidden.name = clickedBtn.name;
+        hidden.value = clickedBtn.value;
+        form.appendChild(hidden);
+      }
+      form.submit();
+
+      // Ensure UI restores perfectly if navigation doesn't occur immediately
+      removeButtonSpinners();
+      hideOverlay();
+      form.dataset.isSubmitting = 'false';
+    }, MIN_DELAY_MS);
+  });
+
+  /* ── 6. Skeleton shimmer cards ───────────────────────────── */
+  function insertSkeletons() {
+    const vehiclesGrid = document.querySelector('.vehicles-grid');
+    if (!vehiclesGrid) return;
+
+    // If the page already has real vehicle cards (from PHP), hide them temporarily
+    const realCards = vehiclesGrid.querySelectorAll('.vehicle-card');
+    let hasRealCards = realCards.length > 0;
+
+    if (hasRealCards) {
+      realCards.forEach(card => card.style.display = 'none');
+    }
+
+    // Insert 6 skeleton cards
+    for (let i = 0; i < 6; i++) {
       const card = document.createElement('div');
-      card.className = 'td-skeleton-card';
+      card.className = 'td-skeleton';
       card.innerHTML = `
         <div class="td-skeleton-img"></div>
         <div class="td-skeleton-body">
@@ -148,55 +213,84 @@
           <div class="td-skeleton-line xshort"></div>
           <div class="td-skeleton-line short"></div>
         </div>`;
-      container.appendChild(card);
+      vehiclesGrid.appendChild(card);
+    }
+
+    // If we hid real cards, restore them after the MIN_SHIMMER_MS delay
+    if (hasRealCards) {
+      setTimeout(() => {
+        document.querySelectorAll('.td-skeleton').forEach(sk => sk.remove());
+        realCards.forEach(card => {
+          card.style.display = '';
+          card.style.animation = 'td-fadeIn 0.4s ease forwards';
+        });
+      }, MIN_SHIMMER_MS);
     }
   }
 
-  /* ── 6. Image lazy-load shimmer ──────────────────────────── */
-  function applyImageShimmer() {
+  /* ── 7. Image lazy-load shimmer ──────────────────────────── */
+  function initLazyImages() {
     document.querySelectorAll('.vehicle-image-wrapper img, .tbl-img img').forEach(img => {
       const wrapper = img.parentElement;
       if (!wrapper.classList.contains('td-img-shimmer')) {
         wrapper.classList.add('td-img-shimmer');
       }
-      if (img.complete && img.naturalWidth > 0) {
-        img.classList.add('loaded');
-        wrapper.classList.add('done');
-      } else {
-        img.addEventListener('load', () => {
+
+      const imgLoadTime = Date.now();
+
+      function resolveImage() {
+        const elapsed = Date.now() - imgLoadTime;
+        const remaining = Math.max(0, MIN_SHIMMER_MS - elapsed);
+        setTimeout(() => {
           img.classList.add('loaded');
           wrapper.classList.add('done');
-        });
-        img.addEventListener('error', () => {
-          wrapper.classList.add('done');
-        });
+
+          const skeleton = document.querySelector('.td-skeleton');
+          if (skeleton) {
+            document.querySelectorAll('.td-skeleton').forEach(sk => {
+              sk.style.opacity = '0';
+              setTimeout(() => sk.remove(), 300);
+            });
+          }
+        }, remaining);
+      }
+
+      if (img.complete && img.naturalWidth > 0) {
+        resolveImage();
+      } else {
+        img.addEventListener('load', resolveImage);
+        img.addEventListener('error', () => wrapper.classList.add('done'));
       }
     });
   }
-  applyImageShimmer();
 
-  /* ── 7. Admin approve/reject action spinners ─────────────── */
-  document.querySelectorAll('button[name="action"]').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const isApprove = this.value === 'approve';
-      /* Show overlay with contextual message */
-      window.TDLoading.show(isApprove ? 'Approving vehicle…' : 'Rejecting vehicle…');
-
-      /* Spinner on the clicked button */
-      const spinner = document.createElement('span');
-      spinner.className = 'td-btn-spinner';
-      this.prepend(spinner);
-      this.disabled = true;
-
-      /* Disable the sibling action button too */
-      const siblingBtns = this.closest('td')?.querySelectorAll('button[name="action"]');
-      if (siblingBtns) siblingBtns.forEach(b => { b.disabled = true; });
-    });
+  /* ── 8. Page Events ──────────────────────────────────────── */
+  window.addEventListener('load', () => {
+    finishProgressBar();
   });
 
-  /* ── 8. Auto-hide overlay on page load ───────────────────── */
-  window.addEventListener('load', () => {
-    window.TDLoading.hide();
+  document.addEventListener('DOMContentLoaded', () => {
+    initLazyImages();
+    insertSkeletons();
+  });
+
+  // Clean up if user uses the browser back button (bfcache)
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+      hideOverlay();
+      removeButtonSpinners();
+
+      const grid = document.querySelector('.vehicles-grid');
+      if (grid) {
+        document.querySelectorAll('.td-search-skeleton').forEach(sk => sk.remove());
+        grid.querySelectorAll('.vehicle-card').forEach(c => c.style.display = '');
+      }
+
+      const inlineSpinner = document.getElementById('td-search-spinner');
+      if (inlineSpinner) inlineSpinner.remove();
+
+      document.querySelectorAll('form').forEach(f => f.dataset.isSubmitting = 'false');
+    }
   });
 
 })();

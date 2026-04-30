@@ -743,15 +743,47 @@ if (step1Form && document.getElementById('password')) {
         const allValid = Object.values(passwordValid).every(v => v === true);
         const passwordsMatch = passwordInput.value === confirmPasswordInput.value;
         
+        if (passwordInput.value === '') {
+            return; // Let HTML5 validation handle required fields naturally
+        }
+        
         if (!allValid) {
             e.preventDefault();
-            alert('Please ensure your password meets all requirements');
+            e.stopImmediatePropagation();
+            let banner = document.getElementById('signup-error-banner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'signup-error-banner';
+                banner.className = 'error-message';
+                banner.style.padding = '10px';
+                banner.style.background = 'rgba(244, 67, 54, 0.1)';
+                banner.style.borderRadius = '6px';
+                banner.style.marginBottom = '15px';
+                banner.style.fontSize = '14px';
+                const heading = document.querySelector('.signup-heading');
+                heading.parentNode.insertBefore(banner, heading.nextSibling);
+            }
+            banner.textContent = 'Please ensure your password meets all requirements.';
             return false;
         }
         
         if (confirmPasswordInput.value.length > 0 && !passwordsMatch) {
             e.preventDefault();
-            alert('Passwords do not match');
+            e.stopImmediatePropagation();
+            let banner = document.getElementById('signup-error-banner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'signup-error-banner';
+                banner.className = 'error-message';
+                banner.style.padding = '10px';
+                banner.style.background = 'rgba(244, 67, 54, 0.1)';
+                banner.style.borderRadius = '6px';
+                banner.style.marginBottom = '15px';
+                banner.style.fontSize = '14px';
+                const heading = document.querySelector('.signup-heading');
+                heading.parentNode.insertBefore(banner, heading.nextSibling);
+            }
+            banner.textContent = 'Passwords do not match.';
             return false;
         }
     });

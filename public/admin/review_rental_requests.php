@@ -129,13 +129,13 @@ if (!$result) {
                 <div style="display:flex; justify-content:flex-end; gap: 0.5rem;">
                     <form method="POST" style="margin: 0;">
                         <input type="hidden" name="vehicle_id" value="<?= $vehicle['id'] ?>">
-                        <button type="submit" name="action" value="approve" class="btn btn-sm" style="background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.3);">
+                        <button type="submit" name="action" value="approve" class="btn btn-sm approve-btn" style="background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.3);">
                             Approve
                         </button>
                     </form>
                     <form method="POST" style="margin: 0;">
                         <input type="hidden" name="vehicle_id" value="<?= $vehicle['id'] ?>">
-                        <button type="submit" name="action" value="reject" class="btn btn-red btn-sm">
+                        <button type="submit" name="action" value="reject" class="btn btn-red btn-sm reject-btn">
                             Reject
                         </button>
                     </form>
