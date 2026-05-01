@@ -116,10 +116,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
         if (!$user_id)
             die("User not logged in.");
 
-        $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, created_at)
-                       VALUES (?, ?, ?, ?, ?, 'confirmed', NOW())";
-        $insert_stmt = $conn->prepare($insert_sql);
-        $insert_stmt->bind_param("iissd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $totalprice);
+        $discount_code = filter_input(INPUT_POST, 'applied_discount_code', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $discount_amount = 0.00;
+        $discount_code_id = null;
+
+        if (!empty($discount_code)) {
+            $stmt = $conn->prepare("SELECT * FROM discount_codes WHERE code = ? AND is_active = 1");
+            $stmt->bind_param("s", $discount_code);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                $code_data = $result->fetch_assoc();
+                $code_id   = $code_data['id'];
+                $stmt->close();
+
+                // Check expiry
+                if ($code_data['expires_at'] && $code_data['expires_at'] < date('Y-m-d')) {
+                    $errors['discount'] = "This discount code has expired.";
+                }
+                // Check max uses
+                elseif ($code_data['max_uses'] !== null && $code_data['used_count'] >= $code_data['max_uses']) {
+                    $errors['discount'] = "This code has reached its maximum uses.";
+                } 
+                // Check ownership if it's a personal code
+                elseif ($code_data['owner_user_id'] !== null && (int)$code_data['owner_user_id'] !== (int)$user_id) {
+                    $errors['discount'] = "This is a personal discount code and cannot be used by you.";
+                } else {
+                    // Check user already used it
+                    $stmt = $conn->prepare("SELECT id FROM discount_code_uses WHERE user_id = ? AND code_id = ?");
+                    $stmt->bind_param("ii", $user_id, $code_id);
+                    $stmt->execute();
+                    if ($stmt->get_result()->num_rows > 0) {
+                        $errors['discount'] = "You have already used this discount code.";
+                    } else {
+                        // Calculate discount
+                        if ($code_data['type'] === 'flat') {
+                            $discount_amount = min($code_data['discount_flat'], $totalprice);
+                        } else {
+                            $discount_amount = ($totalprice * $code_data['discount_percent']) / 100;
+                        }
+                        $totalprice -= $discount_amount;
+                        $discount_code_id = $code_id;
+                    }
+                    $stmt->close();
+                }
+            } else {
+                $stmt->close();
+                $errors['discount'] = "Invalid or inactive discount code.";
+            }
+        }
+        
+        if (empty($errors)) {
+            $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, discount_code, discount_amount, created_at)
+                           VALUES (?, ?, ?, ?, ?, 'confirmed', ?, ?, NOW())";
+            $insert_stmt = $conn->prepare($insert_sql);
+            $insert_stmt->bind_param("iissdsd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $totalprice, $discount_code, $discount_amount);
 
         if ($insert_stmt->execute()) {
             $booking_id = $insert_stmt->insert_id;
@@ -132,6 +184,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
             $txn_stmt = $conn->prepare($txn_sql);
             $txn_stmt->bind_param("iidsss", $booking_id, $user_id, $totalprice, $card_last4, $card_type, $transaction_ref);
             $txn_stmt->execute();
+
+            // Record discount usage & increment used_count
+            if ($discount_code_id) {
+                $stmt = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
+                $stmt->bind_param("ii", $user_id, $discount_code_id);
+                $stmt->execute();
+                $stmt->close();
+                // Increment the global used_count
+                $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = $discount_code_id");
+
+                // ── GOLD RESET CYCLE ──────────────────────────────────────────
+                // If the code used was the user's personal GOLD code (20% off),
+                // reset their medal back to BRONZE so they climb the cycle again:
+                //   BRONZE → SILVER → GOLD → [use Gold code] → BRONZE → ...
+                $gold_check = $conn->query("
+                    SELECT id FROM discount_codes
+                    WHERE id = $discount_code_id
+                      AND owner_user_id = $user_id
+                      AND discount_percent = 20
+                    LIMIT 1
+                ");
+                if ($gold_check && $gold_check->num_rows > 0) {
+                    // Reset to Bronze level (completed_rentals = 3 keeps them at Bronze threshold)
+                    $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
+                }
+                // ─────────────────────────────────────────────────────────────
+            }
+
+            // Milestone logic — increment AFTER possible Gold reset
+            $conn->query("UPDATE users SET completed_rentals = completed_rentals + 1 WHERE id = $user_id");
+            $res = $conn->query("SELECT completed_rentals, medal FROM users WHERE id = $user_id");
+            if ($res && $res->num_rows > 0) {
+                $u_data = $res->fetch_assoc();
+                $rentals = (int)$u_data['completed_rentals'];
+                $current_medal = $u_data['medal'];
+                
+                $new_medal      = $current_medal;
+                $milestone_code    = '';
+                $milestone_percent = 0;
+
+                // Updated thresholds: Bronze=3, Silver=7, Gold=15
+                if ($rentals >= 3 && $current_medal === 'NONE') {
+                    $new_medal         = 'BRONZE';
+                    $milestone_code    = 'BRONZE5';
+                    $milestone_percent = 5;
+                } elseif ($rentals >= 7 && $current_medal === 'BRONZE') {
+                    $new_medal         = 'SILVER';
+                    $milestone_code    = 'SILVER10';
+                    $milestone_percent = 10;
+                } elseif ($rentals >= 15 && $current_medal === 'SILVER') {
+                    $new_medal         = 'GOLD';
+                    $milestone_code    = 'GOLD20';
+                    $milestone_percent = 20;
+                }
+                
+                if ($new_medal !== $current_medal) {
+                    $conn->query("UPDATE users SET medal = '$new_medal' WHERE id = $user_id");
+                    
+                    if ($milestone_code !== '') {
+                        // Create a UNIQUE personal code for this user (max_uses = 1)
+                        $unique_suffix = substr(md5(uniqid($user_id, true)), 0, 4);
+                        $personal_code = $milestone_code . "-U" . $user_id . "-" . $unique_suffix;
+                        
+                        $conn->query("
+                            INSERT INTO discount_codes (code, type, discount_percent, discount_flat, max_uses, owner_user_id) 
+                            VALUES ('$personal_code', 'percent', $milestone_percent, 0, 1, $user_id)
+                        ");
+                    }
+                }
+            }
 
             // Fetch user data for the confirmation email
             $user_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
@@ -153,9 +275,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                     'days' => $days,
                     'price_per_day' => $vehicle['price_per_day'],
                     'total_price' => $totalprice,
+                    'discount_code' => $discount_code,
+                    'discount_amount' => $discount_amount,
                 ];
 
                 $pdf_string = generateInvoicePDF($invoice_data);
+
+                $savings_msg = '';
+                if ($discount_amount > 0) {
+                    $savings_msg = "<p style='color: #2ecc71;'><strong>You saved NPR " . number_format($discount_amount, 2) . " with code " . htmlspecialchars($discount_code) . "!</strong></p>";
+                }
 
                 // send mail
                 $mail = createMailer();
@@ -167,7 +296,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
         <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
         <p>Pickup date: {$pickup_date}</p>
         <p>Dropoff date: {$dropoff_date}</p>
-        <p>Total Paid: NPR $totalprice</p>
+        <p>Total Paid: NPR " . number_format($totalprice, 2) . "</p>
+        {$savings_msg}
         <p>Please find your invoice attached.</p>
         <p>Thank you for choosing TD Rentals 🚀</p>
         
@@ -195,6 +325,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
         } else {
             $errors['database'] = "Failed to create booking. Please try again.";
         }
+        }
+    }
+}
+
+// Fetch available discount codes for the user
+$available_codes = [];
+$uid = $_SESSION['user_id'] ?? 0;
+if ($uid) {
+    // Get user medal for filtering
+    $u_res = $conn->query("SELECT medal FROM users WHERE id = $uid");
+    $u_row = $u_res->fetch_assoc();
+    $u_medal = $u_row['medal'] ?? 'NONE';
+
+    // 1. Show global codes (owner_user_id IS NULL)
+    // 2. Show personal codes (owner_user_id = UID)
+    // 3. Exclude already used codes
+    $codes_sql = "
+        SELECT c.code, c.discount_percent, c.owner_user_id
+        FROM discount_codes c 
+        WHERE c.is_active = 1 
+          AND (c.owner_user_id IS NULL OR c.owner_user_id = ?)
+          AND c.id NOT IN (SELECT code_id FROM discount_code_uses WHERE user_id = ?)
+        ORDER BY c.discount_percent DESC
+    ";
+    $c_stmt = $conn->prepare($codes_sql);
+    $c_stmt->bind_param("ii", $uid, $uid);
+    $c_stmt->execute();
+    $raw_codes = $c_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $c_stmt->close();
+
+    // Filter out global milestone codes if user doesn't have the level
+    foreach ($raw_codes as $rc) {
+        if ($rc['owner_user_id'] === null) {
+            $cname = strtoupper($rc['code']);
+            if (strpos($cname, 'BRONZE') !== false && $u_medal === 'NONE') continue;
+            if (strpos($cname, 'SILVER') !== false && ($u_medal === 'NONE' || $u_medal === 'BRONZE')) continue;
+            if (strpos($cname, 'GOLD') !== false && $u_medal !== 'GOLD') continue;
+        }
+        $available_codes[] = $rc;
     }
 }
 ?>
@@ -214,12 +383,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
             <h1 class="title">PAYMENT DETAILS</h1>
 
             <!-- Credit Card Info -->
-            <form action="paymentdetail.php" method="POST">
+            <form action="paymentdetail.php" method="POST" id="checkout-form">
                 <!-- Add hidden fields to carry booking data through re-submission -->
                 <input type="hidden" name="vehicle_id" value="<?= $vehicle_id ?>">
                 <input type="hidden" name="pickup_date" value="<?= htmlspecialchars($pickup_date) ?>">
                 <input type="hidden" name="dropoff_date" value="<?= htmlspecialchars($dropoff_date) ?>">
                 <input type="hidden" name="days" value="<?= $days ?>">
+                <input type="hidden" name="applied_discount_code" id="applied_discount_code" value="<?= htmlspecialchars($_POST['applied_discount_code'] ?? '') ?>">
+
+                <?php if (!empty($errors['discount'])): ?>
+                    <div class="field-error" style="margin-bottom: 15px; padding: 10px; background: rgba(224, 48, 48, 0.1); border-left: 3px solid #e03030;">
+                        <?= e($errors['discount']) ?>
+                    </div>
+                <?php endif; ?>
 
                 <section class="card-section">
                     <h3 class="section-title"><i class="fa-solid fa-credit-card icon"></i>CREDIT CARD INFORMATION</h3>
@@ -384,10 +560,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
 
                 <hr class="price-divider" />
 
+                <!-- Discount Input Section -->
+                <div class="discount-section" style="margin-bottom: 20px;">
+                    <p class="price-breakdown-label">Discount Code</p>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="discount-input" class="input-field" placeholder="Enter code" style="margin-bottom: 0;">
+                        <button type="button" id="apply-discount-btn" class="primary-btn" style="width: auto; padding: 0 15px; font-size: 0.9rem;">APPLY</button>
+                    </div>
+                    <p id="discount-message" style="margin-top: 5px; font-size: 0.85rem;"></p>
+                    <div style="margin-top: 10px; font-size: 0.8rem; color: #888;">
+                        <span style="display: block; margin-bottom: 6px; color: #aaa; text-transform: uppercase; font-weight: 600; font-size: 0.7rem;">Available Rewards:</span>
+                        <?php if (!empty($available_codes)): ?>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <?php foreach($available_codes as $ac): ?>
+                                    <span class="available-code-badge" onclick="document.getElementById('discount-input').value='<?= htmlspecialchars($ac['code']) ?>'" style="background: rgba(224,48,48,0.1); border: 1px solid rgba(224,48,48,0.3); color: var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600;" onmouseover="this.style.background='rgba(224,48,48,0.2)'" onmouseout="this.style.background='rgba(224,48,48,0.1)'">
+                                        <?= htmlspecialchars($ac['code']) ?> (-<?= floatval($ac['discount_percent']) ?>%)
+                                    </span>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <span style="font-style: italic; opacity: 0.7;">No unused codes available right now.</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Dynamic Discount Row (Hidden initially) -->
+                <div class="price-row" id="discount-row" style="display: none;">
+                    <span class="price-row-name" id="discount-name" style="color: #2ecc71;">Discount</span>
+                    <span class="price-row-amount" id="discount-amount" style="color: #2ecc71;">- NPR 0.00</span>
+                </div>
+
                 <!-- Total -->
                 <div class="total-row">
                     <span class="total-label">Total Due</span>
-                    <span class="total-amount">NPR
+                    <span class="total-amount" id="final-total-display" data-base-total="<?= $totalprice ?>">NPR
                         <?= number_format($totalprice, 2) ?></span>
                 </div>
 
@@ -450,6 +656,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
         const zipInput = document.getElementById('zip');
         zipInput.addEventListener('input', function () {
             this.value = this.value.replace(/\D/g, '').substring(0, 5);
+        });
+
+        // Discount Code AJAX
+        const applyBtn = document.getElementById('apply-discount-btn');
+        const discountInput = document.getElementById('discount-input');
+        const discountMsg = document.getElementById('discount-message');
+        const finalTotalDisplay = document.getElementById('final-total-display');
+        const baseTotal = parseFloat(finalTotalDisplay.getAttribute('data-base-total'));
+        const discountRow = document.getElementById('discount-row');
+        const discountName = document.getElementById('discount-name');
+        const discountAmountDisplay = document.getElementById('discount-amount');
+        const appliedDiscountInput = document.getElementById('applied_discount_code');
+        const payButton = document.getElementById('pay-button');
+
+        applyBtn.addEventListener('click', function() {
+            const code = discountInput.value.trim();
+            if (!code) {
+                discountMsg.textContent = 'Please enter a code.';
+                discountMsg.style.color = '#e74c3c';
+                return;
+            }
+
+            // Reset UI to loading
+            applyBtn.textContent = '...';
+            applyBtn.disabled = true;
+
+            fetch('check_discount.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'code=' + encodeURIComponent(code) + '&total_price=' + encodeURIComponent(baseTotal)
+            })
+            .then(response => response.json())
+            .then(data => {
+                applyBtn.textContent = 'APPLY';
+                applyBtn.disabled = false;
+
+                if (data.valid) {
+                    discountMsg.textContent = data.message;
+                    discountMsg.style.color = '#2ecc71';
+                    
+                    // Update UI Total
+                    finalTotalDisplay.innerHTML = 'NPR ' + data.new_total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    payButton.innerHTML = 'CONFIRM & PAY NPR ' + data.new_total.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                    
+                    // Show discount row
+                    discountRow.style.display = 'flex';
+                    discountName.textContent = 'Discount (' + data.discount_percent + '% - ' + code + ')';
+                    discountAmountDisplay.textContent = '- NPR ' + data.discount_amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    
+                    // Store applied code to hidden form input
+                    appliedDiscountInput.value = code;
+                } else {
+                    discountMsg.textContent = data.message;
+                    discountMsg.style.color = '#e74c3c';
+                    
+                    // Reset to base total
+                    finalTotalDisplay.innerHTML = 'NPR ' + baseTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    payButton.innerHTML = 'CONFIRM & PAY NPR ' + baseTotal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                    discountRow.style.display = 'none';
+                    appliedDiscountInput.value = '';
+                }
+            })
+            .catch(error => {
+                applyBtn.textContent = 'APPLY';
+                applyBtn.disabled = false;
+                discountMsg.textContent = 'Error verifying code. Try again.';
+                discountMsg.style.color = '#e74c3c';
+            });
         });
     </script>
 </body>

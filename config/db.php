@@ -110,6 +110,52 @@ CREATE TABLE IF NOT EXISTS transactions (
     FOREIGN KEY (booking_id) REFERENCES bookings(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );");
+$conn->query("
+CREATE TABLE IF NOT EXISTS discount_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    type ENUM('percent','flat') DEFAULT 'percent',
+    discount_percent DECIMAL(5,2) DEFAULT 0,
+    discount_flat DECIMAL(10,2) DEFAULT 0,
+    max_uses INT DEFAULT NULL,
+    used_count INT DEFAULT 0,
+    is_active TINYINT(1) DEFAULT 1,
+    expires_at DATE DEFAULT NULL,
+    owner_user_id INT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
+
+// Function to safely add a column if it doesn't exist
+function addColumn($conn, $table, $column, $definition) {
+    $check = $conn->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
+    if ($check && $check->num_rows == 0) {
+        $conn->query("ALTER TABLE `$table` ADD COLUMN `$column` $definition");
+    }
+}
+
+addColumn($conn, 'discount_codes', 'type', "ENUM('percent','flat') DEFAULT 'percent'");
+addColumn($conn, 'discount_codes', 'discount_flat', "DECIMAL(10,2) DEFAULT 0");
+addColumn($conn, 'discount_codes', 'max_uses', "INT DEFAULT NULL");
+addColumn($conn, 'discount_codes', 'used_count', "INT DEFAULT 0");
+addColumn($conn, 'discount_codes', 'expires_at', "DATE DEFAULT NULL");
+addColumn($conn, 'discount_codes', 'owner_user_id', "INT DEFAULT NULL");
+
+$conn->query("
+CREATE TABLE IF NOT EXISTS discount_code_uses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    code_id INT NOT NULL,
+    used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (code_id) REFERENCES discount_codes(id) ON DELETE CASCADE
+)");
+
+addColumn($conn, 'users', 'medal', "ENUM('NONE','BRONZE','SILVER','GOLD') DEFAULT 'NONE'");
+addColumn($conn, 'users', 'completed_rentals', "INT DEFAULT 0");
+
+addColumn($conn, 'bookings', 'discount_code', "VARCHAR(50) DEFAULT NULL");
+addColumn($conn, 'bookings', 'discount_amount', "DECIMAL(10,2) DEFAULT 0.00");
+
 // confirmation
 // echo "Database and tables are ready.";
 ?>
