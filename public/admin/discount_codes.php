@@ -70,227 +70,61 @@ $medal_tiers = [
     'gold'   => ['rentals' => 15, 'discount' => 20, 'icon' => '🥇', 'color' => '#ffd700'],
 ];
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discount Codes | TD Rentals Admin</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+<?php require_once __DIR__ . '/../../includes/header.php'; ?>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/admin.css">
+<style>
+    .page-wrap { max-width: 960px; margin: 40px auto; font-family: 'Inter', sans-serif; }
+    .back-link { display: inline-block; color: #666; text-decoration: none; font-size: 0.85rem; margin-bottom: 24px; }
+    .back-link:hover { color: #fff; }
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 32px; color: #fff; }
+    h1 span { color: #e03030; }
+    .msg { padding: 12px 18px; border-radius: 8px; margin-bottom: 24px; font-size: 0.9rem; }
+    .msg.success { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: #2ecc71; }
+    .msg.error   { background: rgba(224,48,48,0.1); border: 1px solid rgba(224,48,48,0.3); color: #e03030; }
+    .section-title { font-size: 0.8rem; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
+    .create-card { background: #181818; border: 1px solid #2a2a2a; border-radius: 12px; padding: 28px; margin-bottom: 40px; }
+    .create-card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 24px; color: #ddd; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .form-full { grid-column: 1 / -1; }
+    .field label { display: block; font-size: 0.75rem; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    input[type="text"], input[type="number"], input[type="date"], select { width: 100%; padding: 12px 14px; background: #111; border: 1px solid #2a2a2a; color: #fff; border-radius: 8px; font-size: 0.9rem; font-family: 'Inter', sans-serif; transition: border-color 0.2s; appearance: none; }
+    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    input:focus, select:focus { outline: none; border-color: #e03030; }
+    input::placeholder { color: #444; }
+    .btn-create { width: 100%; padding: 14px; background: #1a1a1a; border: 1px solid #333; color: #fff; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 8px; cursor: pointer; margin-top: 8px; transition: background 0.2s, border-color 0.2s; }
+    .btn-create:hover { background: #222; border-color: #555; }
+    .codes-section { margin-bottom: 48px; }
+    .code-row { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #1e1e1e; gap: 16px; }
+    .code-row:first-child { border-top: 1px solid #1e1e1e; }
+    .code-badge { background: #e03030; color: #fff; font-size: 0.8rem; font-weight: 700; padding: 5px 12px; border-radius: 6px; letter-spacing: 0.05em; white-space: nowrap; min-width: 90px; text-align: center; }
+    .code-badge.inactive { background: #333; color: #888; }
+    .code-type { flex: 1; font-size: 0.85rem; color: #bbb; }
+    .code-uses { font-size: 0.85rem; color: #888; white-space: nowrap; min-width: 80px; text-align: right; }
+    .code-expiry { font-size: 0.8rem; color: #666; white-space: nowrap; min-width: 100px; text-align: right; }
+    .code-status { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+    .code-status.active { background: rgba(46,204,113,0.15); color: #2ecc71; }
+    .code-status.inactive { background: rgba(150,150,150,0.15); color: #888; }
+    .code-actions { display: flex; gap: 8px; }
+    .btn-sm { padding: 5px 12px; font-size: 0.75rem; font-weight: 600; border-radius: 6px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+    .btn-toggle { background: #222; color: #aaa; border-color: #333; }
+    .btn-toggle:hover { border-color: #555; color: #fff; }
+    .btn-del { background: transparent; color: #e03030; border-color: rgba(224,48,48,0.3); }
+    .btn-del:hover { background: rgba(224,48,48,0.1); }
+    .empty-codes { color: #555; font-size: 0.9rem; padding: 20px 0; }
+    .medal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+    .medal-card { background: #181818; border: 1px solid #2a2a2a; border-radius: 12px; padding: 24px 20px; text-align: center; }
+    .medal-icon { font-size: 2.5rem; margin-bottom: 10px; display: block; }
+    .medal-name { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .medal-sub { font-size: 0.8rem; color: #666; margin-bottom: 6px; }
+    .medal-discount { font-size: 0.85rem; }
+</style>
+<div class="admin-wrapper">
+  <div class="main">
+    <div class="page-wrap">
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0e0e0e;
-            color: #ffffff;
-            min-height: 100vh;
-            padding: 40px 24px;
-        }
-
-        .page-wrap { max-width: 960px; margin: 0 auto; }
-
-        .back-link {
-            display: inline-block;
-            color: #666;
-            text-decoration: none;
-            font-size: 0.85rem;
-            margin-bottom: 24px;
-        }
-        .back-link:hover { color: #fff; }
-
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 32px;
-        }
-        h1 span { color: #e03030; }
-
-        /* Message */
-        .msg {
-            padding: 12px 18px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-size: 0.9rem;
-        }
-        .msg.success { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: #2ecc71; }
-        .msg.error   { background: rgba(224,48,48,0.1);  border: 1px solid rgba(224,48,48,0.3);  color: #e03030; }
-
-        /* Section headers */
-        .section-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 16px;
-        }
-
-        /* Create form card */
-        .create-card {
-            background: #181818;
-            border: 1px solid #2a2a2a;
-            border-radius: 12px;
-            padding: 28px;
-            margin-bottom: 40px;
-        }
-        .create-card h2 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 24px;
-            color: #ddd;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
-        .form-full { grid-column: 1 / -1; }
-
-        .field label {
-            display: block;
-            font-size: 0.75rem;
-            color: #888;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        input[type="text"], input[type="number"], input[type="date"], select {
-            width: 100%;
-            padding: 12px 14px;
-            background: #111;
-            border: 1px solid #2a2a2a;
-            color: #fff;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-family: 'Inter', sans-serif;
-            transition: border-color 0.2s;
-            appearance: none;
-        }
-        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
-        input:focus, select:focus { outline: none; border-color: #e03030; }
-        input::placeholder { color: #444; }
-
-        .btn-create {
-            width: 100%;
-            padding: 14px;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: #fff;
-            font-size: 0.85rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: background 0.2s, border-color 0.2s;
-        }
-        .btn-create:hover { background: #222; border-color: #555; }
-
-        /* Codes table */
-        .codes-section { margin-bottom: 48px; }
-
-        .code-row {
-            display: flex;
-            align-items: center;
-            padding: 14px 0;
-            border-bottom: 1px solid #1e1e1e;
-            gap: 16px;
-        }
-        .code-row:first-child { border-top: 1px solid #1e1e1e; }
-
-        .code-badge {
-            background: #e03030;
-            color: #fff;
-            font-size: 0.8rem;
-            font-weight: 700;
-            padding: 5px 12px;
-            border-radius: 6px;
-            letter-spacing: 0.05em;
-            white-space: nowrap;
-            min-width: 90px;
-            text-align: center;
-        }
-        .code-badge.inactive { background: #333; color: #888; }
-
-        .code-type {
-            flex: 1;
-            font-size: 0.85rem;
-            color: #bbb;
-        }
-
-        .code-uses {
-            font-size: 0.85rem;
-            color: #888;
-            white-space: nowrap;
-            min-width: 80px;
-            text-align: right;
-        }
-
-        .code-expiry {
-            font-size: 0.8rem;
-            color: #666;
-            white-space: nowrap;
-            min-width: 100px;
-            text-align: right;
-        }
-
-        .code-status {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 20px;
-            white-space: nowrap;
-        }
-        .code-status.active   { background: rgba(46,204,113,0.15); color: #2ecc71; }
-        .code-status.inactive { background: rgba(150,150,150,0.15); color: #888; }
-
-        .code-actions { display: flex; gap: 8px; }
-        .btn-sm {
-            padding: 5px 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-        }
-        .btn-toggle { background: #222; color: #aaa; border-color: #333; }
-        .btn-toggle:hover { border-color: #555; color: #fff; }
-        .btn-del { background: transparent; color: #e03030; border-color: rgba(224,48,48,0.3); }
-        .btn-del:hover { background: rgba(224,48,48,0.1); }
-
-        .empty-codes { color: #555; font-size: 0.9rem; padding: 20px 0; }
-
-        /* Medal section */
-        .medal-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-        .medal-card {
-            background: #181818;
-            border: 1px solid #2a2a2a;
-            border-radius: 12px;
-            padding: 24px 20px;
-            text-align: center;
-        }
-        .medal-icon { font-size: 2.5rem; margin-bottom: 10px; display: block; }
-        .medal-name { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-        .medal-sub  { font-size: 0.8rem; color: #666; margin-bottom: 6px; }
-        .medal-discount { font-size: 0.85rem; }
-    </style>
-</head>
-<body>
-<div class="page-wrap">
-
-    <a href="admin_dashboard.php" class="back-link">← Back to Dashboard</a>
     <h1>Discount <span>Codes</span></h1>
 
     <?php if ($message): ?>
@@ -407,7 +241,10 @@ $medal_tiers = [
         <?php endforeach; ?>
     </div>
 
-</div>
+    </div> <!-- end page-wrap -->
+  </div> <!-- end main -->
+</div> <!-- end admin-wrapper -->
+
 <script>
 function toggleValueLabel() {
     const type = document.getElementById('code-type').value;
@@ -422,5 +259,4 @@ function toggleValueLabel() {
     }
 }
 </script>
-</body>
-</html>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
