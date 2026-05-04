@@ -111,11 +111,26 @@ if ($filter_result && $filter_result->num_rows > 0) {
 }
 
 // Sort arrays for better display
-sort($transmissions);
 sort($fuel_types);
+sort($transmissions);
+
+// Fetch user's wishlist IDs
+$wishlist_ids = [];
+if (isset($_SESSION['user_id'])) {
+    $wish_sql = "SELECT vehicle_id FROM wishlist WHERE user_id = ?";
+    $wish_stmt = $conn->prepare($wish_sql);
+    $wish_stmt->bind_param("i", $_SESSION['user_id']);
+    $wish_stmt->execute();
+    $wish_res = $wish_stmt->get_result();
+    while ($w = $wish_res->fetch_assoc()) {
+        $wishlist_ids[] = $w['vehicle_id'];
+    }
+}
 ?>
 <?php require_once '../../includes/header.php'; ?>
 <link rel="stylesheet" href="../../assets/css/vehicles.css">
+<link rel="stylesheet" href="../../assets/css/wishlist.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <main class="vehicles-page">
     <div class="vehicles-hero">
@@ -235,6 +250,15 @@ sort($fuel_types);
                                     <img src="<?= htmlspecialchars($imgSrc) ?>"
                                          alt="<?= htmlspecialchars($vehicle['model']) ?>" class="vehicle-image"
                                          onerror="this.closest('.vehicle-image-wrapper').style.display='none'">
+                                    
+                                    <!-- WISHLIST HEART -->
+                                    <button class="card-wishlist-btn <?= in_array($vehicle['id'], $wishlist_ids) ? 'active' : '' ?>" 
+                                            data-id="<?= $vehicle['id'] ?>" 
+                                            onclick="toggleWishlist(event, this)"
+                                            title="<?= in_array($vehicle['id'], $wishlist_ids) ? 'Remove from wishlist' : 'Add to wishlist' ?>">
+                                        <i class="<?= in_array($vehicle['id'], $wishlist_ids) ? 'fa-solid' : 'fa-regular' ?> fa-heart"></i>
+                                    </button>
+
                                     <div class="vehicle-badge">Available</div>
                                 </div>
                             <?php endif; ?>
@@ -411,6 +435,45 @@ sort($fuel_types);
 
     if (currentHex) applyColor(currentHex);
 })();
+
+function toggleWishlist(event, btn) {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    const vehicleId = btn.getAttribute('data-id');
+    const isActive = btn.classList.contains('active');
+    const action = isActive ? 'remove' : 'add';
+    
+    const formData = new FormData();
+    formData.append('vehicle_id', vehicleId);
+    formData.append('action', action);
+
+    fetch('../api/wishlist_action.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.in_wishlist) {
+                btn.classList.add('active');
+                btn.querySelector('i').classList.replace('fa-regular', 'fa-solid');
+                btn.title = 'Remove from wishlist';
+            } else {
+                btn.classList.remove('active');
+                btn.querySelector('i').classList.replace('fa-solid', 'fa-regular');
+                btn.title = 'Add to wishlist';
+            }
+        } else {
+            if (data.message.includes('login')) {
+                window.location.href = '../authentication/login.php';
+            } else {
+                alert(data.message);
+            }
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
 </script>
 
 <?php require_once '../../includes/footer.php'; ?>

@@ -83,6 +83,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </button>
 
             <div class="dropdown" id="dropdownMenu">
+              <a href="/vehicle_rental_collab_project/public/user/wishlist.php">My Wishlist</a>
               <a href="/vehicle_rental_collab_project/public/user/settings.php">Settings</a>
               <a href="/vehicle_rental_collab_project/public/authentication/logout.php?return=<?= urlencode($_SERVER['REQUEST_URI']) ?>">Logout</a>
             </div>
