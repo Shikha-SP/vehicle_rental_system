@@ -2,6 +2,7 @@
 require_once '../../config/db.php';
 require_once '../../includes/functions.php';
 session_start();
+file_put_contents('../../session_debug.txt', print_r($_SESSION, true));
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     redirect('../info/contact.php');
@@ -17,8 +18,10 @@ if (!empty($name) && !empty($email) && !empty($message)) {
         exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $name, $email, $message);
+    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+    $stmt = $conn->prepare("INSERT INTO contact_messages (user_id, name, email, message) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("isss", $user_id, $name, $email, $message);
     
     if ($stmt->execute()) {
         echo "<script>alert('Thank you for contacting us! We will get back to you soon.'); window.location.href = '../info/contact.php';</script>";

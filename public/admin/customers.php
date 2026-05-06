@@ -8,13 +8,13 @@ $totalBookings = $totalBookingsResult ? $totalBookingsResult->fetch_row()[0] : 0
 $totalRevenueResult = $conn->query("SELECT COALESCE(SUM(total_price), 0) FROM bookings");
 $totalRevenue = $totalRevenueResult ? $totalRevenueResult->fetch_row()[0] : 0;
 
-$totalUsersResult = $conn->query("SELECT COUNT(*) FROM users");
+$totalUsersResult = $conn->query("SELECT COUNT(*) FROM users WHERE is_verified = 1");
 $totalUsers = $totalUsersResult ? $totalUsersResult->fetch_row()[0] : 0;
 
 $confirmedCount = $totalBookings;
 
 $users = [];
-$uRes = $conn->query("SELECT * FROM users ORDER BY created_at DESC LIMIT 50");
+$uRes = $conn->query("SELECT * FROM users WHERE is_verified = 1 ORDER BY created_at DESC LIMIT 50");
 if ($uRes) {
     while($row = $uRes->fetch_assoc()) {
         $users[] = $row;
@@ -70,6 +70,15 @@ require_once __DIR__ . '/../../includes/header.php';
               $uCount    = count($uBookings);
               $uRevenue  = array_sum(array_column($uBookings, 'total_price'));
               
+              if ($u['status'] === 'timeout' && $u['ban_expires_at']) {
+                  if (new DateTime() >= new DateTime($u['ban_expires_at'])) {
+                      // Auto-restore in DB so they are treated as normal customers
+                      $conn->query("UPDATE users SET status = 'active', ban_expires_at = NULL WHERE id = " . (int)$u['id']);
+                      $u['status'] = 'active';
+                      $u['ban_expires_at'] = null;
+                  }
+              }
+
               if ($u['status'] === 'banned') {
                   $statusClass = 'b-cancelled';
                   $statusLabel = 'BANNED';
@@ -93,12 +102,7 @@ require_once __DIR__ . '/../../includes/header.php';
               </td>
               <td><span class="badge <?= $statusClass ?>"><?= $statusLabel ?></span></td>
               <td>
-                <div style="display:flex;align-items:center;gap:.5rem">
-                  <div class="freq-dots">
-                    <?php for ($i = 0; $i < 5; $i++): ?><div class="dot <?= $i < min(5, $uCount) ? 'on' : '' ?>"></div><?php endfor; ?>
-                  </div>
-                  <span style="font-size:.72rem;color:var(--fg3)"><?= $uCount ?> Rental<?= $uCount !== 1 ? 's' : '' ?></span>
-                </div>
+                <span style="font-weight:700; font-size:1.1rem; color:var(--fg);"><?= $uCount ?></span>
               </td>
               <td style="font-weight:600">NPR<?= number_format($uRevenue, 2) ?></td>
               <td>

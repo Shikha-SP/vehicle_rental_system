@@ -1,0 +1,7 @@
+Array
+(
+    [csrf_token] => 5d396b61b4b741aac5d261dd380ce959eeb5148cc8c7e0d37c3f88b7e8b7a837
+    [user_id] => 1
+    [username] => Shikhaaaaa
+    [is_admin] => 1
+)

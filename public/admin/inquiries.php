@@ -98,7 +98,12 @@ require_once __DIR__ . '/../../includes/header.php';
                   <tr style="opacity: <?= $c['status'] === 'resolved' ? '0.5' : '1' ?>;">
                     <td style="white-space: nowrap;"><?= date('M d, Y H:i', strtotime($c['created_at'])) ?></td>
                     <td>
-                      <div style="font-weight:600"><?= htmlspecialchars($c['name']) ?></div>
+                      <div style="font-weight:600">
+                        <?= htmlspecialchars($c['name']) ?>
+                        <?php if ($c['user_id']): ?>
+                          <span style="font-size: 0.65rem; color: var(--red); font-weight: normal; margin-left: 4px;">(user)</span>
+                        <?php endif; ?>
+                      </div>
                       <div style="font-size:.7rem;color:var(--fg3)"><?= htmlspecialchars($c['email']) ?></div>
                     </td>
                     <td style="max-width: 400px;">
@@ -110,10 +115,10 @@ require_once __DIR__ . '/../../includes/header.php';
                       <?php if ($c['status'] === 'pending'): ?>
                         <form method="POST" style="margin:0;">
                           <input type="hidden" name="resolve_contact_id" value="<?= $c['id'] ?>">
-                          <button class="btn btn-outline" style="width:100%; padding: 4px 8px; font-size: 0.7rem; border-color: #888; color: #aaa;">Mark Resolved</button>
+                          <button class="btn btn-outline" style="width:100%; padding: 4px 8px; font-size: 0.7rem; border-color: #888; color: #aaa;">Mark Read</button>
                         </form>
                       <?php else: ?>
-                        <span style="font-size:0.7rem; color:#4ade80; text-align:center;">RESOLVED</span>
+                        <span style="font-size:0.7rem; color:#4ade80; text-align:center;">READ</span>
                       <?php endif; ?>
                     </td>
                   </tr>
@@ -137,7 +142,17 @@ require_once __DIR__ . '/../../includes/header.php';
                   <tr><td colspan="5" style="text-align:center; padding: 2rem; color: #888;">No active appeals.</td></tr>
                 <?php else: ?>
                   <?php foreach ($appeals as $i): 
-                      $statusClass = $i['user_status'] === 'banned' ? 'b-cancelled' : ($i['user_status'] === 'timeout' ? 'b-pending' : 'b-verified');
+                      if ($i['user_status'] === 'timeout' && $i['ban_expires_at']) {
+                          if (new DateTime() >= new DateTime($i['ban_expires_at'])) {
+                              // Auto-restore in DB
+                              $conn->query("UPDATE users SET status = 'active', ban_expires_at = NULL WHERE id = " . (int)$i['user_id']);
+                              $i['user_status'] = 'active';
+                              $i['ban_expires_at'] = null;
+                          }
+                      }
+
+                      $statusClass = $i['user_status'] === 'banned' ? 'b-cancelled' : 'b-verified';
+                      $statusLabel = strtoupper($i['user_status']);
                   ?>
                   <tr style="opacity: <?= $i['status'] === 'resolved' ? '0.5' : '1' ?>;">
                     <td style="white-space: nowrap;"><?= date('M d, Y H:i', strtotime($i['created_at'])) ?></td>
@@ -145,7 +160,7 @@ require_once __DIR__ . '/../../includes/header.php';
                       <div style="font-weight:600"><?= htmlspecialchars($i['first_name'] . ' ' . $i['last_name']) ?></div>
                       <div style="font-size:.7rem;color:var(--fg3)"><?= htmlspecialchars($i['email']) ?></div>
                     </td>
-                    <td><span class="badge <?= $statusClass ?>"><?= strtoupper($i['user_status']) ?></span></td>
+                    <td><span class="badge <?= $statusClass ?>"><?= $statusLabel ?></span></td>
                     <td style="max-width: 300px;">
                         <div style="background: rgba(0,0,0,0.2); padding: 0.8rem; border-radius: 6px; font-size: 0.85rem;">
                             <?= nl2br(htmlspecialchars($i['message'])) ?>
@@ -160,7 +175,7 @@ require_once __DIR__ . '/../../includes/header.php';
                           </form>
                           <?php endif; ?>
                           <?php if ($i['user_status'] !== 'active'): ?>
-                          <button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.7rem; border-color: #4ade80; color: #4ade80;" onclick="unbanUser(<?= $i['user_id'] ?>)">Restore Account</button>
+                              <button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.7rem; border-color: #4ade80; color: #4ade80;" onclick="unbanUser(<?= $i['user_id'] ?>)">Restore Account</button>
                           <?php endif; ?>
                       </div>
                     </td>
