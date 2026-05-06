@@ -25,6 +25,10 @@ if (!isset($_SESSION['csrf_token'])) {
 
 $errors = [];
 
+if (isset($_GET['deleted'])) {
+    $errors[] = "Your account has been permanently deleted due to policy violations.";
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Verify the CSRF token submitted from the form against the one in their active session.

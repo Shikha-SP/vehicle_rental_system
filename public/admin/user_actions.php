@@ -11,7 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $user_id = (int)($_POST['user_id'] ?? 0);
 $action = $_POST['action'] ?? '';
-$days = (int)($_POST['days'] ?? 0);
+$value = (int)($_POST['value'] ?? 0);
+$unit = $_POST['unit'] ?? 'days';
 
 if (!$user_id || !in_array($action, ['ban', 'timeout', 'unban'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid parameters.']);
@@ -24,7 +25,15 @@ try {
         $stmt->bind_param("i", $user_id);
     } else {
         $status = $action === 'ban' ? 'banned' : 'timeout';
-        $expires = date('Y-m-d H:i:s', strtotime("+$days days"));
+        
+        if ($action === 'ban') {
+            // Ban is always 3 days
+            $expires = date('Y-m-d H:i:s', strtotime("+3 days"));
+        } else {
+            // Timeout duration based on unit
+            $time_str = "+$value " . ($unit === 'minutes' ? 'minutes' : 'days');
+            $expires = date('Y-m-d H:i:s', strtotime($time_str));
+        }
         
         $stmt = $conn->prepare("UPDATE users SET status = ?, ban_expires_at = ? WHERE id = ?");
         $stmt->bind_param("ssi", $status, $expires, $user_id);

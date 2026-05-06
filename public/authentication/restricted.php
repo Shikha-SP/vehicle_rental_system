@@ -31,10 +31,38 @@ if ($user['status'] === 'active') {
 
 $now = new DateTime();
 $expires = new DateTime($user['ban_expires_at']);
+$time_remaining = "";
+
+if ($now >= $expires) {
+    if ($user['status'] === 'timeout') {
+        // Auto-restore timeout users
+        $upd = $conn->prepare("UPDATE users SET status = 'active', ban_expires_at = NULL WHERE id = ?");
+        $upd->bind_param("i", $user_id);
+        $upd->execute();
+        
+        $_SESSION['user_id'] = $user_id;
+        $_SESSION['username'] = $user['first_name'];
+        unset($_SESSION['restricted_user_id']);
+        redirect('../user/home_page.php');
+    } else {
+        // Banned user whose 3 days are up -> they get deleted on refresh
+        $del = $conn->prepare("DELETE FROM users WHERE id = ?");
+        $del->bind_param("i", $user_id);
+        $del->execute();
+        session_destroy();
+        redirect('login.php?deleted=1');
+    }
+}
+
 $diff = $now->diff($expires);
-$days_left = $diff->days;
-if ($expires > $now && $diff->h > 0 && $days_left == 0) {
-    $days_left = 1; // Round up for display if under 24 hours
+if ($diff->days > 0) {
+    $time_remaining = $diff->days . " Day" . ($diff->days > 1 ? "s " : " ") . $diff->h . " Hr" . ($diff->h != 1 ? "s" : "");
+} elseif ($diff->h > 0) {
+    $time_remaining = ($diff->h * 60 + $diff->i) . " Min " . $diff->s . " Sec";
+} elseif ($diff->i > 0) {
+    $time_remaining = $diff->i . " Min " . $diff->s . " Sec";
+} else {
+    $time_remaining = $diff->s . " Seconds";
 }
 
 if (!isset($_SESSION['csrf_token'])) {
@@ -110,7 +138,7 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
                 </div>
                 <div class="message-box">
                     You were found violating our policies. Your account has been permanently banned and will be completely deleted in:
-                    <div class="days-left"><?= $days_left ?> Days</div>
+                    <div class="days-left"><?= $time_remaining ?></div>
                     If you believe this is a mistake, please contact the admin immediately.
                 </div>
             <?php elseif ($user['status'] === 'timeout'): ?>
@@ -120,7 +148,7 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
                 </div>
                 <div class="message-box" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: #fbbf24;">
                     Your account is temporarily timed out for policy violations.
-                    <div class="days-left"><?= $days_left ?> Days</div>
+                    <div class="days-left"><?= $time_remaining ?></div>
                     Wait until the timeout expires to regain access, or contact the admin if you think this is a mistake.
                 </div>
             <?php endif; ?>
@@ -149,6 +177,44 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
         </div>
     </main>
 </div>
+
+<script>
+// Auto-refresh when timer reaches zero
+const expiresAt = new Date("<?= $user['ban_expires_at'] ?>").getTime();
+
+function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = expiresAt - now;
+
+    if (distance <= 0) {
+        window.location.reload();
+        return;
+    }
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    let display = "";
+    if (days > 0) {
+        display = days + " Day" + (days > 1 ? "s " : " ") + hours + " Hr" + (hours != 1 ? "s" : "");
+    } else if (hours > 0) {
+        display = (hours * 60 + minutes) + " Min " + seconds + " Sec";
+    } else if (minutes > 0) {
+        display = minutes + " Min " + seconds + " Sec";
+    } else {
+        display = seconds + " Seconds";
+    }
+
+    document.querySelectorAll('.days-left').forEach(el => {
+        el.innerHTML = display;
+    });
+}
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
+</script>
 
 </body>
 </html>

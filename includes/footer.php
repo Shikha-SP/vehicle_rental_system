@@ -10,9 +10,9 @@
 
     <!-- Footer navigation links -->
     <nav class="footer-links">
-        <a href="/VEHICLE_RENTAL_COLLAB_PROJECT/public/info/privacy-policy.php">Privacy Policy</a>
-        <a href="/VEHICLE_RENTAL_COLLAB_PROJECT/public/info/terms-of-service.php">Terms of Service</a>
-        <a href="/VEHICLE_RENTAL_COLLAB_PROJECT/public/info/contact.php">Contact</a>
+        <a href="/vehicle_rental_collab_project/public/info/privacy-policy.php">Privacy Policy</a>
+        <a href="/vehicle_rental_collab_project/public/info/terms-of-service.php">Terms of Service</a>
+        <a href="/vehicle_rental_collab_project/public/info/contact.php">Contact</a>
     </nav>
     
     <!-- Copyright notice with dynamic year -->

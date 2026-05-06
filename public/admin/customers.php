@@ -128,9 +128,18 @@ require_once __DIR__ . '/../../includes/header.php';
         <h3 style="margin-top:0; color:#f59e0b; font-family:'Bebas Neue',sans-serif; font-size:2rem;">Set Timeout Duration</h3>
         <p style="color:#aaa; font-size:0.9rem; margin-bottom:1.5rem;">The user will be temporarily suspended for the specified number of days.</p>
         <input type="hidden" id="timeoutUserId">
-        <div style="margin-bottom:1.5rem;">
-            <label style="display:block; margin-bottom:0.5rem; color:#888; font-size:0.8rem;">Duration (Days)</label>
-            <input type="number" id="timeoutDays" value="7" min="1" max="365" style="width:100%; padding:0.8rem; background:#000; border:1px solid #333; color:#fff; border-radius:6px;">
+        <div style="margin-bottom:1.5rem; display:flex; gap:1rem;">
+            <div style="flex:1;">
+                <label style="display:block; margin-bottom:0.5rem; color:#888; font-size:0.8rem;">Duration</label>
+                <input type="number" id="timeoutValue" value="7" min="1" max="365" style="width:100%; padding:0.8rem; background:#000; border:1px solid #333; color:#fff; border-radius:6px;">
+            </div>
+            <div style="flex:1;">
+                <label style="display:block; margin-bottom:0.5rem; color:#888; font-size:0.8rem;">Unit</label>
+                <select id="timeoutUnit" style="width:100%; padding:0.8rem; background:#000; border:1px solid #333; color:#fff; border-radius:6px; height:46px;">
+                    <option value="days">Days</option>
+                    <option value="minutes">Minutes</option>
+                </select>
+            </div>
         </div>
         <div style="display:flex; justify-content:flex-end; gap:1rem;">
             <button onclick="document.getElementById('timeoutModal').style.display='none'" style="background:transparent; border:1px solid #444; color:#aaa; padding:0.5rem 1rem; border-radius:6px; cursor:pointer;">Cancel</button>
@@ -147,8 +156,9 @@ function openTimeoutModal(id) {
 
 function submitTimeout() {
     const id = document.getElementById('timeoutUserId').value;
-    const days = document.getElementById('timeoutDays').value;
-    handleAction(id, 'timeout', days);
+    const value = document.getElementById('timeoutValue').value;
+    const unit = document.getElementById('timeoutUnit').value;
+    handleAction(id, 'timeout', value, unit);
 }
 
 function banUser(id) {
@@ -163,11 +173,12 @@ function unbanUser(id) {
     }
 }
 
-function handleAction(userId, action, days) {
+function handleAction(userId, action, value, unit = 'days') {
     const formData = new FormData();
     formData.append('user_id', userId);
     formData.append('action', action);
-    formData.append('days', days);
+    formData.append('value', value);
+    formData.append('unit', unit);
 
     fetch('user_actions.php', {
         method: 'POST',
