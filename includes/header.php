@@ -49,6 +49,7 @@ if (session_status() === PHP_SESSION_NONE) {
               <a href="/vehicle_rental_collab_project/public/admin/customers.php" 
                  class="<?= ($currentPage == 'customers.php') ? 'active' : '' ?>">Customers</a>
             </li>
+
             <li>
               <a href="/vehicle_rental_collab_project/public/admin/audit.php" 
                  class="<?= ($currentPage == 'audit.php') ? 'active' : '' ?>">Analytics</a>
@@ -85,7 +86,11 @@ if (session_status() === PHP_SESSION_NONE) {
             </button>
 
             <div class="dropdown" id="dropdownMenu">
-              <a href="/vehicle_rental_collab_project/public/user/wishlist.php">My Wishlist</a>
+              <?php if (empty($_SESSION['is_admin'])): ?>
+                <a href="/vehicle_rental_collab_project/public/user/wishlist.php">My Wishlist</a>
+              <?php else: ?>
+                <a href="/vehicle_rental_collab_project/public/admin/inquiries.php">Appeals</a>
+              <?php endif; ?>
               <a href="/vehicle_rental_collab_project/public/user/settings.php">Settings</a>
               <a href="/vehicle_rental_collab_project/public/authentication/logout.php?return=<?= urlencode($_SERVER['REQUEST_URI']) ?>">Logout</a>
             </div>

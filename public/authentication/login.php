@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         // Use prepared statements here to completely prevent SQL injection attacks
         $stmt = mysqli_prepare($conn,
-            "SELECT id, first_name, password, is_admin, is_verified 
+            "SELECT id, first_name, password, is_admin, is_verified, status, ban_expires_at 
              FROM users WHERE email=? LIMIT 1"
         );
 
@@ -70,16 +70,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Generate a new session ID to protect against session fixation vulnerabilities
                 session_regenerate_id(true);
 
-                $_SESSION['user_id']   = $user['id'];
-                $_SESSION['username']  = $user['first_name'];
-                $_SESSION['is_admin']  = (bool) $user['is_admin'];
-                $_SESSION['csrf_token'] = generateCsrfToken();
-
-                // Check the user's role and route them to the correct dashboard section
-                if ($user['is_admin']) {
-                    redirect('../admin/dashboard.php'); // Send admin users to management portal
+                // Handle Bans & Timeouts
+                if ($user['status'] === 'banned') {
+                    if ($user['ban_expires_at'] && strtotime($user['ban_expires_at']) < time()) {
+                        // Delete the user completely (cascading deletes will remove their bookings/wishlist/etc)
+                        $del_stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+                        $del_stmt->bind_param("i", $user['id']);
+                        $del_stmt->execute();
+                        $errors[] = "Your account has been permanently deleted due to policy violations.";
+                    } else {
+                        $_SESSION['restricted_user_id'] = $user['id'];
+                        redirect('restricted.php');
+                    }
+                } elseif ($user['status'] === 'timeout') {
+                    if ($user['ban_expires_at'] && strtotime($user['ban_expires_at']) < time()) {
+                        // Timeout expired, auto-resolve to active
+                        $upd_stmt = $conn->prepare("UPDATE users SET status = 'active', ban_expires_at = NULL WHERE id = ?");
+                        $upd_stmt->bind_param("i", $user['id']);
+                        $upd_stmt->execute();
+                        
+                        // Proceed with normal login
+                        $_SESSION['user_id']   = $user['id'];
+                        $_SESSION['username']  = $user['first_name'];
+                        $_SESSION['is_admin']  = (bool) $user['is_admin'];
+                        $_SESSION['csrf_token'] = generateCsrfToken();
+                        redirect($user['is_admin'] ? '../admin/dashboard.php' : '../user/home_page.php');
+                    } else {
+                        $_SESSION['restricted_user_id'] = $user['id'];
+                        redirect('restricted.php');
+                    }
                 } else {
-                    redirect('../user/home_page.php');  // Send normal drivers to standard portal
+                    // Normal active user
+                    $_SESSION['user_id']   = $user['id'];
+                    $_SESSION['username']  = $user['first_name'];
+                    $_SESSION['is_admin']  = (bool) $user['is_admin'];
+                    $_SESSION['csrf_token'] = generateCsrfToken();
+
+                    // Check the user's role and route them to the correct dashboard section
+                    if ($user['is_admin']) {
+                        redirect('../admin/dashboard.php'); // Send admin users to management portal
+                    } else {
+                        redirect('../user/home_page.php');  // Send normal drivers to standard portal
+                    }
                 }
             } else {
                 $errors[] = "Invalid email or password.";
