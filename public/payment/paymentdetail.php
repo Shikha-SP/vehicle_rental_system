@@ -451,6 +451,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
         zipInput.addEventListener('input', function () {
             this.value = this.value.replace(/\D/g, '').substring(0, 5);
         });
+
+        // Prevent multiple form submissions
+        const paymentForm = document.querySelector('form[action="paymentdetail.php"]');
+        if (paymentForm) {
+            paymentForm.addEventListener('submit', function (e) {
+                const submitBtn = document.getElementById('pay-button');
+                if (submitBtn.disabled) {
+                    e.preventDefault();
+                    return;
+                }
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = 'PROCESSING... <i class="fa-solid fa-spinner fa-spin"></i>';
+                submitBtn.style.opacity = '0.7';
+                submitBtn.style.cursor = 'not-allowed';
+            });
+        }
     </script>
 </body>
 

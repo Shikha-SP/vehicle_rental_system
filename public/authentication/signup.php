@@ -756,6 +756,25 @@ if (step1Form && document.getElementById('password')) {
         }
     });
 }
+
+// Global submit handler to prevent double-clicks on all steps
+const signupForm = document.querySelector('.signup-form');
+if (signupForm) {
+    signupForm.addEventListener('submit', function(e) {
+        // Use timeout to allow native and custom validations to run first
+        setTimeout(() => {
+            if (!e.defaultPrevented) {
+                const submitBtn = this.querySelector('.signup-form__submit');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.style.opacity = '0.7';
+                    submitBtn.style.cursor = 'not-allowed';
+                    submitBtn.innerHTML = 'Processing...';
+                }
+            }
+        }, 10);
+    });
+}
 </script>
 
 </body>
