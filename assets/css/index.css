@@ -437,12 +437,12 @@ h4 {
     position: relative;
     max-width: 1000px;
     margin: 50px auto;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
 }
 
 .map-container img {
     width: 100%;
-    opacity: 0.15;
-    filter: grayscale(100%);
+    opacity: 1;
 }
 
 .map-dots .dot {
@@ -652,10 +652,7 @@ html[data-theme="light"] .hero-desc {
     color: #444444;
 }
 
-html[data-theme="light"] .map-container img {
-    filter: invert(1) grayscale(100%);
-    opacity: 0.25;
-}
+
 
 html[data-theme="light"] .section-heading {
     color: #111111;
