@@ -18,8 +18,16 @@ if (!isset($data['message']) || empty(trim($data['message']))) {
 
 $userMessage = trim($data['message']);
 
+if (strtolower($userMessage) === 'clear') {
+    $_SESSION['chat_history'] = [];
+    echo json_encode(['reply' => 'Chat history cleared. Please ask me again!']);
+    exit;
+}
+
 // 2. Configuration
-$apiKey = '';
+$envFile = __DIR__ . '/../../.env';
+$envParams = file_exists($envFile) ? parse_ini_file($envFile) : [];
+$apiKey = $envParams['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY');
 $apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
 $model  = 'llama-3.1-8b-instant'; // 5x higher rate limit, still free, works great with strong prompting
 
@@ -209,7 +217,7 @@ if ($needsData) {
         $stmt = $conn->prepare("
             SELECT COALESCE(SUM(total_price),0) as total_spent,
                    COUNT(*) as total_bookings
-            FROM bookings WHERE user_id = ? AND status != 'cancelled'
+            FROM bookings WHERE user_id = ? AND status IN ('confirmed', 'completed', 'cancelled')
         ");
         $stmt->bind_param('i', $userId);
         $stmt->execute();
@@ -270,7 +278,7 @@ if ($needsData) {
         $userContext .= "\nCANCELLED BOOKINGS (recent " . count($cancelledBookings) . "):\n";
         if (!empty($cancelledBookings)) {
             foreach ($cancelledBookings as $b) {
-                $userContext .= "- {$b['model']} | {$b['start_date']} → {$b['end_date']} | NPR {$b['total_price']} (non-refundable)\n";
+                $userContext .= "- {$b['model']} | {$b['start_date']} → {$b['end_date']} | NPR {$b['total_price']} (Paid and lost, no refund)\n";
             }
         } else {
             $userContext .= "- None.\n";
@@ -347,7 +355,7 @@ No vehicles match → link to: http://localhost/vehicle_rental_collab_project/pu
 
 ## POLICIES
 - No refunds. All confirmed bookings are non-refundable.
-- Cancellations are recorded but not refunded.
+- Cancellations are recorded but not refunded. The user has still paid the full amount for cancelled bookings.
 - Insurance included in all bookings.
 $userContext
 $vehicleCatalog
