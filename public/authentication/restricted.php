@@ -52,36 +52,8 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Restricted — TD Rentals</title>
-    <link rel="stylesheet" href="../../assets/css/settings.css">
+    <link rel="stylesheet" href="../../assets/css/login.css">
     <style>
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .restricted-card {
-            background: rgba(20,20,20,0.8);
-            border: 1px solid rgba(255,255,255,0.08);
-            padding: 3rem;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-        .restricted-card h1 {
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 3rem;
-            color: var(--red);
-            margin-bottom: 1rem;
-            letter-spacing: 0.05em;
-        }
         .message-box {
             background: rgba(220, 38, 38, 0.1);
             border: 1px solid rgba(220, 38, 38, 0.3);
@@ -89,98 +61,93 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
             border-radius: 12px;
             margin-bottom: 2rem;
             color: #f87171;
-            font-size: 1.1rem;
+            font-size: 1rem;
             line-height: 1.5;
+            text-align: left;
         }
         .days-left {
             font-size: 2.5rem;
+            font-family: 'Bebas Neue', sans-serif;
             font-weight: 800;
             color: #fff;
             margin: 0.5rem 0;
-        }
-        .form-group {
-            text-align: left;
-            margin-bottom: 1.5rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #aaa;
-            font-size: 0.9rem;
+            text-align: center;
         }
         .form-group textarea {
             width: 100%;
-            background: rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #fff;
-            padding: 1rem;
-            border-radius: 8px;
-            min-height: 120px;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-primary, #fff);
             font-family: inherit;
+            font-size: 1rem;
+            padding: 0.5rem 0;
+            min-height: 80px;
             resize: vertical;
+            transition: border-color 0.3s;
         }
         .form-group textarea:focus {
             outline: none;
-            border-color: var(--red);
-        }
-        .btn-submit {
-            background: var(--red);
-            color: #fff;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-        }
-        .btn-submit:hover {
-            background: #b02020;
-            transform: translateY(-2px);
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 1.5rem;
-            color: #888;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-        .back-link:hover {
-            color: #fff;
+            border-bottom-color: var(--red, #e03030);
         }
     </style>
 </head>
 <body>
 
-<div class="restricted-card">
-    <?php if ($user['status'] === 'banned'): ?>
-        <h1>ACCOUNT BANNED</h1>
-        <div class="message-box">
-            You were found violating our policies. Your account has been permanently banned and will be completely deleted in:
-            <div class="days-left"><?= $days_left ?> Days</div>
-            If you believe this is a mistake, please contact the admin immediately.
-        </div>
-    <?php elseif ($user['status'] === 'timeout'): ?>
-        <h1 style="color: #f59e0b;">ACCOUNT TIMEOUT</h1>
-        <div class="message-box" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: #fbbf24;">
-            Your account is temporarily timed out for policy violations.
-            <div class="days-left"><?= $days_left ?> Days</div>
-            Wait until the timeout expires to regain access, or contact the admin if you think this is a mistake.
-        </div>
-    <?php endif; ?>
+<div class="login-page">
+    <nav class="login-nav">
+        <a href="../../public/landing_page.php" class="login-nav__logo">TD Rentals</a>
+    </nav>
 
-    <form action="../api/submit_inquiry.php" method="POST">
-        <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
-        <div class="form-group">
-            <label for="message">Message Admin (Appeal)</label>
-            <textarea name="message" id="message" placeholder="Explain your situation..." required></textarea>
+    <main class="login-main">
+        <div class="login-card">
+            <div class="login-card__rule"></div>
+            
+            <?php if ($user['status'] === 'banned'): ?>
+                <div class="login-card__heading">
+                    <span style="color: var(--red);">Account</span>
+                    <span style="color: var(--red);">Banned.</span>
+                </div>
+                <div class="message-box">
+                    You were found violating our policies. Your account has been permanently banned and will be completely deleted in:
+                    <div class="days-left"><?= $days_left ?> Days</div>
+                    If you believe this is a mistake, please contact the admin immediately.
+                </div>
+            <?php elseif ($user['status'] === 'timeout'): ?>
+                <div class="login-card__heading">
+                    <span style="color: #f59e0b;">Account</span>
+                    <span style="color: #f59e0b;">Timeout.</span>
+                </div>
+                <div class="message-box" style="background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); color: #fbbf24;">
+                    Your account is temporarily timed out for policy violations.
+                    <div class="days-left"><?= $days_left ?> Days</div>
+                    Wait until the timeout expires to regain access, or contact the admin if you think this is a mistake.
+                </div>
+            <?php endif; ?>
+
+            <form class="login-form" action="../api/submit_inquiry.php" method="POST">
+                <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
+                
+                <div class="login-form__group">
+                    <label class="login-form__label" for="message">Message Admin (Appeal)</label>
+                    <div class="form-group">
+                        <textarea name="message" id="message" placeholder="Explain your situation..." required></textarea>
+                    </div>
+                </div>
+
+                <button class="login-form__submit" type="submit" style="margin-top: 1rem;">
+                    Submit Appeal
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </button>
+
+                <p class="login-signup-prompt" style="margin-top: 1.5rem;">
+                    <a href="logout.php?confirm=yes">Return to Home</a>
+                </p>
+            </form>
         </div>
-        <button type="submit" class="btn-submit">Submit Appeal</button>
-    </form>
-    
-    <a href="logout.php" class="back-link">Return to Login</a>
+    </main>
 </div>
 
 </body>
