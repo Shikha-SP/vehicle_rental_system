@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS users (
     is_verified TINYINT(1) NOT NULL DEFAULT 0,
     verification_token VARCHAR(64) DEFAULT NULL,
     token_expires_at DATETIME DEFAULT NULL,
+    status ENUM('active', 'banned', 'timeout') DEFAULT 'active',
+    ban_expires_at DATETIME DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
 
@@ -121,6 +123,17 @@ CREATE TABLE IF NOT EXISTS wishlist (
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE,
     UNIQUE KEY (user_id, vehicle_id)
 )");
+
+$conn->query("
+CREATE TABLE IF NOT EXISTS user_inquiries (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    message TEXT NOT NULL,
+    status ENUM('pending', 'resolved') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+)");
+
 // confirmation
 // echo "Database and tables are ready.";
 ?>

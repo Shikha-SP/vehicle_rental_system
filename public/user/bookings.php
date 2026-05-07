@@ -265,7 +265,7 @@ include '../../includes/header.php';
     <?php else: ?>
         <div class="bookings-grid">
             <?php foreach ($bookings as $b): ?>
-                <div class="booking-card">
+                <div class="booking-card" data-booking-id="<?= $b['id'] ?>">
                     <div class="card-banner">
                         <?php
                           $img = $b['image_path'];
@@ -327,6 +327,8 @@ include '../../includes/header.php';
                                 <input type="hidden" name="csrf_token" value="<?= e($csrfToken) ?>">
                                 <button type="submit" class="btn-cancel">CANCEL BOOKING</button>
                             </form>
+                            <?php elseif ($b['status'] === 'cancelled'): ?>
+                                <button type="button" onclick="dismissBooking(<?= $b['id'] ?>, this)" class="btn-cancel" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #888;">DISMISS FROM VIEW</button>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -337,3 +339,24 @@ include '../../includes/header.php';
 </div>
 
 <?php include '../../includes/footer.php'; ?>
+
+<script>
+function dismissBooking(id, btn) {
+    let dismissed = JSON.parse(localStorage.getItem('dismissedBookings')) || [];
+    if (!dismissed.includes(id)) {
+        dismissed.push(id);
+        localStorage.setItem('dismissedBookings', JSON.stringify(dismissed));
+    }
+    btn.closest('.booking-card').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    let dismissed = JSON.parse(localStorage.getItem('dismissedBookings')) || [];
+    document.querySelectorAll('.booking-card').forEach(card => {
+        let bookingId = card.getAttribute('data-booking-id');
+        if (bookingId && dismissed.includes(parseInt(bookingId))) {
+            card.style.display = 'none';
+        }
+    });
+});
+</script>

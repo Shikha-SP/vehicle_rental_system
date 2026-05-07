@@ -13,6 +13,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/footer.css">
+    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/chatbot.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
@@ -47,6 +49,7 @@ if (session_status() === PHP_SESSION_NONE) {
               <a href="/vehicle_rental_collab_project/public/admin/customers.php" 
                  class="<?= ($currentPage == 'customers.php') ? 'active' : '' ?>">Customers</a>
             </li>
+
             <li>
               <a href="/vehicle_rental_collab_project/public/admin/audit.php" 
                  class="<?= ($currentPage == 'audit.php') ? 'active' : '' ?>">Analytics</a>
@@ -83,7 +86,11 @@ if (session_status() === PHP_SESSION_NONE) {
             </button>
 
             <div class="dropdown" id="dropdownMenu">
-              <a href="/vehicle_rental_collab_project/public/user/wishlist.php">My Wishlist</a>
+              <?php if (empty($_SESSION['is_admin'])): ?>
+                <a href="/vehicle_rental_collab_project/public/user/wishlist.php">My Wishlist</a>
+              <?php else: ?>
+                <a href="/vehicle_rental_collab_project/public/admin/inquiries.php">Inbox</a>
+              <?php endif; ?>
               <a href="/vehicle_rental_collab_project/public/user/settings.php">Settings</a>
               <a href="/vehicle_rental_collab_project/public/authentication/logout.php?return=<?= urlencode($_SERVER['REQUEST_URI']) ?>">Logout</a>
             </div>
@@ -136,3 +143,40 @@ window.onclick = function(e) {
   }
 }
 </script>
+
+<!-- AI CHATBOT WIDGET -->
+<div class="chatbot-widget">
+    <button class="chatbot-toggle" title="Chat with AI">
+        <i class="fa-solid fa-comments"></i>
+    </button>
+    
+    <div class="chatbot-window">
+        <div class="chat-header">
+            <div class="bot-avatar">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div class="chat-header-info">
+                <h3>TD RENTALS AI</h3>
+                <span>Always Online</span>
+            </div>
+        </div>
+        
+        <div class="chat-messages">
+            <!-- Messages injected by JS -->
+            <div class="typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        
+        <div class="chat-input-area">
+            <form class="chat-input-form">
+                <input type="text" placeholder="Ask about bookings, wishlist..." required autocomplete="off">
+                <button type="submit" class="chat-send-btn">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="/vehicle_rental_collab_project/assets/js/chatbot.js"></script>
