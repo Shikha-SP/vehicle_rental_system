@@ -42,16 +42,30 @@ if ($user_id) {
     $userBooking = (bool) $booking_check_stmt->get_result()->fetch_assoc();
 }
 
+// Check wishlist status
+$inWishlist = false;
+if ($user_id) {
+    $wish_sql = "SELECT 1 FROM wishlist WHERE user_id = ? AND vehicle_id = ? LIMIT 1";
+    $wish_stmt = $conn->prepare($wish_sql);
+    $wish_stmt->bind_param("ii", $user_id, $id);
+    $wish_stmt->execute();
+    $inWishlist = (bool)$wish_stmt->get_result()->fetch_assoc();
+}
+
 // Default dates for preview
 $def_pickup = date('Y-m-d', strtotime('+1 day'));
 $def_dropoff = date('Y-m-d', strtotime('+3 days'));
 $def_days = 2;
 
 $pageTitle = $vehicle['model'] . " – TD Rentals";
+
 include '../../includes/header.php';
 ?>
 
 <link rel="stylesheet" href="../../assets/css/vehicle_detail.css">
+<link rel="stylesheet" href="../../assets/css/ai_recommendations.css">
+<link rel="stylesheet" href="../../assets/css/wishlist.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <main class="detail-page">
     <!-- HERO SECTION -->
@@ -152,9 +166,35 @@ include '../../includes/header.php';
                         <p class="secure-note">🛡️ Secure Payment & Insurance Covered</p>
                     </form>
                 <?php endif; ?>
+
+                <div class="sidebar-wishlist">
+                    <button id="wishlist-btn" class="btn-wishlist-sidebar <?= $inWishlist ? 'active' : '' ?>" data-id="<?= $id ?>">
+                        <div class="wishlist-icon-box">
+                            <i class="<?= $inWishlist ? 'fa-solid' : 'fa-regular' ?> fa-heart"></i>
+                        </div>
+                        <span class="wishlist-text"><?= $inWishlist ? 'IN COLLECTION' : 'SAVE TO WISHLIST' ?></span>
+                    </button>
+                </div>
             </div>
         </aside>
     </div>
+
+    <!-- AI RECOMMENDATIONS SECTION -->
+    <section class="ai-recommendations" id="ai-recommendations-container">
+        <!-- Skeleton Loading -->
+        <div class="ai-loading">
+            <div class="skeleton-header">
+                <div class="skeleton-title"></div>
+                <div class="skeleton-subtitle"></div>
+            </div>
+            <div class="recommendations-grid">
+                <div class="rec-card skeleton-card"></div>
+                <div class="rec-card skeleton-card"></div>
+                <div class="rec-card skeleton-card"></div>
+                <div class="rec-card skeleton-card"></div>
+            </div>
+        </div>
+    </section>
 </main>
 
 <script>
@@ -189,6 +229,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
     pIn.addEventListener('change', updatePrice);
     pOff.addEventListener('change', updatePrice);
+
+    // Fetch AI Recommendations
+    const aiContainer = document.getElementById('ai-recommendations-container');
+    const vehicleId = <?= $id ?>;
+    
+    fetch(`../api/get_recommendations.php?id=${vehicleId}`)
+        .then(response => response.text())
+        .then(html => {
+            aiContainer.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error fetching recommendations:', error);
+            aiContainer.innerHTML = '<p class="secure-note" style="text-align:center; padding: 2rem;">Unable to load recommendations.</p>';
+        });
+
+    // Wishlist logic
+    const wishlistBtn = document.getElementById('wishlist-btn');
+    if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', function() {
+            const vehicleId = this.getAttribute('data-id');
+            const isActive = this.classList.contains('active');
+            const action = isActive ? 'remove' : 'add';
+            
+            const formData = new FormData();
+            formData.append('vehicle_id', vehicleId);
+            formData.append('action', action);
+
+            fetch('../api/wishlist_action.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.in_wishlist) {
+                        this.classList.add('active');
+                        this.querySelector('i').classList.replace('fa-regular', 'fa-solid');
+                        this.querySelector('span').innerText = 'In Wishlist';
+                    } else {
+                        this.classList.remove('active');
+                        this.querySelector('i').classList.replace('fa-solid', 'fa-regular');
+                        this.querySelector('span').innerText = 'Add to Wishlist';
+                    }
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    }
 });
 </script>
 
