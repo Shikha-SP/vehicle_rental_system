@@ -393,3 +393,33 @@
 .settings-notification {
     transition: opacity 0.3s ease-out;
 }
+
+/* ============================================================
+   LIGHT MODE OVERRIDES
+   ============================================================ */
+html[data-theme="light"] .settings-page-form-group input {
+    background: #ffffff !important;
+    color: #111111 !important;
+}
+
+html[data-theme="light"] .settings-page-form-group input:focus {
+    background: #ffffff !important;
+    color: #111111 !important;
+}
+
+/* Fix for browser autofill overriding background/text colors */
+html[data-theme="light"] .settings-page-form-group input:-webkit-autofill,
+html[data-theme="light"] .settings-page-form-group input:-webkit-autofill:hover, 
+html[data-theme="light"] .settings-page-form-group input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+    -webkit-text-fill-color: #111111 !important;
+}
+
+html[data-theme="light"] .settings-page-form-group input::placeholder {
+    color: #888888;
+}
+
+html[data-theme="light"] .settings-page-code {
+    background: #e9ecef;
+    color: var(--clr-accent);
+}

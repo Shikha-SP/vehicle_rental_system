@@ -330,3 +330,44 @@
 @media (max-width: 768px) {
   .kpi-row { grid-template-columns: 1fr; }
 }
+
+/* ============================================================
+   LIGHT MODE OVERRIDES FOR ADMIN DASHBOARD
+   ============================================================ */
+html[data-theme="light"] {
+  --bg: #f4f6f8;
+  --bg2: #ffffff;
+  --bg3: #ffffff;
+  --bg4: #e2e8f0;
+  --border: rgba(0, 0, 0, 0.1);
+  --border2: rgba(0, 0, 0, 0.15);
+  --fg: #1e293b;
+  --fg2: #475569;
+  --fg3: #64748b;
+  --red: #d32f2f;
+  --red-glow: rgba(211, 47, 47, 0.2);
+}
+
+html[data-theme="light"] .kpi-card:nth-child(1) .kpi-value,
+html[data-theme="light"] .kpi-card:nth-child(4) .kpi-value { color: var(--fg); }
+
+html[data-theme="light"] .action-value { color: var(--red); }
+html[data-theme="light"] .action-desc { color: var(--fg3); }
+
+html[data-theme="light"] .asset-name { color: var(--fg); }
+html[data-theme="light"] .tbl-main { color: var(--fg); }
+
+html[data-theme="light"] .admin-wrapper tr:hover td { background: rgba(0,0,0,.04); }
+html[data-theme="light"] .admin-wrapper th { background: rgba(0,0,0,.04); }
+
+html[data-theme="light"] .asset-rank { background: rgba(0,0,0,0.06); color: var(--fg2); }
+
+html[data-theme="light"] .search-box { background: #ffffff; border-color: var(--border2); }
+html[data-theme="light"] .search-box:focus-within { box-shadow: 0 0 10px rgba(0,0,0,0.08); }
+
+html[data-theme="light"] .tbl-img { border-color: rgba(0,0,0,0.1); box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+
+html[data-theme="light"] .btn-red { color: #ffffff; }
+
+html[data-theme="light"] .modal-box { background: #ffffff; }
+

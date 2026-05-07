@@ -244,6 +244,7 @@ body {
 /* ── SPEC BADGES ROW ── */
 .spec-badges {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 20px;
 }
@@ -351,3 +352,249 @@ body {
   border-color: #6366f1;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
+
+/* ============================================================
+   MANUAL LIGHT MODE FIXES
+   ============================================================ */
+
+html[data-theme="light"] body {
+  background-color: #f7f7f7;
+  color: #111111;
+}
+
+html[data-theme="light"] .section-title {
+  color: #222222;
+}
+
+html[data-theme="light"] .labels,
+html[data-theme="light"] .expiry-label {
+  color: #555555;
+}
+
+html[data-theme="light"] .input-field,
+html[data-theme="light"] .expiry-dropdowns select {
+  background-color: #ffffff;
+  color: #111111;
+  border: 1px solid #cccccc;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+html[data-theme="light"] .input-field:focus,
+html[data-theme="light"] .expiry-dropdowns select:focus {
+  border-color: #6366f1;
+}
+
+html[data-theme="light"] #summary-section {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+}
+
+html[data-theme="light"] .booking-panel {
+  background-color: #ffffff;
+  border-radius: 0 0 6px 6px;
+}
+
+html[data-theme="light"] .booking-meta-label, 
+html[data-theme="light"] .price-breakdown-label {
+  color: #555555;
+}
+
+html[data-theme="light"] .booking-meta-value {
+  color: #111111;
+}
+
+html[data-theme="light"] .price-row-name {
+  color: #555555;
+}
+
+html[data-theme="light"] .price-row-amount {
+  color: #111111;
+}
+
+html[data-theme="light"] .price-divider {
+  border-top: 1px solid #e0e0e0;
+}
+
+html[data-theme="light"] .total-label {
+  color: #111111;
+}
+
+html[data-theme="light"] .spec-badge {
+  background-color: #f0f0f0;
+  color: #333333;
+}
+
+html[data-theme="light"] .notice-box {
+  background-color: #f9f9f9;
+  border-left: 3px solid #cccccc;
+}
+
+html[data-theme="light"] .notice-icon, 
+html[data-theme="light"] .notice-text {
+  color: #555555;
+}
+
+html[data-theme="light"] .security-note {
+  color: #666666;
+}
+
+html[data-theme="light"] .subtitle {
+  color: #c8332d;
+}
+
+html[data-theme="light"] .car-info {
+  background-color: #f0f0f0;
+}
+
+html[data-theme="light"] .title {
+  color: #111111;
+}
+
+html[data-theme="light"] .icon {
+  color: #c8332d;
+}
+
+/* ── KHALTI PAYMENT STYLES ── */
+.khalti-section {
+    margin-top: 40px;
+    padding-top: 10px;
+}
+
+#khalti-button {
+    background-color: #5C2D91;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 18px 40px;
+    width: 80%;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 15px;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+}
+
+#khalti-button:hover {
+    background-color: #4a2475;
+}
+
+.khalti-logo {
+    height: 24px;
+    filter: brightness(0) invert(1);
+}
+
+.payment-divider {
+    text-align: center;
+    position: relative;
+    margin: 30px 0;
+    width: 80%;
+}
+
+.payment-divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #333;
+    z-index: 1;
+}
+
+.payment-divider span {
+    background: #131313;
+    padding: 0 15px;
+    color: #666;
+    font-size: 12px;
+    font-weight: 700;
+    position: relative;
+    z-index: 2;
+    text-transform: uppercase;
+}
+
+html[data-theme="light"] .payment-divider span {
+    background: #f7f7f7;
+}
+
+html[data-theme="light"] .payment-divider::before {
+    background: #cccccc;
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN & FORM LAYOUT
+   ============================================================ */
+
+/* Form Layout Fixes for Desktop */
+.form-row {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Mobile Responsiveness */
+@media screen and (max-width: 900px) {
+    #payment-page {
+        flex-direction: column-reverse;
+        gap: 40px;
+        padding: 20px 15px;
+    }
+
+    #payment-form-section,
+    #summary-section {
+        flex: none;
+        width: 100%;
+        min-width: 100%; /* Override the min-width constraint */
+    }
+
+    #summary-section {
+        position: static;
+    }
+
+    #pay-button,
+    #khalti-button,
+    .payment-divider {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .expiry-dropdowns {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .car-info {
+        height: 180px;
+    }
+    
+    .car-title {
+        font-size: 18px;
+    }
+    
+    .total-amount {
+        font-size: 20px;
+    }
+}
+

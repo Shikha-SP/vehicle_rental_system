@@ -8,6 +8,7 @@
 
 :root {
     --bg-dark: #09090b;
+    --bg-light: #ffffff;
     --text-main: #ffffff;
     --text-muted: #888888;
     --accent-red: #e62020;
@@ -15,6 +16,36 @@
     --card-bg: #141416;
     --btn-dark: #2a2a2c;
     --btn-dark-hover: #36363a;
+
+    /* Theme Specifics */
+    --faint-404: rgba(255, 255, 255, 0.03);
+    --status-label-color: #cccccc;
+    --error-desc-color: #aeaeae;
+    --btn-secondary-text: #ffffff;
+    --badge-bg: rgba(255, 255, 255, 0.04);
+    --badge-border: rgba(255, 255, 255, 0.05);
+    --badge-text: #a0a0a0;
+    --gradient-overlay: linear-gradient(to right, rgba(9, 9, 11, 1) 0%, rgba(9, 9, 11, 0.9) 40%, rgba(9, 9, 11, 0.8) 80%);
+    --btn-secondary-border: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="light"] {
+    --bg-dark: #ffffff;
+    --text-main: #1a1a1b;
+    --text-muted: #666666;
+    --card-bg: #f8f9fa;
+    --btn-dark: #f1f3f5;
+    --btn-dark-hover: #e9ecef;
+
+    --faint-404: rgba(0, 0, 0, 0.04);
+    --status-label-color: #495057;
+    --error-desc-color: #495057;
+    --btn-secondary-text: #1a1a1b;
+    --badge-bg: rgba(0, 0, 0, 0.04);
+    --badge-border: rgba(0, 0, 0, 0.1);
+    --badge-text: #666666;
+    --gradient-overlay: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.9) 40%, rgba(255, 255, 255, 0.8) 80%);
+    --btn-secondary-border: rgba(0, 0, 0, 0.08);
 }
 
 *,
@@ -49,7 +80,7 @@ a {
     flex-direction: column;
     justify-content: center;
     padding: 0 8%;
-    background: linear-gradient(to right, rgba(9, 9, 11, 1) 0%, rgba(9, 9, 11, 0.9) 40%, rgba(9, 9, 11, 0.8) 80%);
+    background: var(--gradient-overlay);
     background-color: var(--bg-dark);
     background-size: cover;
 }
@@ -73,7 +104,7 @@ a {
     right: 5%;
     font-size: 35vw;
     font-weight: 900;
-    color: rgba(255, 255, 255, 0.03);
+    color: var(--faint-404);
     z-index: 0;
     pointer-events: none;
     line-height: 1;
@@ -95,7 +126,7 @@ a {
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.2em;
-    color: #cccccc;
+    color: var(--status-label-color);
     text-transform: uppercase;
     margin-bottom: 24px;
 }
@@ -123,7 +154,7 @@ a {
 /* Description text */
 .error-desc {
     font-size: 1.15rem;
-    color: #aeaeae;
+    color: var(--error-desc-color);
     line-height: 1.6;
     margin-bottom: 48px;
     font-weight: 400;
@@ -168,8 +199,8 @@ a {
 
 .btn-secondary {
     background: var(--btn-dark);
-    color: #ffffff;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    color: var(--btn-secondary-text);
+    box-shadow: inset 0 0 0 1px var(--btn-secondary-border);
 }
 
 .btn-secondary:hover {
@@ -194,14 +225,14 @@ a {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--badge-bg);
+    border: 1px solid var(--badge-border);
     padding: 12px 20px;
     border-radius: 4px;
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.15em;
-    color: #a0a0a0;
+    color: var(--badge-text);
     text-transform: uppercase;
 }
 

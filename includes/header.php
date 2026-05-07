@@ -13,8 +13,17 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/footer.css">
+    <!-- From HEAD: Chatbot & Icons -->
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/chatbot.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- From Gaurav: Theme Initialization Script (Prevents FOUC) -->
+    <script>
+      (function() {
+        const theme = localStorage.getItem('td-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
 </head>
 <body>
 
@@ -49,7 +58,6 @@ if (session_status() === PHP_SESSION_NONE) {
               <a href="/vehicle_rental_collab_project/public/admin/customers.php" 
                  class="<?= ($currentPage == 'customers.php') ? 'active' : '' ?>">Customers</a>
             </li>
-
             <li>
               <a href="/vehicle_rental_collab_project/public/admin/audit.php" 
                  class="<?= ($currentPage == 'audit.php') ? 'active' : '' ?>">Analytics</a>
@@ -69,7 +77,7 @@ if (session_status() === PHP_SESSION_NONE) {
               <a href="/vehicle_rental_collab_project/public/user/bookings.php" 
                  class="<?= ($currentPage == 'bookings.php') ? 'active' : '' ?>">My Bookings</a>
             </li>
-               <li>
+            <li>
               <a href="/vehicle_rental_collab_project/public/renter/my_vehicles.php" 
                  class="<?= ($currentPage == 'my_vehicles.php') ? 'active' : '' ?>">My Listings</a>
             </li>
@@ -79,7 +87,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <!-- RIGHT SIDE -->
         <div class="nav-auth" id="navAuth">
-          <!-- PROFILE DROPDOWN -->
           <div class="profile-menu">
             <button class="profile-btn" onclick="toggleDropdown()">
               <?= isset($_SESSION['username']) ? strtoupper(substr($_SESSION['username'], 0, 1)) : 'U' ?>
@@ -96,7 +103,6 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
           </div>
 
-          <!-- MAIN CTA - Only show for regular users -->
           <?php if (empty($_SESSION['is_admin'])): ?>
             <a href="/vehicle_rental_collab_project/public/renter/list_car.php" class="btn-primary">
               List Your Vehicle
@@ -105,17 +111,18 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
         
     <?php else: ?>
-        <!-- ONLY LOGIN & REGISTER FOR GUESTS -->
+        <!-- GUESTS -->
         <div class="nav-auth" id="navAuth">
-            <a href="/vehicle_rental_collab_project/public/authentication/login.php" class="btn-ghost">
-              Log In
-            </a>
-
-            <a href="/vehicle_rental_collab_project/public/authentication/signup.php" class="btn-primary">
-              Register
-            </a>
+            <a href="/vehicle_rental_collab_project/public/authentication/login.php" class="btn-ghost">Log In</a>
+            <a href="/vehicle_rental_collab_project/public/authentication/signup.php" class="btn-primary">Register</a>
         </div>
     <?php endif; ?>
+
+    <!-- THEME TOGGLE (From Gaurav) -->
+    <button id="themeToggleBtn" class="theme-toggle" aria-label="Toggle Theme" title="Toggle Light/Dark Mode">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    </button>
 
     <!-- MOBILE TOGGLE -->
     <button class="nav-toggle"
@@ -127,24 +134,7 @@ if (session_status() === PHP_SESSION_NONE) {
   </nav>
 </header>
 
-<!-- DROPDOWN SCRIPT -->
-<script>
-function toggleDropdown() {
-  document.getElementById("dropdownMenu").classList.toggle("show");
-}
-
-// close dropdown when clicking outside
-window.onclick = function(e) {
-  if (!e.target.matches('.profile-btn')) {
-    const dropdown = document.getElementById("dropdownMenu");
-    if (dropdown && dropdown.classList.contains('show')) {
-      dropdown.classList.remove('show');
-    }
-  }
-}
-</script>
-
-<!-- AI CHATBOT WIDGET -->
+<!-- AI CHATBOT WIDGET (From HEAD) -->
 <div class="chatbot-widget">
     <button class="chatbot-toggle" title="Chat with AI">
         <i class="fa-solid fa-comments"></i>
@@ -162,7 +152,6 @@ window.onclick = function(e) {
         </div>
         
         <div class="chat-messages">
-            <!-- Messages injected by JS -->
             <div class="typing-indicator">
                 <span></span><span></span><span></span>
             </div>
@@ -180,3 +169,35 @@ window.onclick = function(e) {
 </div>
 
 <script src="/vehicle_rental_collab_project/assets/js/chatbot.js"></script>
+
+<script>
+// Combined Scripts
+function toggleDropdown() {
+  document.getElementById("dropdownMenu").classList.toggle("show");
+}
+
+window.onclick = function(e) {
+  if (!e.target.matches('.profile-btn')) {
+    const dropdown = document.getElementById("dropdownMenu");
+    if (dropdown && dropdown.classList.contains('show')) {
+      dropdown.classList.remove('show');
+    }
+  }
+}
+
+// Theme Toggle Logic (From Gaurav)
+document.addEventListener('DOMContentLoaded', () => {
+  const themeBtn = document.getElementById('themeToggleBtn');
+  if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('td-theme', next);
+    });
+  }
+});
+</script>
+
+</body>
+</html>

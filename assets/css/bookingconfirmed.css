@@ -165,3 +165,25 @@ body {
   flex-direction: column;
   gap: 14px;
 }
+
+/* ============================================================
+   MANUAL LIGHT MODE FIXES
+   ============================================================ */
+
+html[data-theme="light"] body {
+  background: #f7f7f7 !important;
+  color: #111111 !important;
+}
+
+html[data-theme="light"] .tagline {
+  color: #c8332d;
+}
+
+html[data-theme="light"] .hero-description {
+  color: #555555;
+}
+
+html[data-theme="light"] .location-card {
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}

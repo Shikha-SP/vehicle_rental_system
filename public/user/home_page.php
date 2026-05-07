@@ -119,69 +119,68 @@ $brands_result = $conn->query($brands_sql);
 
                 <?php if ($gallery_result && $gallery_result->num_rows > 0): ?>
 
-                        <?php while ($car = $gallery_result->fetch_assoc()): ?>
+                    <?php while ($car = $gallery_result->fetch_assoc()): ?>
+
+                        <?php
+                        $price = number_format((float) $car['price_per_day'], 0);
+                        $fuel = $car['fuel_capacity'] ? $car['fuel_capacity'] . ' L' : 'N/A';
+                        ?>
+
+                        <div class="car-card">
+
+                            <div class="card-type-badge">
+                                <?php echo e(strtoupper($car['license_type'] ?? 'CAR')); ?>
+                            </div>
+
+
+                            <div class="card-img-wrapper">
 
                                 <?php
-                                $price = number_format((float) $car['price_per_day'], 0);
-                                $fuel = $car['fuel_capacity'] ? $car['fuel_capacity'] . ' L' : 'N/A';
-                                ?>
+                                $imgSrc = getImageUrl($car['image_path']);
 
-                                <div class="car-card">
+                                if ($imgSrc):
+                                    ?>
+                                    <img src="<?php echo e($imgSrc); ?>" alt="<?php echo e($car['model']); ?>">
+                                <?php else: ?>
+                                    <div class="no-img">NO IMAGE</div>
+                                <?php endif; ?>
 
-                                    <div class="card-type-badge">
-                                        <?php echo e(strtoupper($car['license_type'] ?? 'CAR')); ?>
-                                    </div>
-
-
-                                    <div class="card-img-wrapper">
-
-                                        <?php if (!empty($car['image_path'])): 
-                                            $imgPath = $car['image_path'];
-                                            $imgSrc = (strpos($imgPath, 'http') === 0) ? $imgPath : '../../' . $imgPath;
-                                        ?>
-                                                <img src="<?php echo e($imgSrc); ?>" alt="<?php echo e($car['model']); ?>">
-                                        <?php else: ?>
-
-                                                <div class="no-img">NO IMAGE</div>
-
-                                        <?php endif; ?>
-
-                                    </div>
+                            </div>
 
 
-                                    <div class="card-info">
+                            <div class="card-info">
 
-                                        <h3>
-                                            <?php echo e($car['model']); ?>
-                                            <span class="badge">NEW</span>
-                                        </h3>
-
-
-                                        <div class="card-specs-row">
-                                            <span class="spec-item">⛽ <?php echo e($fuel); ?></span>
-                                        </div>
+                                <h3>
+                                    <?php echo e($car['model']); ?>
+                                    <span class="badge">NEW</span>
+                                </h3>
 
 
-                                        <div class="specs">
-                                            <span class="price">NPR <?php echo e($price); ?> /day</span>
+                                <div class="card-specs-row">
+                                    <span class="spec-item">⛽ <?php echo e($fuel); ?></span>
+                                </div>
 
-                                            <a href="booking.php?id=<?php echo (int) $car['id']; ?>" class="btn-rent">
-                                                RENT NOW
-                                            </a>
 
-                                        </div>
+                                <div class="specs">
+                                    <span class="price">NPR <?php echo e($price); ?> /day</span>
 
-                                    </div>
+                                    <a href="../vehicle/vehicle_detail.php?id=<?php echo (int) $car['id']; ?>" class="btn-rent">
+                                        RENT NOW
+                                    </a>
 
                                 </div>
 
-                        <?php endwhile; ?>
+                            </div>
+
+                        </div>
+
+                    <?php endwhile; ?>
 
                 <?php else: ?>
 
-                        <div class="no-vehicle-message">
-                            <p>No vehicles available at the moment.</p>
-                        </div>
+                    <div class="no-vehicle-message">
+                        <p>No vehicles available at the moment.</p>
+                    </div>
 
                 <?php endif; ?>
 
@@ -197,13 +196,14 @@ $brands_result = $conn->query($brands_sql);
                     while ($b = $brands_result->fetch_assoc()):
                         ?>
 
-                                <a href="../vehicle/vehicles.php?license_type=<?php echo urlencode($b['license_type']); ?>" class="brand-tab">
+                        <a href="../vehicle/vehicles.php?license_type=<?php echo urlencode($b['license_type']); ?>"
+                            class="brand-tab">
 
-                                    <?php echo e(strtoupper($b['license_type'])); ?>
+                            <?php echo e(strtoupper($b['license_type'])); ?>
 
-                                </a>
+                        </a>
 
-                                <?php
+                        <?php
                     endwhile;
 
                 endif;

@@ -30,7 +30,7 @@
 body {
     font-family: 'Inter', Arial, sans-serif;
     background: var(--bg-dark);
-    color: #fff;
+    color: var(--text-main);
     -webkit-font-smoothing: antialiased;
 }
 
@@ -168,17 +168,31 @@ a {
 }
 
 .btn-ghost {
-    background-color: #333333;
+    background: rgba(255, 255, 255, 0.08);
     color: white;
     backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    transition: all 0.2s ease;
 }
 
 .btn-ghost:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.75);
+    background-color: #333333;
+    color: white;
+    border-color: transparent;
 }
 
+/* LIGHT MODE */
+html[data-theme="light"] .btn-ghost {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333333;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
 
+html[data-theme="light"] .btn-ghost:hover {
+    background-color: #f5f5f5;
+    color: #333333;
+    border: 1px solid #d2c9c9;
+}
 
 /* =============================================================================
    3. GALLERY SECTION
@@ -375,6 +389,16 @@ a {
 .btn-rent:hover {
     background: var(--accent-red);
     color: #fff;
+}
+
+/* Light Mode Button Styling Overrides */
+.light-mode .btn-rent {
+    background: var(--accent-red);
+    color: #fff;
+}
+
+.light-mode .btn-rent:hover {
+    background: #d92020;
 }
 
 /* --- Brand Filter Tabs (DB: distinct brand values) --- */
@@ -605,6 +629,10 @@ a {
         max-width: 100%;
     }
 
+    .map-container {
+        width: 100%;
+    }
+
     .brand-filters {
         flex-wrap: wrap;
     }
@@ -630,3 +658,17 @@ a {
         font-size: 1.4rem;
     }
 }
+
+/* =============================================================================
+   7. LIGHT MODE TEXT OVERRIDES
+============================================================================= */
+html[data-theme="light"] .contact-details li span { color: #555555; }
+html[data-theme="light"] .showroom-info > p { color: #444444; }
+html[data-theme="light"] .brand-tab { border-right: 1px solid #ddd; }
+html[data-theme="light"] .brand-filters { border-top: 1px solid #ddd; }
+html[data-theme="light"] .brand-tab:hover { color: var(--accent-red); background: rgba(0,0,0,0.04); }
+html[data-theme="light"] .model-name { color: #666666; }
+html[data-theme="light"] .spec-item { color: #666666; }
+html[data-theme="light"] .no-img { color: #999999; }
+html[data-theme="light"] .section-header { border-bottom: 1px solid #ddd; }
+html[data-theme="light"] .specs { border-top: 1px solid #ddd; }

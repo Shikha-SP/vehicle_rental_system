@@ -134,7 +134,7 @@ require_once('../includes/functions.php');
                 <!-- Example geographic pins (using percentage positioning) -->
                 <div class="dot" style="top: 35%; left: 22%;"></div> <!-- North America -->
                 <div class="dot" style="top: 55%; left: 51%;"></div> <!-- Africa -->
-                <div class="dot" style="top: 48.5%; left: 68.3%;"></div> <!-- Asia -->
+                <div class="dot" style="top: 48.5%; left: 70.5%;"></div> <!-- Asia -->
             </div>
         </div>
 
