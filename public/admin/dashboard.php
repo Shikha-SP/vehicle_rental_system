@@ -256,6 +256,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 Refresh
             </button>
             <a href="vehicle_listings.php" class="btn btn-red btn-sm">Manage Listings</a>
+            <a href="discount_codes.php" class="btn btn-red btn-sm">🏷️ Discount Codes</a>
           </div>
         </div>
         <div class="tbl-wrap" style="border:none;">

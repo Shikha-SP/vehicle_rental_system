@@ -13,32 +13,70 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Handle Cancellation (Permanent Deletion)
+// Handle Cancellation
 $cancelError = $cancelSuccess = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'cancel') {
     if (verifyCsrfToken($_POST['csrf_token'] ?? '')) {
         $bookingId = (int)($_POST['booking_id'] ?? 0);
-        
-        // Verify the booking belongs to this user before cancelling
-        $date_sql = "SELECT start_date FROM bookings WHERE id = ? AND user_id = ?";
-        $d_stmt = $conn->prepare($date_sql);
+
+        // Verify booking belongs to this user and is still confirmed (not already cancelled/completed)
+        $d_stmt = $conn->prepare("SELECT id, status FROM bookings WHERE id = ? AND user_id = ? AND status = 'confirmed'");
         $d_stmt->bind_param("ii", $bookingId, $user_id);
         $d_stmt->execute();
         $res = $d_stmt->get_result()->fetch_assoc();
-        
+
         if ($res) {
-            // Update status to 'cancelled' instead of deleting the booking record
-            $del_sql = "UPDATE bookings SET status = 'cancelled' WHERE id = ? AND user_id = ?";
-            $del_stmt = $conn->prepare($del_sql);
+            // Mark booking as cancelled
+            $del_stmt = $conn->prepare("UPDATE bookings SET status = 'cancelled' WHERE id = ? AND user_id = ?");
             $del_stmt->bind_param("ii", $bookingId, $user_id);
-            
+
             if ($del_stmt->execute()) {
-                $cancelSuccess = "Booking #{$bookingId} has been successfully cancelled.";
+
+                // ── DECREMENT RENTAL COUNT & RE-EVALUATE MEDAL ───────────────
+                // Capture BEFORE state first
+                $before = $conn->query("SELECT completed_rentals, medal FROM users WHERE id = $user_id")->fetch_assoc();
+                $rentals_before = (int)$before['completed_rentals'];
+                $medal_before   = $before['medal'];
+
+                // Decrement by 1 (never below 0)
+                $conn->query("UPDATE users SET completed_rentals = GREATEST(0, completed_rentals - 1) WHERE id = $user_id");
+
+                // Re-fetch AFTER state
+                $after = $conn->query("SELECT completed_rentals, medal FROM users WHERE id = $user_id")->fetch_assoc();
+                $rentals_after = (int)$after['completed_rentals'];
+
+                // Determine correct medal for new count
+                if ($rentals_after >= 15)     $correct_medal = 'GOLD';
+                elseif ($rentals_after >= 7)  $correct_medal = 'SILVER';
+                elseif ($rentals_after >= 3)  $correct_medal = 'BRONZE';
+                else                          $correct_medal = 'NONE';
+
+                // Only downgrade medal (never upgrade on cancel)
+                $medal_rank = ['NONE' => 0, 'BRONZE' => 1, 'SILVER' => 2, 'GOLD' => 3];
+                $medal_changed = false;
+                if ($medal_rank[$correct_medal] < $medal_rank[$medal_before]) {
+                    $conn->query("UPDATE users SET medal = '$correct_medal' WHERE id = $user_id");
+                    $medal_changed = true;
+                } else {
+                    $correct_medal = $medal_before; // no change
+                }
+                // ─────────────────────────────────────────────────────────────
+
+                // Build visible success message with point change info
+                $cancelSuccess = "Booking #{$bookingId} cancelled. ";
+                if ($rentals_before > 0) {
+                    $cancelSuccess .= "Rental points: <strong>{$rentals_before} → {$rentals_after}</strong>. ";
+                }
+                if ($medal_changed) {
+                    $medal_labels = ['NONE' => 'No Medal', 'BRONZE' => '🥉 Bronze', 'SILVER' => '🥈 Silver', 'GOLD' => '🥇 Gold'];
+                    $cancelSuccess .= "Medal downgraded: {$medal_labels[$medal_before]} → <strong>{$medal_labels[$correct_medal]}</strong>.";
+                }
+
             } else {
-                $cancelError = "Failed to update booking status.";
+                $cancelError = "Failed to cancel booking.";
             }
         } else {
-            $cancelError = "Booking not found or you do not have permission to cancel it.";
+            $cancelError = "Booking not found, already cancelled, or you do not have permission.";
         }
     } else {
         $cancelError = "Security token mismatch. Please refresh the page and try again.";
@@ -47,6 +85,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'cance
 
 // Ensure a single reusable CSRF token for all cancel buttons
 $csrfToken = $_SESSION['csrf_token'] ?? generateCsrfToken();
+
+// Fetch User Medal & Rentals
+$u_stmt = $conn->prepare("SELECT medal, completed_rentals FROM users WHERE id = ?");
+$u_stmt->bind_param("i", $user_id);
+$u_stmt->execute();
+$u_res = $u_stmt->get_result()->fetch_assoc();
+$user_medal    = $u_res['medal'] ?? 'NONE';
+$user_rentals  = (int)($u_res['completed_rentals'] ?? 0);
+$u_stmt->close();
+
+// Medal tier definitions (must match paymentdetail.php thresholds)
+$medal_tiers = [
+    'BRONZE' => ['rentals' => 3,  'discount' => 5,  'icon' => '🥉', 'color' => '#cd7f32', 'label' => 'Bronze'],
+    'SILVER' => ['rentals' => 7,  'discount' => 10, 'icon' => '🥈', 'color' => '#aaaaaa', 'label' => 'Silver'],
+    'GOLD'   => ['rentals' => 15, 'discount' => 20, 'icon' => '🥇', 'color' => '#ffd700', 'label' => 'Gold'],
+];
+
+// Progress calculation
+$next_threshold = 3; // default to Bronze
+$next_label = 'Bronze';
+if ($user_medal === 'NONE')   { $next_threshold = 3;  $next_label = 'Bronze'; }
+elseif ($user_medal === 'BRONZE') { $next_threshold = 7;  $next_label = 'Silver'; }
+elseif ($user_medal === 'SILVER') { $next_threshold = 15; $next_label = 'Gold'; }
+elseif ($user_medal === 'GOLD')   { $next_threshold = 15; $next_label = 'Gold'; } // maxed
+
+$prev_threshold = 0;
+if ($user_medal === 'BRONZE') $prev_threshold = 3;
+elseif ($user_medal === 'SILVER') $prev_threshold = 7;
+elseif ($user_medal === 'GOLD') $prev_threshold = 15;
+
+$user_reward = match($user_medal) {
+    'BRONZE' => 5,
+    'SILVER' => 10,
+    'GOLD'   => 20,
+    default  => 0
+};
 
 // Fetch Bookings with more vehicle details
 $sql = "SELECT b.*, v.model, v.image_path, v.transmission, v.fuel_type, v.top_speed, v.price_per_day,
@@ -228,10 +302,99 @@ include '../../includes/header.php';
         color: #fff;
         border-color: rgba(255,255,255,0.2);
     }
+    
+    .medal-badge {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 1.2rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-left: 20px;
+        vertical-align: middle;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .medal-BRONZE { background: linear-gradient(135deg, #cd7f32, #8b5a2b); color: #fff; }
+    .medal-SILVER { background: linear-gradient(135deg, #e0e0e0, #9e9e9e); color: #222; }
+    .medal-GOLD { background: linear-gradient(135deg, #ffd700, #b8860b); color: #222; }
+
+    .savings-badge {
+        background: rgba(46, 204, 113, 0.15);
+        color: #4ade80;
+        border: 1px solid rgba(46, 204, 113, 0.3);
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        display: inline-block;
+        letter-spacing: 0.05em;
+    }
+
+    /* Medal Progress Panel */
+    .medal-panel {
+        background: rgba(20,20,20,0.8);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 20px;
+        padding: 28px 32px;
+        margin-bottom: 3rem;
+    }
+
+    .medal-tier-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .medal-tier-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 14px;
+        padding: 20px 16px;
+        text-align: center;
+        transition: border-color 0.2s;
+    }
+    .medal-tier-card.active-tier {
+        border-color: rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.06);
+    }
+    .tier-icon   { font-size: 2rem; display: block; margin-bottom: 8px; }
+    .tier-name   { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+    .tier-sub    { font-size: 0.75rem; color: #666; margin-bottom: 4px; }
+    .tier-discount { font-size: 0.85rem; font-weight: 600; }
+
+    .medal-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .stat-box {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 12px;
+        padding: 18px 12px;
+        text-align: center;
+    }
+    .stat-val   { font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
+    .stat-label { font-size: 0.65rem; color: #555; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
+
+    .progress-section { margin-top: 4px; }
+    .progress-header  { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; margin-bottom: 8px; }
+    .progress-track   { background: #222; border-radius: 100px; height: 6px; overflow: hidden; margin-bottom: 8px; }
+    .progress-fill    { height: 100%; background: linear-gradient(90deg, #e03030, #ff6b6b); border-radius: 100px; transition: width 0.5s ease; }
+    .progress-ticks   { display: flex; justify-content: space-between; font-size: 0.65rem; color: #555; }
 </style>
 
 <div class="bookings-container">
-    <h1 style="font-family:'Bebas Neue',sans-serif; font-size: 5rem; margin-bottom: 1rem; letter-spacing: 0.02em;">MY JOURNEYS</h1>
+    <h1 style="font-family:'Bebas Neue',sans-serif; font-size: 5rem; margin-bottom: 1rem; letter-spacing: 0.02em;">MY JOURNEYS
+        <?php if ($user_medal !== 'NONE'): ?>
+            <span class="medal-badge medal-<?= $user_medal ?>"> <?= $user_medal ?> MEMBER </span>
+        <?php endif; ?>
+    </h1>
     <p style="color: #666; margin-bottom: 3.5rem; font-weight: 500;">History of your elite driving experiences</p>
 
     <?php if ($cancelSuccess): ?>
@@ -246,6 +409,63 @@ include '../../includes/header.php';
             <div><?= $cancelError ?></div>
         </div>
     <?php endif; ?>
+
+    <!-- Medal Progress Panel -->
+    <div class="medal-panel">
+        <!-- Medal Tier Cards -->
+        <div class="medal-tier-grid">
+            <?php foreach ($medal_tiers as $key => $tier): ?>
+            <div class="medal-tier-card <?= ($user_medal === $key) ? 'active-tier' : '' ?>">
+                <span class="tier-icon"><?= $tier['icon'] ?></span>
+                <div class="tier-name" style="color: <?= $tier['color'] ?>"><?= $tier['label'] ?></div>
+                <div class="tier-sub"><?= $tier['rentals'] ?> rentals</div>
+                <div class="tier-discount" style="color: <?= $tier['color'] ?>"><?= $tier['discount'] ?>% off</div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="medal-stats">
+            <div class="stat-box">
+                <div class="stat-val" style="color: #e03030"><?= $user_rentals ?></div>
+                <div class="stat-label">RENTALS DONE</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-val" style="color: <?= $user_medal !== 'NONE' ? ($medal_tiers[$user_medal]['color'] ?? '#e03030') : '#555' ?>">
+                    <?= $user_medal !== 'NONE' ? $medal_tiers[$user_medal]['label'] : '—' ?>
+                </div>
+                <div class="stat-label">MEDAL</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-val" style="color: #e03030"><?= $user_reward ?>%</div>
+                <div class="stat-label">REWARD</div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <?php if ($user_medal !== 'GOLD'): ?>
+        <div class="progress-section">
+            <div class="progress-header">
+                <span>Progress to <?= $next_label ?></span>
+                <span><?= $user_rentals ?>/<?= $next_threshold ?></span>
+            </div>
+            <div class="progress-track">
+                <?php
+                $pct = min(100, ($user_rentals / $next_threshold) * 100);
+                ?>
+                <div class="progress-fill" style="width: <?= $pct ?>%"></div>
+            </div>
+            <div class="progress-ticks">
+                <span>0</span>
+                <span>Bronze <?= $medal_tiers['BRONZE']['rentals'] ?></span>
+                <span>Silver <?= $medal_tiers['SILVER']['rentals'] ?></span>
+                <span>Gold <?= $medal_tiers['GOLD']['rentals'] ?></span>
+            </div>
+        </div>
+        <?php else: ?>
+        <div style="text-align:center; color: #ffd700; font-weight: 700; padding: 12px 0;">🏆 You have reached Gold status!</div>
+        <?php endif; ?>
+    </div>
 
     <!-- Cancellation Policy Hub -->
     <div class="policy-box">
@@ -283,6 +503,12 @@ include '../../includes/header.php';
                             <div class="status-banner status-banner-cancelled">CANCELLED</div>
                         <?php elseif ($b['status'] === 'completed'): ?>
                             <div class="status-banner status-banner-completed">COMPLETED</div>
+                        <?php endif; ?>
+                        
+                        <?php if (isset($b['discount_amount']) && $b['discount_amount'] > 0): ?>
+                            <div class="savings-badge">
+                                Saved NPR <?= number_format($b['discount_amount'], 2) ?> with <?= htmlspecialchars($b['discount_code']) ?>
+                            </div>
                         <?php endif; ?>
 
                         <h3><?= htmlspecialchars($b['model']) ?></h3>

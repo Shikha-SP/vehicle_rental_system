@@ -11,6 +11,8 @@ if (session_status() === PHP_SESSION_NONE) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TD Rentals</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/loading.css?v=<?= time() ?>">
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/footer.css">
     <!-- From HEAD: Chatbot & Icons -->
@@ -26,6 +28,16 @@ if (session_status() === PHP_SESSION_NONE) {
     </script>
 </head>
 <body>
+
+<!-- Top Progress Bar -->
+<div id="td-progress-bar"></div>
+
+<!-- Full-page Overlay -->
+<div id="td-overlay">
+  <div class="loader-logo">TD <span>RENTALS</span></div>
+  <div class="loader-bar-track"><div class="loader-bar-fill"></div></div>
+  <div id="td-overlay-msg">Loading…</div>
+</div>
 
 <header>
   <nav>
@@ -184,8 +196,7 @@ window.onclick = function(e) {
     }
   }
 }
-
-// Theme Toggle Logic (From Gaurav)
+// Theme Toggle Logic 
 document.addEventListener('DOMContentLoaded', () => {
   const themeBtn = document.getElementById('themeToggleBtn');
   if (themeBtn) {
@@ -198,6 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
+
+<script src="/vehicle_rental_collab_project/assets/js/loading.js?v=<?= time() ?>"></script>
 
 </body>
 </html>

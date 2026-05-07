@@ -7,6 +7,11 @@ function generateInvoicePDF($data) {
 
     $invoice_no = "INV-" . str_pad($data['booking_id'], 5, "0", STR_PAD_LEFT);
 
+    $discount_html = "";
+    if (isset($data['discount_amount']) && $data['discount_amount'] > 0) {
+        $discount_html = "<br><span style=\"color: #2ecc71;\">Discount (" . htmlspecialchars($data['discount_code']) . "): - NPR " . number_format($data['discount_amount'], 2) . "</span>";
+    }
+
     $html = "
     <style>
         h1 { color: #e63946; }
@@ -40,11 +45,11 @@ function generateInvoicePDF($data) {
     <hr>
     <p>
     Daily Rate: NPR {$data['price_per_day']}<br>
-    Basic Fee: NPR 500
+    Basic Fee: NPR 500{$discount_html}
     </p>
 
     <hr>
-    <p><strong>Total: NPR {$data['total_price']}</strong></p>
+    <p><strong>Total: NPR " . number_format($data['total_price'], 2) . "</strong></p>
 
     <hr>
     <p>Thank you for choosing TD Rentals </p>
