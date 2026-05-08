@@ -183,19 +183,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                 $mail2->Subject = 'Payment Confirmed!';
                 $mail2->isHTML(true);
                 $mail2->Body = "
-                <h2>Your Payment has been confirmed.</h2>
-                <p>Booking ID: {$booking_id}</p>
-                <p>Vehicle: {$vehicle['model']}</p>
-                <p>Pickup Date: {$pickup_date}</p>
-                <p>Dropoff Date: {$dropoff_date}</p>
-                <p>Total Paid: NPR $totalprice</p>
-                <p>Please find your invoice attached.</p>
-                <p>Thank you for choosing TD Rentals 🚀</p>
-                
-                <p>Best Regards,</p>
-                <p>TD Rentals Team</p>
-                
-                ";
+                    <div style='font-family: Arial, Helvetica, sans-serif; max-width: 550px;'>
+                        
+                        <p style='font-size: 14px;'><strong>OUR VALIDATED CUSTOMER</strong></p>
+                        
+                        <p style='font-size: 13px; line-height: 1.5;'>
+                            Thank you for your payment through <strong>TD RENTALS</strong>. 
+                            This email is to inform you that your vehicle booking has been <strong>CONFIRMED</strong>.
+                        </p>
+                        
+                        <p style='font-size: 13px;'>Here is an overview of your recent booking:</p>
+                        
+                        <p style='font-size: 13px; margin: 5px 0;'><strong>BOOKING ID :-</strong> {$booking_id}</p>
+                        <p style='font-size: 13px; margin: 5px 0;'><strong>VEHICLE :-</strong> {$vehicle['model']}</p>
+                        <p style='font-size: 13px; margin: 5px 0;'><strong>PICKUP DATE :-</strong> {$pickup_date}</p>
+                        <p style='font-size: 13px; margin: 5px 0;'><strong>DROPOFF DATE :-</strong> {$dropoff_date}</p>
+                        <p style='font-size: 13px; margin: 5px 0;'><strong>PAYMENT METHOD :-</strong> Online Payment</p>
+                        <p style='font-size: 13px; margin: 5px 0;'><strong>VALUE :-</strong> NPR {$totalprice}</p>
+                        
+                        <p style='font-size: 13px; margin: 15px 0 5px;'>
+                            To view or cancel your booking, please contact our customer service at: 
+                            <strong>+977 9801234567</strong>
+                        </p>
+                        
+                        <p style='font-size: 13px; margin: 20px 0 5px;'>
+                            📎 Please find your invoice attached.
+                        </p>
+                        
+                        <p style='font-size: 13px; margin: 20px 0 5px;'>
+                            Thank you,<br>
+                            <strong>TD Rentals Billing Support</strong>
+                        </p>
+                        
+                    </div>
+                    ";
                 $mail2->AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
                 // Attach PDF from string (no temp file needed)
                 $mail2->addStringAttachment($pdf_string, "TD_Rentals_Invoice.pdf", 'base64', 'application/pdf');

@@ -29,7 +29,7 @@ $booking = $stmt->get_result()->fetch_assoc();
     <link rel="stylesheet" href="../../assets/css/bookingconfirmed.css">
     <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
     <link rel="stylesheet" href="../../assets/css/footer.css">
-    <title>Booking confirmed</title>
+    <title>TD Rentals</title>
     <style>
         /* make footer take 100% width */
         .site-footer {
@@ -65,7 +65,7 @@ $booking = $stmt->get_result()->fetch_assoc();
                 <div class="hero-buttons">
                     <a href="/vehicle_rental_collab_project/public/user/bookings.php" class="btnn btnn-primary">MANAGE
                         BOOKING</a>
-                    
+
                 </div>
             </div>
 

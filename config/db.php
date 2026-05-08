@@ -58,6 +58,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
     fuel_capacity INT,
     image_path VARCHAR(255),
     status ENUM('pending','approved','rejected','available','rented') DEFAULT 'pending',
+    avg_rating DECIMAL(3,2),  
     approved_at DATETIME NULL,
     rejected_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -90,6 +91,7 @@ CREATE TABLE IF NOT EXISTS password_resets (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 )");
 
+// Create transactions table if not exists
 $conn->query("
 CREATE TABLE IF NOT EXISTS transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -109,6 +111,21 @@ CREATE TABLE IF NOT EXISTS transactions (
 
     FOREIGN KEY (booking_id) REFERENCES bookings(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
+);");
+
+// Create reviews table if not exists
+$conn->query("
+CREATE TABLE IF NOT EXISTS reviews (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    user_id INT NOT NULL,
+    vehicle_id INT NOT NULL,
+    rating INT NOT NULL,
+    review TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );");
 // confirmation
 // echo "Database and tables are ready.";
