@@ -98,8 +98,8 @@ include '../../includes/header.php';
 
 <div class="contact-container">
     <div class="contact-card">
-        <h1>GET IN TOUCH</h1>
-        <p>Have a question about our fleet or services? Send us a message and our team will get back to you shortly.</p>
+        <h1>HELP US IMPROVE</h1>
+        <p>Got a recommendation for our app or a feature request? We value your feedback! Tell us how we can make your rental experience even better.</p>
         
         <form action="../api/submit_contact.php" method="POST">
             <div class="form-group">
@@ -113,8 +113,8 @@ include '../../includes/header.php';
             </div>
             
             <div class="form-group">
-                <label for="message">Your Message</label>
-                <textarea id="message" name="message" placeholder="How can we help you today?" required></textarea>
+                <label for="message">Your Recommendation / Feedback</label>
+                <textarea id="message" name="message" placeholder="What features would you like to see? How can we improve our service?" required></textarea>
             </div>
             
             <button type="submit" class="btn-submit">Send Message</button>

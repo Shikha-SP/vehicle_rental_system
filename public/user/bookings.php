@@ -138,7 +138,29 @@ $pageTitle = 'My Bookings – TD Rentals';
 include '../../includes/header.php';
 ?>
 
+<link rel="stylesheet" href="../../assets/css/chat.css">
 <style>
+    .btn-chat {
+        background: rgba(46,204,113,0.12);
+        border: 1px solid rgba(46,204,113,0.35);
+        color: #2ecc71;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    .btn-chat:hover {
+        background: rgba(46,204,113,0.95);
+        color: #fff;
+        transform: translateY(-1px);
+    }
     .bookings-container { padding: 5rem 40px; min-height: 80vh; width: 100%; max-width: none; margin: 0; }
     
     /* Policy Notice */
@@ -542,6 +564,7 @@ include '../../includes/header.php';
                         </div>
 
                         <div class="footer-actions">
+                            <button type="button" class="btn-chat open-chat-btn" data-booking-id="<?= $b['id'] ?>" data-model="<?= htmlspecialchars($b['model']) ?>">Chat with Admin</button>
                             <a href="../vehicle/vehicle_detail.php?id=<?= $b['vehicle_id'] ?>" class="btn-details">View Details</a>
                             <?php 
                             // Policy change: Anyone can cancel now. No date check needed.
@@ -566,7 +589,96 @@ include '../../includes/header.php';
 
 <?php include '../../includes/footer.php'; ?>
 
+<!-- Chat Modal -->
+<div class="chat-modal-overlay" id="chatModal">
+    <div class="chat-window">
+        <div class="chat-header">
+            <h3>Chat: <span id="chatBookingModel">Booking</span></h3>
+            <button class="close-chat" id="closeChat">&times;</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages load here -->
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Type your message...">
+            <button class="btn-send-msg" id="sendMessage">Send</button>
+        </div>
+    </div>
+</div>
+
 <script>
+let currentBookingId = null;
+let chatInterval = null;
+
+function openChat(bookingId, model) {
+    currentBookingId = bookingId;
+    document.getElementById('chatBookingModel').innerText = model;
+    document.getElementById('chatModal').classList.add('active');
+    loadMessages();
+    
+    // Start polling
+    if (chatInterval) clearInterval(chatInterval);
+    chatInterval = setInterval(loadMessages, 3000);
+}
+
+function loadMessages() {
+    if (!currentBookingId) return;
+    fetch(`../api/messages_action.php?action=get&booking_id=${currentBookingId}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const container = document.getElementById('chatMessages');
+                const atBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
+                
+                container.innerHTML = data.messages.map(m => `
+                    <div class="message ${m.sender_is_admin ? 'received' : 'sent'}">
+                        ${m.message}
+                        <span class="message-time">${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                    </div>
+                `).join('');
+                
+                if (atBottom) {
+                    container.scrollTop = container.scrollHeight;
+                }
+            }
+        });
+}
+
+document.getElementById('sendMessage').addEventListener('click', () => {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg || !currentBookingId) return;
+    
+    const formData = new FormData();
+    formData.append('action', 'send');
+    formData.append('booking_id', currentBookingId);
+    formData.append('message', msg);
+    
+    fetch('../api/messages_action.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            input.value = '';
+            loadMessages();
+        }
+    });
+});
+
+document.getElementById('closeChat').addEventListener('click', () => {
+    document.getElementById('chatModal').classList.remove('active');
+    clearInterval(chatInterval);
+    currentBookingId = null;
+});
+
+document.querySelectorAll('.open-chat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        openChat(btn.dataset.bookingId, btn.dataset.model);
+    });
+});
+
 function dismissBooking(id, btn) {
     let dismissed = JSON.parse(localStorage.getItem('dismissedBookings')) || [];
     if (!dismissed.includes(id)) {

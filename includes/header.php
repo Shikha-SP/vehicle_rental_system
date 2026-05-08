@@ -108,7 +108,7 @@ if (session_status() === PHP_SESSION_NONE) {
               <?php if (empty($_SESSION['is_admin'])): ?>
                 <a href="/vehicle_rental_collab_project/public/user/wishlist.php">My Wishlist</a>
               <?php else: ?>
-                <a href="/vehicle_rental_collab_project/public/admin/inquiries.php">Inbox</a>
+                <a href="/vehicle_rental_collab_project/public/admin/inquiries.php">Messages</a>
               <?php endif; ?>
               <a href="/vehicle_rental_collab_project/public/user/settings.php">Settings</a>
               <a href="/vehicle_rental_collab_project/public/authentication/logout.php?return=<?= urlencode($_SERVER['REQUEST_URI']) ?>">Logout</a>
