@@ -1,7 +1,47 @@
 Array
 (
-    [csrf_token] => 5d396b61b4b741aac5d261dd380ce959eeb5148cc8c7e0d37c3f88b7e8b7a837
-    [user_id] => 1
-    [username] => Shikhaaaaa
-    [is_admin] => 1
+    [csrf_token] => b375721bd529139fa85ca124bf19ae193782b57ceac12fdf0bdfd3a142f22198
+    [user_id] => 2
+    [username] => Shipy
+    [is_admin] => 
+    [chat_history] => Array
+        (
+            [0] => Array
+                (
+                    [role] => user
+                    [content] => hi how many gray vehicles do we have
+                )
+
+            [1] => Array
+                (
+                    [role] => assistant
+                    [content] => We have 2 gray vehicles available. The Lexus is a gray electric vehicle available for NPR 3000.00/day, and the SUV is a gray petrol vehicle available for NPR 5000.00/day. Here are the details:
+
+🚗 **lexus** — Grey, Automatic, Electric
+💰 NPR 3000.00/day | ⚡ 6000 km/h
+👉 [View & Book →](http://localhost/vehicle_rental_collab_project/public/vehicle/vehicle_detail.php?id=19)
+
+🚗 **SUV** — Grey, Automatic, Petrol
+💰 NPR 5000.00/day | ⚡ 180 km/h
+👉 [View & Book →](http://localhost/vehicle_rental_collab_project/public/vehicle/vehicle_detail.php?id=12)
+                )
+
+            [2] => Array
+                (
+                    [role] => user
+                    [content] => how many in white
+                )
+
+            [3] => Array
+                (
+                    [role] => assistant
+                    [content] => We have 1 white vehicle available. The test vehicle is a white electric vehicle available for NPR 3000.00/day. Here are the details:
+
+🚗 **test** — White, Automatic, Electric
+💰 NPR 3000.00/day | ⚡ 
+👉 [View & Book →](http://localhost/vehicle_rental_collab_project/public/vehicle/vehicle_detail.php?id=18)
+                )
+
+        )
+
 )

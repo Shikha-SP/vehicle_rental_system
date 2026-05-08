@@ -52,6 +52,63 @@ if ($user_id) {
     $inWishlist = (bool)$wish_stmt->get_result()->fetch_assoc();
 }
 
+// Check if user has ANY booking (confirmed or cancelled) for review purposes
+$canReview = false;
+$booking_id = null;
+$review_booking_id = null;
+if ($user_id) {
+    $review_check_sql = "SELECT id FROM bookings WHERE user_id = ? AND vehicle_id = ? LIMIT 1";
+    $review_check_stmt = $conn->prepare($review_check_sql);
+    $review_check_stmt->bind_param("ii", $user_id, $id);
+    $review_check_stmt->execute();
+    $review_row = $review_check_stmt->get_result()->fetch_assoc();
+    $canReview = (bool) $review_row;
+    $review_booking_id = $review_row['id'] ?? null;
+    
+    // Also get active booking id if exists
+    $booking_check_sql = "SELECT id FROM bookings WHERE user_id = ? AND vehicle_id = ? AND status = 'confirmed' AND end_date >= CURDATE() LIMIT 1";
+    $booking_check_stmt = $conn->prepare($booking_check_sql);
+    $booking_check_stmt->bind_param("ii", $user_id, $id);
+    $booking_check_stmt->execute();
+    $booking_row = $booking_check_stmt->get_result()->fetch_assoc();
+    $booking_id = $booking_row['id'] ?? null;
+}
+
+// Fetch user's existing rating and review
+$user_rating_value = 0;
+$user_review_text = '';
+$effective_booking_id = $booking_id ?? $review_booking_id;
+if ($user_id && $effective_booking_id) {
+    $rating_check_sql = "SELECT rating, review FROM reviews WHERE user_id = ? AND vehicle_id = ? LIMIT 1";
+    $rating_check_stmt = $conn->prepare($rating_check_sql);
+    $rating_check_stmt->bind_param("ii", $user_id, $id);
+    $rating_check_stmt->execute();
+    $rating_result = $rating_check_stmt->get_result()->fetch_assoc();
+    if ($rating_result) {
+        $user_rating_value = $rating_result['rating'];
+        $user_review_text = $rating_result['review'] ?? '';
+    }
+}
+
+// Fetch all reviews for this vehicle
+$reviews_sql = "SELECT r.rating, r.review, u.first_name, r.created_at 
+                FROM reviews r 
+                JOIN users u ON r.user_id = u.id 
+                WHERE r.vehicle_id = ? AND r.review IS NOT NULL AND r.review != ''
+                ORDER BY r.created_at DESC";
+$reviews_stmt = $conn->prepare($reviews_sql);
+$reviews_stmt->bind_param("i", $id);
+$reviews_stmt->execute();
+$all_reviews = $reviews_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+
+// Fetch average rating
+$avg_sql = "SELECT AVG(rating) as avg_rating FROM reviews WHERE vehicle_id = ?";
+$avg_stmt = $conn->prepare($avg_sql);
+$avg_stmt->bind_param("i", $id);
+$avg_stmt->execute();
+$avg_result = $avg_stmt->get_result()->fetch_assoc();
+$vehicle['avg_rating'] = $avg_result['avg_rating'];
+
 // Default dates for preview
 $def_pickup = date('Y-m-d', strtotime('+1 day'));
 $def_dropoff = date('Y-m-d', strtotime('+3 days'));
@@ -116,6 +173,71 @@ include '../../includes/header.php';
                     <strong>EXTERIOR FINISH:</strong>
                     <div class="swatch" style="background: <?= htmlspecialchars($vehicle['color'] ?? '#333') ?>"></div>
                     <span><?= htmlspecialchars($vehicle['color'] ?? 'Factory Standard') ?></span>
+                </div>
+
+                <!-- Rate Vehicle Only After Booking -->
+                <?php if ($userBooking || $canReview): ?>
+                    <div class="rating-box" data-vehicle-id="<?= $id ?>" data-booking-id="<?= $effective_booking_id ?>">
+                        <div class="stars">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
+                                <?php if ($i <= $user_rating_value): ?>
+                                    <i class="fa-solid fa-star active"></i>
+                                <?php else: ?>
+                                    <i class="fa-regular fa-star"></i>
+                                <?php endif; ?>
+                            <?php endfor; ?>
+                        </div>
+                        <p class="review-trigger" id="openReviewModal">
+                            <?= $user_rating_value ? 'Edit your review' : 'Write a review' ?>
+                        </p>
+                        <p>Rate this vehicle</p>
+                    </div>
+                <?php endif; ?>
+
+                <!-- display reviews -->
+                <div class="avg-rating-box">
+                    <h3>Community Reviews</h3>
+                    <?php
+                    $avg = round($vehicle['avg_rating'] ?? 0);
+                    for ($i = 1; $i <= 5; $i++): ?>
+                        <?php if ($i <= $avg): ?>
+                            <i class="fa-solid fa-star active"></i>
+                        <?php else: ?>
+                            <i class="fa-regular fa-star"></i>
+                        <?php endif; ?>
+                    <?php endfor; ?>
+                    <span><?= $vehicle['avg_rating'] ? number_format($vehicle['avg_rating'], 1) : 'No ratings yet' ?></span>
+                    <div class="review-box">
+                        <?php if (empty($all_reviews)): ?>
+                            <p class="no-reviews">No reviews yet. Be the first to review!</p>
+                        <?php else: ?>
+                            <?php foreach ($all_reviews as $review): ?>
+                                <div class="review-card">
+                                    <div class="review-card-header">
+                                        <div class="reviewer-avatar">
+                                            <?= strtoupper(substr($review['first_name'], 0, 1)) ?>
+                                        </div>
+                                        <div class="reviewer-meta">
+                                            <strong>
+                                                <?= htmlspecialchars($review['first_name']) ?>
+                                            </strong>
+                                            <span class="review-date">
+                                                <?= date('M d, Y', strtotime($review['created_at'])) ?>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="review-stars">
+                                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                                            <i class="fa-<?= $i <= $review['rating'] ? 'solid' : 'regular' ?> fa-star"></i>
+                                        <?php endfor; ?>
+                                    </div>
+                                    <p class="review-text">
+                                        <?= htmlspecialchars($review['review']) ?>
+                                    </p>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
@@ -196,6 +318,44 @@ include '../../includes/header.php';
         </div>
     </section>
 </main>
+
+<!-- Review modal -->
+<?php if ($userBooking || $canReview): ?>
+    <div class="review-modal-overlay" id="reviewModal" data-rating="<?= $user_rating_value ?>" data-review="<?= htmlspecialchars($user_review_text) ?>">
+        <div class="review-modal">
+            <button class="modal-close" id="closeModal">&times;</button>
+
+            <div class="modal-header">
+                <img src="../../<?= htmlspecialchars($vehicle['image_path'] ?? 'assets/images/placeholder.png') ?>"
+                    alt="<?= htmlspecialchars($vehicle['model']) ?>" class="modal-vehicle-img">
+                <div>
+                    <h3>
+                        <?= htmlspecialchars($vehicle['model']) ?>
+                    </h3>
+                    <p>Share your experience</p>
+                </div>
+            </div>
+
+            <!-- Stars inside modal too -->
+            <div class="modal-stars stars-modal">
+                <?php for ($i = 1; $i <= 5; $i++): ?>
+                    <?php if ($i <= $user_rating_value): ?>
+                        <i class="fa-solid fa-star active"></i>
+                    <?php else: ?>
+                        <i class="fa-regular fa-star"></i>
+                    <?php endif; ?>
+                <?php endfor; ?>
+            </div>
+            <p class="modal-rating-label" id="modalRatingLabel">
+                <?= $user_rating_value ? ['', 'Terrible', 'Poor', 'Average', 'Good', 'Excellent'][$user_rating_value] : 'Select a rating' ?>
+            </p>
+
+            <textarea id="reviewText" placeholder="Describe your experience with this vehicle..." rows="5"><?= htmlspecialchars($user_review_text) ?></textarea>
+
+            <button class="btn-submit-review" id="submitReview"><?= $user_review_text ? 'Update Review' : 'Post Review' ?></button>
+        </div>
+    </div>
+<?php endif; ?>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -281,5 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 </script>
+
+<script src="../../assets/js/ratings.js"></script>
 
 <?php include '../../includes/footer.php'; ?>
