@@ -334,7 +334,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
 
         <div class="khalti-section">
             <a href="khalti_initiate.php" id="khalti-button">
-                <img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo">
+                <img src="../../assets/images/khaltilogo.png" alt="Khalti" class="khalti-logo">
+                PAY NPR <?= number_format($totalprice, 0) ?>
+            </a>
+        </div>
+
+        <div class="esewa-section">
+            <a href="esewa_initiate.php" id="esewa-button">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Esewa_logo.webp" alt="eSewa" class="esewa-logo">
                 PAY NPR <?= number_format($totalprice, 0) ?>
             </a>
         </div>

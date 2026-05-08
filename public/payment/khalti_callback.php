@@ -18,15 +18,7 @@ $pidx = $_GET['pidx'] ?? '';
 $purchase_order_id = $_GET['purchase_order_id'] ?? '';
 
 if (isset($_GET['status']) && strtolower($_GET['status']) === 'user canceled') {
-    unset(
-        $_SESSION['payment_vehicle_id'],
-        $_SESSION['payment_pickup'],
-        $_SESSION['payment_dropoff'],
-        $_SESSION['payment_days'],
-        $_SESSION['khalti_purchase_order_id'],
-        $_SESSION['khalti_amount']
-    );
-    header("Location: ../vehicle/vehicles.php");
+    header("Location: paymentdetail.php");
     exit;
 }
 
@@ -60,7 +52,6 @@ curl_setopt_array($curl, array(
 
 $response = curl_exec($curl);
 $err = curl_error($curl);
-curl_close($curl);
 
 if ($err) {
     die("cURL Error #:" . $err);
@@ -184,15 +175,7 @@ if (isset($response_data['status']) && $response_data['status'] === 'Completed')
     }
 
 } else {
-    // Payment failed or cancelled
-    unset(
-        $_SESSION['payment_vehicle_id'],
-        $_SESSION['payment_pickup'],
-        $_SESSION['payment_dropoff'],
-        $_SESSION['payment_days'],
-        $_SESSION['khalti_purchase_order_id'],
-        $_SESSION['khalti_amount']
-    );
-    header("Location: ../vehicle/vehicles.php");
+    // Payment failed
+    header("Location: paymentdetail.php");
     exit;
 }
