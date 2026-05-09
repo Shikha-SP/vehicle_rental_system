@@ -18,10 +18,7 @@ require_once '../../config/mailer.php';
 require_once '../../includes/functions.php';
 session_start();
 
-$theme = 'light';
-if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
-    $theme = 'dark';
-}
+$theme = 'dark'; // Default to dark for premium feel
 
 if (isLoggedIn()) {
     if ($_SESSION['is_admin']) {
@@ -65,71 +62,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } 
     // === STEP 1 VALIDATION (Basic Account Details) ===
     else if ($current_step === 1) {
-        if (empty($first_name))   $errors[] = "First name is required.";
-        if (empty($last_name))    $errors[] = "Last name is required.";
-        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Valid email is required.";
-        if (empty($phone))        $errors[] = "Phone number is required.";
-        if (empty($address))      $errors[] = "Address is required.";
+        if (empty($first_name))   $errors['first_name'] = "First name is required.";
+        if (empty($last_name))    $errors['last_name'] = "Last name is required.";
         
-        // Enforce robust password requirements to protect user accounts
+        if (empty($email)) {
+            $errors['email'] = "Email is required.";
+        } else if (!is_email_genuine($email)) {
+            $errors['email'] = "Please enter a valid, genuine email address.";
+        }
+
+        if (empty($phone)) {
+            $errors['phone'] = "Phone number is required.";
+        } else if (!preg_match('/^[0-9]{10,15}$/', $phone)) {
+            $errors['phone'] = "Phone number must be 10-15 digits.";
+        }
+
+        if (empty($address)) $errors['address'] = "Address is required.";
+        
         if (empty($password)) {
-            $errors[] = "Password is required.";
+            $errors['password'] = "Password is required.";
         } else {
-            // Thorough check to ensure password meets all our complexity requirements
             if (strlen($password) < 8) {
-                $errors[] = "Password must be at least 8 characters long.";
-            }
-            if (!preg_match('/[A-Z]/', $password)) {
-                $errors[] = "Password must contain at least one uppercase letter.";
-            }
-            if (!preg_match('/[a-z]/', $password)) {
-                $errors[] = "Password must contain at least one lowercase letter.";
-            }
-            if (!preg_match('/[0-9]/', $password)) {
-                $errors[] = "Password must contain at least one number.";
-            }
-            if (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
-                $errors[] = "Password must contain at least one special character (!@#$%^&*(),.?\":{}|<>).";
+                $errors['password'] = "Password must be at least 8 characters.";
+            } else if (!preg_match('/[A-Z]/', $password) || !preg_match('/[0-9]/', $password)) {
+                $errors['password'] = "Password must contain uppercase and numbers.";
             }
         }
         
-        if ($password !== $confirm) $errors[] = "Passwords do not match.";
+        if ($password !== $confirm) $errors['confirm_password'] = "Passwords do not match.";
         
-        // Ensure phone numbers contain a logical amount of digits and no rogue characters
-        if (!empty($phone) && !preg_match('/^[0-9]{10,15}$/', $phone)) {
-            $errors[] = "Phone number must be 10-15 digits long.";
-        }
-
-        // If there are no validation errors in Step 1, advance the user to Step 2
-        if (empty($errors)) {
-            $current_step = 2; // Move to step 2
-        }
-    } 
-    // === STEP 2 VALIDATION & PROCESSING (Driver Details) ===
-    else if ($current_step === 2) {
-        // Validate driving credentials, which are mandatory to operate any rental vehicle
-        if (empty($license_no)) {
-            $errors[] = "License number is required.";
-        } else {
-            // Validate the format of the license number using regex. This pattern accommodates most regional license numbers.
-            if (!preg_match('/^[A-Z0-9-]{5,20}$/', $license_no)) {
-                $errors[] = "License number must be 5-20 characters long and can only contain letters, numbers, and hyphens.";
-            }
-        }
-        
-        if (empty($license_type)) {
-            $errors[] = "License type is required.";
-        } else {
-            // Restrict license types to predefined values to prevent bad data in the database
-            $allowed_license_types = ['A', 'B', 'C', 'D', 'E'];
-            if (!in_array($license_type, $allowed_license_types)) {
-                $errors[] = "Invalid license type selected.";
-            }
-        }
-        
-        if (!isset($_POST['terms'])) $errors[] = "You must agree to the terms.";
-
-        // Verify if the email is already populated in the system before registering a new user
+        // Check if email already exists
         if (empty($errors)) {
             $stmt = mysqli_prepare($conn, "SELECT id, is_verified FROM users WHERE email = ?");
             mysqli_stmt_bind_param($stmt, "s", $email);
@@ -140,8 +102,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (mysqli_stmt_num_rows($stmt) > 0) {
                 if ($existing_verified) {
-                    $errors[] = "Email is already registered.";
-                    $current_step = 1; // Send them back to step 1 to fix email
+                    $errors['email'] = "This email is already in use.";
+                }
+            }
+            mysqli_stmt_close($stmt);
+        }
+
+        if (empty($errors)) {
+            $current_step = 2;
+        }
+    } 
+    // === STEP 2 VALIDATION & PROCESSING (Driver Details) ===
+    else if ($current_step === 2) {
+        if (empty($license_no)) {
+            $errors['license_no'] = "License number is required.";
+        } else if (!preg_match('/^[A-Z0-9-]{5,20}$/', $license_no)) {
+            $errors['license_no'] = "Invalid license format (5-20 characters).";
+        }
+        
+        if (empty($license_type)) {
+            $errors['license_type'] = "License type is required.";
+        }
+        
+        if (!isset($_POST['terms'])) $errors['terms'] = "You must agree to the terms.";
+
+        if (empty($errors)) {
+            // Check for unverified duplicate again just to be safe before deletion
+            $stmt = mysqli_prepare($conn, "SELECT id, is_verified FROM users WHERE email = ?");
+            mysqli_stmt_bind_param($stmt, "s", $email);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_store_result($stmt);
+            mysqli_stmt_bind_result($stmt, $existing_id, $existing_verified);
+            mysqli_stmt_fetch($stmt);
+
+            if (mysqli_stmt_num_rows($stmt) > 0) {
+                if ($existing_verified) {
+                    $errors['email'] = "Email is already registered.";
+                    $current_step = 1;
                 } else {
                     mysqli_stmt_close($stmt);
                     $del = mysqli_prepare($conn, "DELETE FROM users WHERE id = ?");
@@ -157,8 +154,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($errors)) {
             // Store a secure hash of the password, never plain text. Also generate an activation token.
             $password_hash      = password_hash($password, PASSWORD_DEFAULT);
-            $verification_token = bin2hex(random_bytes(32));
-            $token_expires_at   = date('Y-m-d H:i:s', strtotime('+24 hours'));
+            $otp                = generateOTP(6);
+            $token_expires_at   = date('Y-m-d H:i:s', strtotime('+30 minutes'));
 
             $stmt = mysqli_prepare($conn,
                 "INSERT INTO users
@@ -169,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_stmt_bind_param($stmt, "ssssssssss",
                 $first_name, $last_name, $email, $address, $phone,
                 $password_hash, $license_no, $license_type,
-                $verification_token, $token_expires_at
+                $otp, $token_expires_at
             );
 
             if (mysqli_stmt_execute($stmt)) {
@@ -178,21 +175,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 try {
                     $mail = createMailer();
                     $mail->addAddress($email, $first_name . ' ' . $last_name);
-                    $mail->Subject = 'Verify your email address';
+                    $mail->Subject = 'Your Verification Code - TD Rentals';
                     $mail->isHTML(true);
                     $mail->Body    = "
-                        <p>Hi {$first_name},</p>
-                        <p>Thanks for signing up! Please verify your email by clicking the link below.
-                           This link expires in <strong>24 hours</strong>.</p>
-                        <p><a href='{$verify_url}'>{$verify_url}</a></p>
-                        <p>If you didn't create an account, you can ignore this email.</p>
+                        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;'>
+                            <h2 style='color: #2c3e50; text-align: center;'>TD RENTALS</h2>
+                            <p>Hi {$first_name},</p>
+                            <p>Thanks for signing up! Please use the following One-Time Password (OTP) to verify your email address:</p>
+                            <div style='background: #f4f7f6; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #3498db; margin: 20px 0; border-radius: 5px;'>
+                                {$otp}
+                            </div>
+                            <p>This code expires in <strong>30 minutes</strong>.</p>
+                            <p>If you didn't create an account, you can ignore this email.</p>
+                            <hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>
+                            <p style='font-size: 12px; color: #777; text-align: center;'>&copy; 2026 TD Rentals. All rights reserved.</p>
+                        </div>
                     ";
-                    $mail->AltBody = "Hi {$first_name}, verify your email here: {$verify_url} (expires in 24 hours)";
+                    $mail->AltBody = "Hi {$first_name}, your verification code is: {$otp} (expires in 30 minutes)";
                     $mail->send();
-                    $success = true;
+                    
+                    $_SESSION['verify_email'] = $email;
+                    redirect('verify_otp.php');
                 } catch (Exception $e) {
                     $del = mysqli_prepare($conn, "DELETE FROM users WHERE verification_token = ?");
-                    mysqli_stmt_bind_param($del, "s", $verification_token);
+                    mysqli_stmt_bind_param($del, "s", $otp);
                     mysqli_stmt_execute($del);
                     $errors[] = "Could not send verification email. Please try again later.";
                 }
@@ -210,6 +216,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up — TD Rentals</title>
     <link rel="stylesheet" href="../../assets/css/signup.css">
+    <link rel="stylesheet" href="../../assets/css/loading.css?v=<?= time() ?>">
+    <script>
+      (function() {
+        const theme = localStorage.getItem('td-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
     <style>
         /* Additional front-end styles for evaluating password strength and visualizing license requirements */
         .password-strength {
@@ -301,10 +314,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <nav class="signup-nav">
         <a href="../../public/landing_page.php" class="signup-nav__logo">TD Rentals</a>
-        <?php if (!$success): ?>
-            <span class="signup-nav__step">Step 0<?= $current_step ?> / 02</span>
-        <?php endif; ?>
-        <a href="login.php" class="signup-nav__login">Login</a>
+        <div style="display: flex; align-items: center; gap: 24px;">
+            <?php if (!$success): ?>
+                <span class="signup-nav__step">Step 0<?= $current_step ?> / 02</span>
+            <?php endif; ?>
+            <button id="themeToggleBtn" class="login-theme-toggle" aria-label="Toggle Theme">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+            <a href="login.php" class="signup-nav__login">Login</a>
+        </div>
     </nav>
 
     <main class="signup-main">
@@ -343,13 +362,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?= $current_step === 1 ? 'Enter your details to access the world\'s most exclusive vehicle selection.' : 'We need your license details to finalize your registration.' ?>
             </p>
 
-            <?php if (!empty($errors)): ?>
-                <ul class="signup-errors">
-                    <?php foreach ($errors as $error): ?>
-                        <li><?= e($error) ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            <?php endif; ?>
+            <?php
+            if (!empty($errors) && !isset($errors['first_name']) && !isset($errors['last_name']) && !isset($errors['email']) && !isset($errors['phone']) && !isset($errors['address']) && !isset($errors['password']) && !isset($errors['confirm_password']) && !isset($errors['license_no']) && !isset($errors['license_type']) && !isset($errors['terms'])) {
+                // This handles general errors as a toast
+                echo '<div class="toast-container">';
+                foreach ($errors as $error) {
+                    echo '<div class="toast toast--error"><span class="toast__icon">⚠️</span><span class="toast__msg">' . e($error) . '</span></div>';
+                }
+                echo '</div>';
+            }
+            ?>
 
             <form class="signup-form" method="POST" novalidate>
                 <input type="hidden" name="csrf_token" value="<?= e($_SESSION['csrf_token']) ?>">
@@ -359,40 +381,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="signup-form__row">
                         <div class="signup-form__group">
                             <label class="signup-form__label" for="first_name">First Name</label>
-                            <input class="signup-form__input" type="text" id="first_name" name="first_name"
+                            <input class="signup-form__input <?= isset($errors['first_name']) ? 'is-invalid' : '' ?>" type="text" id="first_name" name="first_name"
                                    placeholder="John" value="<?= e($first_name ?? '') ?>" required>
+                            <?php if (isset($errors['first_name'])): ?>
+                                <span class="field-error">⚠️ <?= e($errors['first_name']) ?></span>
+                            <?php endif; ?>
                         </div>
                         <div class="signup-form__group">
                             <label class="signup-form__label" for="last_name">Last Name</label>
-                            <input class="signup-form__input" type="text" id="last_name" name="last_name"
+                            <input class="signup-form__input <?= isset($errors['last_name']) ? 'is-invalid' : '' ?>" type="text" id="last_name" name="last_name"
                                    placeholder="Doe" value="<?= e($last_name ?? '') ?>" required>
+                            <?php if (isset($errors['last_name'])): ?>
+                                <span class="field-error">⚠️ <?= e($errors['last_name']) ?></span>
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="signup-form__group">
                         <label class="signup-form__label" for="email">Email Address</label>
-                        <input class="signup-form__input" type="email" id="email" name="email"
+                        <input class="signup-form__input <?= isset($errors['email']) ? 'is-invalid' : '' ?>" type="email" id="email" name="email"
                                placeholder="driver@velocity.com" value="<?= e($email ?? '') ?>" required>
+                        <?php if (isset($errors['email'])): ?>
+                            <span class="field-error">⚠️ <?= e($errors['email']) ?></span>
+                        <?php endif; ?>
                     </div>
 
                     <div class="signup-form__row">
                         <div class="signup-form__group">
                             <label class="signup-form__label" for="phone">Phone Number</label>
-                            <input class="signup-form__input" type="tel" id="phone" name="phone"
+                            <input class="signup-form__input <?= isset($errors['phone']) ? 'is-invalid' : '' ?>" type="tel" id="phone" name="phone"
                                    placeholder="1234567890" value="<?= e($phone ?? '') ?>" required>
-                            <small class="valid-feedback" style="display:none;">✓ Valid phone number</small>
+                            <?php if (isset($errors['phone'])): ?>
+                                <span class="field-error">⚠️ <?= e($errors['phone']) ?></span>
+                            <?php else: ?>
+                                <small class="valid-feedback" style="display:none;">✓ Valid phone number</small>
+                            <?php endif; ?>
                         </div>
                         <div class="signup-form__group">
                             <label class="signup-form__label" for="address">Address</label>
-                            <input class="signup-form__input" type="text" id="address" name="address"
+                            <input class="signup-form__input <?= isset($errors['address']) ? 'is-invalid' : '' ?>" type="text" id="address" name="address"
                                    placeholder="123 Main St" value="<?= e($address ?? '') ?>" required>
+                            <?php if (isset($errors['address'])): ?>
+                                <span class="field-error">⚠️ <?= e($errors['address']) ?></span>
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="signup-form__group">
                         <label class="signup-form__label" for="password">Security Password</label>
                         <div class="signup-form__pw-wrap">
-                            <input class="signup-form__input" type="password" id="password" name="password"
+                            <input class="signup-form__input <?= isset($errors['password']) ? 'is-invalid' : '' ?>" type="password" id="password" name="password"
                                    placeholder="••••••••••••" required>
                             <button type="button" class="signup-form__pw-toggle" aria-label="Toggle password"
                                     onclick="togglePw('password', this)">
@@ -405,6 +443,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </svg>
                             </button>
                         </div>
+                        <?php if (isset($errors['password'])): ?>
+                            <span class="field-error">⚠️ <?= e($errors['password']) ?></span>
+                        <?php endif; ?>
                         <div class="password-strength">
                             <div class="password-strength-bar" id="passwordStrengthBar"></div>
                         </div>
@@ -423,7 +464,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="signup-form__group">
                         <label class="signup-form__label" for="confirm_password">Confirm Password</label>
                         <div class="signup-form__pw-wrap">
-                            <input class="signup-form__input" type="password" id="confirm_password"
+                            <input class="signup-form__input <?= isset($errors['confirm_password']) ? 'is-invalid' : '' ?>" type="password" id="confirm_password"
                                    name="confirm_password" placeholder="••••••••••••" required>
                             <button type="button" class="signup-form__pw-toggle" aria-label="Toggle confirm password"
                                     onclick="togglePw('confirm_password', this)">
@@ -436,6 +477,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </svg>
                             </button>
                         </div>
+                        <?php if (isset($errors['confirm_password'])): ?>
+                            <span class="field-error">⚠️ <?= e($errors['confirm_password']) ?></span>
+                        <?php endif; ?>
                         <div id="passwordMatchFeedback" class="error-message" style="display:none;">Passwords do not match</div>
                         <div id="passwordMatchValid" class="valid-feedback" style="display:none;">✓ Passwords match</div>
                     </div>
@@ -460,8 +504,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="signup-form__row">
                         <div class="signup-form__group">
                             <label class="signup-form__label" for="license_no">License Number</label>
-                            <input class="signup-form__input" type="text" id="license_no" name="license_no"
+                            <input class="signup-form__input <?= isset($errors['license_no']) ? 'is-invalid' : '' ?>" type="text" id="license_no" name="license_no"
                                    placeholder="DL-000000" value="<?= e($license_no ?? '') ?>" required>
+                            <?php if (isset($errors['license_no'])): ?>
+                                <span class="field-error">⚠️ <?= e($errors['license_no']) ?></span>
+                            <?php endif; ?>
                             <div class="license-preview" id="licensePreview" style="display:none;">
                                 <svg class="license-preview-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
@@ -472,7 +519,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="signup-form__group">
                             <label class="signup-form__label" for="license_type">License Type</label>
                             <div class="signup-form__select-wrap">
-                                <select class="signup-form__select" id="license_type" name="license_type" required>
+                                <select class="signup-form__select <?= isset($errors['license_type']) ? 'is-invalid' : '' ?>" id="license_type" name="license_type" required>
                                     <option value="">Select Type</option>
                                     <option value="A" <?= (isset($license_type) && $license_type=="A") ? "selected" : "" ?>>A — Motorcycles &amp; Scooters</option>
                                     <option value="B" <?= (isset($license_type) && $license_type=="B") ? "selected" : "" ?>>B — Cars, Jeeps, Vans</option>
@@ -481,6 +528,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <option value="E" <?= (isset($license_type) && $license_type=="E") ? "selected" : "" ?>>E — Heavy with Trailers</option>
                                 </select>
                             </div>
+                            <?php if (isset($errors['license_type'])): ?>
+                                <span class="field-error">⚠️ <?= e($errors['license_type']) ?></span>
+                            <?php endif; ?>
                             <div id="licenseTypeInfo" class="license-preview" style="display:none;">
                                 <span id="licenseTypeDescription"></span>
                             </div>
@@ -492,6 +542,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label class="signup-form__terms-text" for="terms">
                             I agree to the <a href="#">Rental Agreement</a> and <a href="#">Privacy Policy</a>.
                         </label>
+                        <?php if (isset($errors['terms'])): ?>
+                            <span class="field-error" style="display:block; width:100%; margin-top:4px;">⚠️ <?= e($errors['terms']) ?></span>
+                        <?php endif; ?>
                     </div>
 
                     <button class="signup-form__submit" type="submit">
@@ -813,6 +866,26 @@ if (signupForm) {
                 }
             }
         }, 10);
+    });
+}
+
+// Auto-dismiss toasts after 5 seconds
+document.querySelectorAll('.toast').forEach(toast => {
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(20px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+});
+
+// Theme Toggle Logic
+const themeBtn = document.getElementById('themeToggleBtn');
+if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('td-theme', next);
     });
 }
 </script>

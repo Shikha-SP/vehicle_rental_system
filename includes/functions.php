@@ -138,4 +138,42 @@ function getImageUrl($path)
 
     return $projectRoot . '/' . $path;
 }
+
+/**
+ * Check if an email is genuine by validating format and domain MX records.
+ * 
+ * @param string $email
+ * @return bool
+ */
+function is_email_genuine($email) {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+
+    $domain = substr(strrchr($email, "@"), 1);
+    
+    // Check if domain has any MX records. 
+    // This confirms the domain is configured to receive emails.
+    // Note: This might fail in environments without internet access.
+    if (!checkdnsrr($domain, "MX")) {
+        // If MX fails, check for A record as a fallback (some domains handle mail without MX)
+        return checkdnsrr($domain, "A");
+    }
+
+    return true;
+}
+
+/**
+ * Generate a random numeric OTP.
+ * 
+ * @param int $length
+ * @return string
+ */
+function generateOTP($length = 6) {
+    $otp = '';
+    for ($i = 0; $i < $length; $i++) {
+        $otp .= random_int(0, 9);
+    }
+    return $otp;
+}
 ?>

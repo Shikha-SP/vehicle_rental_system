@@ -3,10 +3,7 @@ require_once '../../config/db.php';
 require_once '../../includes/functions.php';
 session_start();
 
-$theme = 'light';
-if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
-    $theme = 'dark';
-}
+$theme = 'dark'; // Default to dark for premium feel
 
 // If the user is already logged in, redirect them to their respective dashboard
 // so they do not see the login form again.
@@ -41,12 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password'] ?? '');
 
     // Perform basic validation to ensure the fields are formatted properly
-    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Valid email is required.";
+    if (empty($email)) {
+        $errors['email'] = "Email is required.";
+    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = "Please enter a valid email address.";
     }
 
     if (empty($password)) {
-        $errors[] = "Password is required.";
+        $errors['password'] = "Password is required.";
     }
 
     // If basic validation passes, lookup the user in the database
@@ -134,6 +133,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login — TD Rentals</title>
     <link rel="stylesheet" href="../../assets/css/login.css">
     <link rel="stylesheet" href="../../assets/css/loading.css?v=<?= time() ?>">
+    <script>
+      (function() {
+        const theme = localStorage.getItem('td-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
 </head>
 <body>
 
@@ -150,7 +155,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- ── Nav ── -->
     <nav class="login-nav">
         <a href="../../public/landing_page.php" class="login-nav__logo">TD Rentals</a>
-        <a href="signup.php" class="login-nav__signup">Create Account</a>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <button id="themeToggleBtn" class="login-theme-toggle" aria-label="Toggle Theme">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+            <a href="signup.php" class="login-nav__signup">Create Account</a>
+        </div>
     </nav>
 
     <!-- ── Main ── -->
@@ -169,12 +180,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Conditionally render the error notification block if exceptions were raised during form processing -->
             <!-- Note: We don't automatically escape these error elements so that we can embed HTML links (like the "Resend Verification" link) directly in the error message -->
-            <?php if (!empty($errors)): ?>
-                <ul class="login-errors">
+            <?php if (!empty($errors) && !isset($errors['email']) && !isset($errors['password'])): ?>
+                <div class="toast-container">
                     <?php foreach ($errors as $error): ?>
-                        <li><?= $error ?></li>
+                        <div class="toast toast--error">
+                            <span class="toast__icon">⚠️</span>
+                            <span class="toast__msg"><?= $error ?></span>
+                        </div>
                     <?php endforeach; ?>
-                </ul>
+                </div>
             <?php endif; ?>
 
             <!-- Form -->
@@ -184,16 +198,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Email -->
                 <div class="login-form__group">
                     <label class="login-form__label" for="email">Email Address</label>
-                    <input class="login-form__input" type="email" id="email" name="email"
+                    <input class="login-form__input <?= isset($errors['email']) ? 'is-invalid' : '' ?>" type="email" id="email" name="email"
                            placeholder="driver@velocity.com"
                            value="<?= e($email ?? '') ?>" required autocomplete="email">
+                    <?php if (isset($errors['email'])): ?>
+                        <span class="field-error">⚠️ <?= $errors['email'] ?></span>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Password -->
                 <div class="login-form__group">
                     <label class="login-form__label" for="password">Password</label>
                     <div class="login-form__pw-wrap">
-                        <input class="login-form__input" type="password" id="password" name="password"
+                        <input class="login-form__input <?= isset($errors['password']) ? 'is-invalid' : '' ?>" type="password" id="password" name="password"
                                placeholder="••••••••••••" required autocomplete="current-password">
                         <button type="button" class="login-form__pw-toggle" aria-label="Toggle password"
                                 onclick="togglePw()">
@@ -207,6 +224,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </svg>
                         </button>
                     </div>
+                    <?php if (isset($errors['password'])): ?>
+                        <span class="field-error">⚠️ <?= $errors['password'] ?></span>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Password Recovery entry point -->
@@ -282,6 +302,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 function togglePw() {
     const input = document.getElementById('password');
     input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+// Auto-dismiss toasts after 5 seconds
+document.querySelectorAll('.toast').forEach(toast => {
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(20px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+});
+
+// Theme Toggle Logic
+const themeBtn = document.getElementById('themeToggleBtn');
+if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('td-theme', next);
+    });
 }
 </script>
 

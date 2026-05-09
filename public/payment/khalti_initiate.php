@@ -39,7 +39,48 @@ if (!$data) {
 
 $basicprice = 500; // From paymentdetail.php
 $total_price_npr = ($data['price_per_day'] * $days) + $basicprice;
-$amount_paisa = $total_price_npr * 100; // Khalti expects amount in paisa
+
+// Apply Discount if provided
+$discount_code = filter_input(INPUT_GET, 'code', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+$discount_amount = 0.00;
+
+if (!empty($discount_code)) {
+    $stmt = $conn->prepare("SELECT * FROM discount_codes WHERE code = ? AND is_active = 1");
+    $stmt->bind_param("s", $discount_code);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $c = $result->fetch_assoc();
+        // Check expiry and ownership
+        $valid = true;
+        if ($c['expires_at'] && $c['expires_at'] < date('Y-m-d')) $valid = false;
+        if ($c['max_uses'] !== null && $c['used_count'] >= $c['max_uses']) $valid = false;
+        if ($c['owner_user_id'] !== null && (int)$c['owner_user_id'] !== (int)$user_id) $valid = false;
+        
+        // Check if already used
+        $check_stmt = $conn->prepare("SELECT id FROM discount_code_uses WHERE user_id = ? AND code_id = ?");
+        $check_stmt->bind_param("ii", $user_id, $c['id']);
+        $check_stmt->execute();
+        if ($check_stmt->get_result()->num_rows > 0) $valid = false;
+        $check_stmt->close();
+
+        if ($valid) {
+            if ($c['type'] === 'flat') {
+                $discount_amount = min($c['discount_flat'], $total_price_npr);
+            } else {
+                $discount_amount = ($total_price_npr * $c['discount_percent']) / 100;
+            }
+            $total_price_npr -= $discount_amount;
+            $_SESSION['khalti_discount_code'] = $discount_code;
+            $_SESSION['khalti_discount_amount'] = $discount_amount;
+            $_SESSION['khalti_discount_id'] = $c['id'];
+        }
+    }
+    $stmt->close();
+}
+
+$amount_paisa = round($total_price_npr * 100); // Khalti expects amount in paisa
 
 // Generate a unique purchase order ID
 $purchase_order_id = "BOOK-" . $user_id . "-" . $vehicle_id . "-" . time();

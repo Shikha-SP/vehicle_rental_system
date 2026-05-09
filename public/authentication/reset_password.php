@@ -136,10 +136,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid_token) {
             <div class="login-card__rule"></div>
             
             <div class="login-card__heading">
-                <span>Create New</span>
+                <span>Reset</span>
                 <span>Password</span>
             </div>
-            <p class="login-card__sub">Enter your new password below.</p>
+            <p class="login-card__sub">Verification successful. You can now set your new password.</p>
             
             <?php if ($success): ?>
                 <div class="login-success">
@@ -183,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid_token) {
                     </form>
                 <?php else: ?>
                     <p style="text-align: center; margin-top: 1rem;">
-                        <a href="forgot_password.php">Request a new reset link →</a>
+                        <a href="forgot_password.php">Request a new code →</a>
                     </p>
                 <?php endif; ?>
             <?php endif; ?>

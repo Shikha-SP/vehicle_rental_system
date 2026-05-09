@@ -712,6 +712,13 @@ if ($uid) {
                     
                     // Store applied code to hidden form input
                     appliedDiscountInput.value = code;
+
+                    // Update Khalti Link
+                    const khaltiLink = document.getElementById('khalti-button');
+                    if (khaltiLink) {
+                        khaltiLink.href = 'khalti_initiate.php?code=' + encodeURIComponent(code);
+                        khaltiLink.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + Math.round(data.new_total).toLocaleString();
+                    }
                 } else {
                     discountMsg.textContent = data.message;
                     discountMsg.style.color = '#e74c3c';
@@ -721,6 +728,13 @@ if ($uid) {
                     payButton.innerHTML = 'CONFIRM & PAY NPR ' + baseTotal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
                     discountRow.style.display = 'none';
                     appliedDiscountInput.value = '';
+
+                    // Reset Khalti Link
+                    const khaltiLink = document.getElementById('khalti-button');
+                    if (khaltiLink) {
+                        khaltiLink.href = 'khalti_initiate.php';
+                        khaltiLink.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + Math.round(baseTotal).toLocaleString();
+                    }
                 }
             })
             .catch(error => {
