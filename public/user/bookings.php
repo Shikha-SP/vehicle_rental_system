@@ -49,11 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'cance
 $csrfToken = $_SESSION['csrf_token'] ?? generateCsrfToken();
 
 // Fetch Bookings with more vehicle details
+// Exclude 'pending' payment bookings — these are pre-created placeholders
+// that get updated to 'paid' on successful callback. Showing them would
+// cause confirmed bookings to falsely appear as "PENDING".
 $sql = "SELECT b.*, v.model, v.image_path, v.transmission, v.fuel_type, v.top_speed, v.price_per_day,
                DATEDIFF(b.end_date, b.start_date) AS days
         FROM bookings b
         JOIN vehicles v ON v.id = b.vehicle_id
-        WHERE b.user_id = ?
+        WHERE b.user_id = ? AND b.payment_status != 'pending'
         ORDER BY b.created_at DESC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
@@ -273,6 +276,14 @@ include '../../includes/header.php';
                         ?>
                         <img src="<?= htmlspecialchars($src) ?>" alt="<?= htmlspecialchars($b['model']) ?>" onerror="this.src='../../assets/images/car-placeholder.png'">
                         <div class="status-badge status-<?= $b['status'] ?>"><?= $b['status'] ?></div>
+                        <div class="status-badge payment-status-<?= $b['payment_status'] ?>" style="right: auto; left: 15px; top: 15px;
+                            <?php
+                                if ($b['payment_status'] === 'paid') echo 'background: rgba(34,197,94,0.9); color: white;';
+                                elseif ($b['payment_status'] === 'failed') echo 'background: rgba(220,38,38,0.9); color: white;';
+                                else echo 'background: rgba(245,158,11,0.9); color: white;';
+                            ?>">
+                            <?= strtoupper($b['payment_status']) ?>
+                        </div>
                         <div class="price-tag">NPR <?= number_format($b['price_per_day'], 0) ?> <span style="font-weight:400; font-size:0.7rem; opacity:0.6;">/ DAY</span></div>
                     </div>
                     

@@ -56,11 +56,20 @@ $post_data = [
     'purchase_order_id' => $purchase_order_id,
     'purchase_order_name' => "Rental: " . $data['model'],
     'customer_info' => [
-        'name' => $admin_data['first_name'] ?? 'Admin',
-        'email' => $admin_data['email'] ?? 'admin@tdrentals.com',
-        'phone' => $admin_data['phone_number'] ?? '9800000000'
+        'name' => $data['first_name'] ?? 'User',
+        'email' => $data['email'] ?? 'user@tdrentals.com',
+        'phone' => $data['phone_number'] ?? '9800000000'
     ]
 ];
+
+// Pre-create the booking as pending
+$insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, created_at)
+               VALUES (?, ?, ?, ?, ?, 'confirmed', 'pending', ?, NOW())";
+$insert_stmt = $conn->prepare($insert_sql);
+$insert_stmt->bind_param("iissds", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $total_price_npr, $purchase_order_id);
+if (!$insert_stmt->execute()) {
+    die("Failed to create pending booking.");
+}
 
 $curl = curl_init();
 curl_setopt_array($curl, array(
@@ -73,6 +82,7 @@ curl_setopt_array($curl, array(
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
     CURLOPT_CUSTOMREQUEST => 'POST',
     CURLOPT_POSTFIELDS => json_encode($post_data),
+    CURLOPT_SSL_VERIFYPEER => false,
     CURLOPT_HTTPHEADER => array(
         'Authorization: Key ' . $khalti_config['secret_key'],
         'Content-Type: application/json',

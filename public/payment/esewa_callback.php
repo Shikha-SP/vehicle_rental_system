@@ -67,10 +67,10 @@ $conn->begin_transaction();
 
 try {
     // Insert into bookings
-    $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, created_at)
-                   VALUES (?, ?, ?, ?, ?, 'confirmed', NOW())";
+    $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, created_at)
+                   VALUES (?, ?, ?, ?, ?, 'confirmed', 'paid', ?, NOW())";
     $insert_stmt = $conn->prepare($insert_sql);
-    $insert_stmt->bind_param("iissd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $totalprice);
+    $insert_stmt->bind_param("iissds", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $totalprice, $transaction_uuid);
     
     if (!$insert_stmt->execute()) {
         throw new Exception("Failed to create booking.");

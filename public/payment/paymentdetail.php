@@ -116,8 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
         if (!$user_id)
             die("User not logged in.");
 
-        $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, created_at)
-                       VALUES (?, ?, ?, ?, ?, 'confirmed', NOW())";
+        $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, created_at)
+                       VALUES (?, ?, ?, ?, ?, 'confirmed', 'paid', NOW())";
         $insert_stmt = $conn->prepare($insert_sql);
         $insert_stmt->bind_param("iissd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $totalprice);
 
@@ -343,6 +343,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
             <a href="esewa_initiate.php" id="esewa-button">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Esewa_logo.webp" alt="eSewa" class="esewa-logo">
                 PAY NPR <?= number_format($totalprice, 0) ?>
+            </a>
+        </div>
+
+        <div class="qr-section" style="margin-top: 15px;">
+            <a href="qr_initiate.php" id="qr-button" style="display: flex; align-items: center; justify-content: center; padding: 12px; background-color: #2c3e50; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: background-color 0.3s ease;">
+                <i class="fa-solid fa-qrcode" style="font-size: 24px; margin-right: 10px;"></i>
+                SCAN QR TO PAY NPR <?= number_format($totalprice, 0) ?>
             </a>
         </div>
 

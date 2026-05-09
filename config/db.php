@@ -74,6 +74,8 @@ CREATE TABLE IF NOT EXISTS bookings (
     end_date DATE NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,
     status ENUM('confirmed', 'cancelled', 'completed') DEFAULT 'confirmed',
+    payment_status ENUM('pending', 'paid', 'failed') DEFAULT 'pending',
+    purchase_order_id VARCHAR(100) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
