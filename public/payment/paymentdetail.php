@@ -332,24 +332,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
             <span>OR PAY WITH</span>
         </div>
 
-        <div class="khalti-section">
-            <a href="khalti_initiate.php" id="khalti-button">
+        <div class="payment-methods-grid">
+            <a href="khalti_initiate.php" id="khalti-button" class="payment-method-btn">
                 <img src="../../assets/images/khaltilogo.png" alt="Khalti" class="khalti-logo">
-                PAY NPR <?= number_format($totalprice, 0) ?>
+                <span>PAY NPR <?= number_format($totalprice, 0) ?></span>
             </a>
-        </div>
 
-        <div class="esewa-section">
-            <a href="esewa_initiate.php" id="esewa-button">
+            <a href="esewa_initiate.php" id="esewa-button" class="payment-method-btn">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Esewa_logo.webp" alt="eSewa" class="esewa-logo">
-                PAY NPR <?= number_format($totalprice, 0) ?>
+                <span>PAY NPR <?= number_format($totalprice, 0) ?></span>
             </a>
-        </div>
 
-        <div class="qr-section" style="margin-top: 15px;">
-            <a href="qr_initiate.php" id="qr-button" style="display: flex; align-items: center; justify-content: center; padding: 12px; background-color: #2c3e50; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: background-color 0.3s ease;">
-                <i class="fa-solid fa-qrcode" style="font-size: 24px; margin-right: 10px;"></i>
-                SCAN QR TO PAY NPR <?= number_format($totalprice, 0) ?>
+            <a href="qr_initiate.php" id="qr-button" class="payment-method-btn">
+                <i class="fa-solid fa-qrcode qr-icon"></i>
+                <span>SCAN QR &amp; PAY NPR <?= number_format($totalprice, 0) ?></span>
             </a>
         </div>
 
