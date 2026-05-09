@@ -143,12 +143,42 @@ include '../../includes/header.php';
 
                         <div class="form-group">
                             <label>Pick-up Date</label>
-                            <input type="date" name="pickup_date" min="<?= date('Y-m-d') ?>" value="<?= $def_pickup ?>" required>
+                            <input type="date" name="pickup_date" id="pickup-date" min="<?= date('Y-m-d') ?>" value="<?= $def_pickup ?>" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pick-up Time</label>
+                            <select name="pickup_time" id="pickup-time" required>
+                                <?php
+                                $times = [];
+                                for ($h = 7; $h <= 22; $h++) {
+                                    $val = sprintf('%02d:00:00', $h);
+                                    $label = date('g:i A', strtotime($val));
+                                    $times[] = ['val' => $val, 'label' => $label];
+                                }
+                                foreach ($times as $t):
+                                ?>
+                                    <option value="<?= $t['val'] ?>" <?= ($t['val'] === '09:00:00') ? 'selected' : '' ?>>
+                                        <?= $t['label'] ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
 
                         <div class="form-group">
                             <label>Drop-off Date</label>
-                            <input type="date" name="dropoff_date" min="<?= date('Y-m-d', strtotime('+1 day')) ?>" value="<?= $def_dropoff ?>" required>
+                            <input type="date" name="dropoff_date" id="dropoff-date" min="<?= date('Y-m-d') ?>" value="<?= $def_dropoff ?>" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Return Time</label>
+                            <select name="return_time" id="return-time" required>
+                                <?php foreach ($times as $t): ?>
+                                    <option value="<?= $t['val'] ?>" <?= ($t['val'] === '18:00:00') ? 'selected' : '' ?>>
+                                        <?= $t['label'] ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
 
                         <div class="price-summary">
@@ -199,36 +229,94 @@ include '../../includes/header.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const pIn = document.querySelector('input[name="pickup_date"]');
-    const pOff = document.querySelector('input[name="dropoff_date"]');
-    const displayDays = document.getElementById('summary-days');
+    const pIn   = document.getElementById('pickup-date');
+    const pOff  = document.getElementById('dropoff-date');
+    const tIn   = document.getElementById('pickup-time');
+    const tOff  = document.getElementById('return-time');
+    const displayDays  = document.getElementById('summary-days');
     const displayTotal = document.getElementById('summary-total');
     const displayGrand = document.getElementById('summary-grand');
-    const dailyRate = <?= (float)$vehicle['price_per_day'] ?>;
+    const dailyRate    = <?= (float)$vehicle['price_per_day'] ?>;
+
+    const today = new Date().toISOString().split('T')[0];
+    const currentHour = new Date().getHours();
+
+    function filterPickupTimes() {
+        const isToday = pIn.value === today;
+        let firstEnabled = null;
+
+        Array.from(tIn.options).forEach(opt => {
+            const h = parseInt(opt.value.split(':')[0]);
+            if (isToday && h <= currentHour) {
+                opt.disabled = true;
+                opt.style.color = '#aaa';
+            } else {
+                opt.disabled = false;
+                opt.style.color = '';
+                if (firstEnabled === null) firstEnabled = opt;
+            }
+        });
+
+        // If selected pickup time is now disabled, jump to first available
+        const selectedHour = parseInt(tIn.value.split(':')[0]);
+        if (isToday && selectedHour <= currentHour && firstEnabled) {
+            tIn.value = firstEnabled.value;
+        }
+    }
 
     function updatePrice() {
+        // Filter pickup times first (disable past times if today is selected)
+        filterPickupTimes();
+
         const d1 = new Date(pIn.value);
         const d2 = new Date(pOff.value);
-        
-        if(d1 && d2 && d2 > d1) {
-            const diffTime = Math.abs(d2 - d1);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        // Keep dropoff min = pickup date (allows same day)
+        if (pIn.value) {
+            pOff.min = pIn.value;
+            // If dropoff is now before pickup, reset it to pickup date
+            if (pOff.value && pOff.value < pIn.value) {
+                pOff.value = pIn.value;
+            }
+        }
+
+        if (d1 && d2 && d2 >= d1) {
+            const diffTime = d2 - d1;
+            const diffDays = diffTime === 0 ? 1 : Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             const total = diffDays * dailyRate;
-            
+
             displayDays.innerText = diffDays;
             displayTotal.innerText = 'NPR ' + total.toLocaleString();
             displayGrand.innerText = 'NPR ' + total.toLocaleString();
 
-            // Send diffDays to paymentdetail.php via hidden field
-            const daysHiddenField = document.getElementById('booking-days');
-            if (daysHiddenField) {
-                daysHiddenField.value = diffDays;
+            document.getElementById('booking-days').value = diffDays;
+        }
+
+        // Same-day validation: return time must be after pickup time
+        if (pIn.value && pOff.value && pIn.value === pOff.value) {
+            const pickupHour  = parseInt(tIn.value.split(':')[0]);
+            const returnHour  = parseInt(tOff.value.split(':')[0]);
+            if (returnHour <= pickupHour) {
+                const newHour = Math.min(pickupHour + 1, 22);
+                tOff.value = String(newHour).padStart(2,'0') + ':00:00';
             }
+            Array.from(tOff.options).forEach(opt => {
+                const h = parseInt(opt.value.split(':')[0]);
+                opt.disabled = (h <= pickupHour);
+            });
+        } else {
+            Array.from(tOff.options).forEach(opt => opt.disabled = false);
         }
     }
 
     pIn.addEventListener('change', updatePrice);
     pOff.addEventListener('change', updatePrice);
+    tIn.addEventListener('change', updatePrice);
+    tOff.addEventListener('change', updatePrice);
+
+    // Run immediately on page load to filter times if today is already selected
+    filterPickupTimes();
+    updatePrice();
 
     // Fetch AI Recommendations
     const aiContainer = document.getElementById('ai-recommendations-container');

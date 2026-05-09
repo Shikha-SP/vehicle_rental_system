@@ -138,4 +138,73 @@ function getImageUrl($path)
 
     return $projectRoot . '/' . $path;
 }
+
+/**
+ * Send an instant reminder email based on time until pickup
+ */
+function sendReminderEmail($conn, $bookingId, $userEmail, $firstName, $vehicleModel, $pickupDatetime, $totalPrice) {
+    require_once __DIR__ . '/../config/mailer.php';
+
+    $pickupTimestamp = strtotime($pickupDatetime);
+    $currentTimestamp = time();
+    $hoursLeft = ($pickupTimestamp - $currentTimestamp) / 3600;
+
+    if ($hoursLeft < 0) return false; // Already passed
+
+    if ($hoursLeft < 0.5) {
+        $reminderType = 'email_30min';
+        $subject = 'Final Alert: Pickup in 30 Minutes';
+    } elseif ($hoursLeft <= 2) {
+        $reminderType = 'email_2h';
+        $subject = 'Urgent: Your Pickup is in 2 Hours';
+    } else {
+        $reminderType = 'email_24h';
+        $subject = 'Reminder: Pickup Tomorrow';
+    }
+
+    // Check if already sent
+    $checkStmt = $conn->prepare("SELECT id FROM reminder_log WHERE booking_id = ? AND reminder_type = ?");
+    $checkStmt->bind_param("is", $bookingId, $reminderType);
+    $checkStmt->execute();
+    if ($checkStmt->get_result()->num_rows > 0) {
+        return false; // Already sent this type
+    }
+
+    try {
+        $mail = createMailer();
+        $mail->addAddress($userEmail, $firstName);
+        $mail->Subject = $subject;
+        
+        $startDate = date('Y-m-d', $pickupTimestamp);
+        $pickupTime = date('H:i:s', $pickupTimestamp);
+        $totalPriceFmt = number_format((float)$totalPrice, 2);
+
+        $htmlBody = "
+            <div style='font-family: Arial, sans-serif; color: #333;'>
+                <h2>Hi {$firstName},</h2>
+                <p>This is a reminder regarding your upcoming vehicle rental.</p>
+                <table style='width: 100%; max-width: 400px; text-align: left; margin-bottom: 20px;'>
+                    <tr><th>Vehicle:</th><td>{$vehicleModel}</td></tr>
+                    <tr><th>Pickup:</th><td>{$startDate} at {$pickupTime}</td></tr>
+                    <tr><th>Total:</th><td>NPR {$totalPriceFmt}</td></tr>
+                </table>
+                <p>Please arrive on time. If you need to cancel or reschedule, visit your bookings page.</p>
+                <p>— TDRentals Team</p>
+            </div>
+        ";
+        
+        $mail->isHTML(true);
+        $mail->Body = $htmlBody;
+        
+        if ($mail->send()) {
+            $logStmt = $conn->prepare("INSERT INTO reminder_log (booking_id, reminder_type) VALUES (?, ?)");
+            $logStmt->bind_param('is', $bookingId, $reminderType);
+            $logStmt->execute();
+            return true;
+        }
+    } catch (Exception $e) {
+        error_log("Failed to send instant reminder email: " . $e->getMessage());
+    }
+    return false;
+}
 ?>
