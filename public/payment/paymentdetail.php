@@ -725,6 +725,13 @@ if ($uid) {
                     
                     // Store applied code to hidden form input
                     appliedDiscountInput.value = code;
+
+                    // Update Khalti Button
+                    const khaltiBtn = document.getElementById('khalti-button');
+                    if (khaltiBtn) {
+                        khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + data.new_total.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                        khaltiBtn.href = 'khalti_initiate.php?discount_code=' + encodeURIComponent(code);
+                    }
                 } else {
                     discountMsg.textContent = data.message;
                     discountMsg.style.color = '#e74c3c';
@@ -734,6 +741,13 @@ if ($uid) {
                     payButton.innerHTML = 'CONFIRM & PAY NPR ' + baseTotal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
                     discountRow.style.display = 'none';
                     appliedDiscountInput.value = '';
+
+                    // Reset Khalti Button
+                    const khaltiBtn = document.getElementById('khalti-button');
+                    if (khaltiBtn) {
+                        khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + baseTotal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                        khaltiBtn.href = 'khalti_initiate.php';
+                    }
                 }
             })
             .catch(error => {
