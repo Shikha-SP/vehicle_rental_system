@@ -1,0 +1,16 @@
+# Ignore everything except what you need
+vendor/
+AI/
+Uploads/
+scratch/
+assets/
+cron/
+ajax/
+config/
+
+
+# Specific files
+check_cols.php
+check_db.php
+smtp_error.log
+composer.lock

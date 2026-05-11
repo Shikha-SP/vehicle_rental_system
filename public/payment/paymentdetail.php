@@ -172,8 +172,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
         }
         
         if (empty($errors)) {
-            $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, pickup_time, return_time, total_price, status, discount_code, discount_amount, created_at)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed', ?, ?, NOW())";
+            $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, pickup_time, return_time, total_price, status,payment_status, discount_code, discount_amount, created_at)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed','paid', ?, ?, NOW())";
             $insert_stmt = $conn->prepare($insert_sql);
             $insert_stmt->bind_param("iissssdsd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $pickup_time, $return_time, $totalprice, $discount_code, $discount_amount);
 
@@ -509,10 +509,20 @@ if ($uid) {
             <span>OR PAY WITH</span>
         </div>
 
-        <div class="khalti-section">
-            <a href="khalti_initiate.php" id="khalti-button">
-                <img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo">
-                PAY NPR <?= number_format($totalprice, 0) ?>
+        <div class="payment-methods-grid">
+            <a href="khalti_initiate.php" id="khalti-button" class="payment-method-btn">
+                <img src="../../assets/images/khaltilogo.png" alt="Khalti" class="khalti-logo">
+                <span>PAY NPR <?= number_format($totalprice, 0) ?></span>
+            </a>
+
+            <a href="esewa_initiate.php" id="esewa-button" class="payment-method-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Esewa_logo.webp" alt="eSewa" class="esewa-logo">
+                <span>PAY NPR <?= number_format($totalprice, 0) ?></span>
+            </a>
+
+            <a href="qr_initiate.php" id="qr-button" class="payment-method-btn">
+                <i class="fa-solid fa-qrcode qr-icon"></i>
+                <span>SCAN QR &amp; PAY NPR <?= number_format($totalprice, 0) ?></span>
             </a>
         </div>
 
