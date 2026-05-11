@@ -140,40 +140,71 @@ function getImageUrl($path)
 }
 
 /**
- * Check if an email is genuine by validating format and domain MX records.
- * 
- * @param string $email
- * @return bool
+ * Send an instant reminder email based on time until pickup
  */
-function is_email_genuine($email) {
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        return false;
+function sendReminderEmail($conn, $bookingId, $userEmail, $firstName, $vehicleModel, $pickupDatetime, $totalPrice) {
+    require_once __DIR__ . '/../config/mailer.php';
+
+    $pickupTimestamp = strtotime($pickupDatetime);
+    $currentTimestamp = time();
+    $hoursLeft = ($pickupTimestamp - $currentTimestamp) / 3600;
+
+    if ($hoursLeft < 0) return false; // Already passed
+
+    if ($hoursLeft < 0.5) {
+        $reminderType = 'email_30min';
+        $subject = 'Final Alert: Pickup in 30 Minutes';
+    } elseif ($hoursLeft <= 2) {
+        $reminderType = 'email_2h';
+        $subject = 'Urgent: Your Pickup is in 2 Hours';
+    } else {
+        $reminderType = 'email_24h';
+        $subject = 'Reminder: Pickup Tomorrow';
     }
 
-    $domain = substr(strrchr($email, "@"), 1);
-    
-    // Check if domain has any MX records. 
-    // This confirms the domain is configured to receive emails.
-    // Note: This might fail in environments without internet access.
-    if (!checkdnsrr($domain, "MX")) {
-        // If MX fails, check for A record as a fallback (some domains handle mail without MX)
-        return checkdnsrr($domain, "A");
+    // Check if already sent
+    $checkStmt = $conn->prepare("SELECT id FROM reminder_log WHERE booking_id = ? AND reminder_type = ?");
+    $checkStmt->bind_param("is", $bookingId, $reminderType);
+    $checkStmt->execute();
+    if ($checkStmt->get_result()->num_rows > 0) {
+        return false; // Already sent this type
     }
 
-    return true;
-}
+    try {
+        $mail = createMailer();
+        $mail->addAddress($userEmail, $firstName);
+        $mail->Subject = $subject;
+        
+        $startDate = date('Y-m-d', $pickupTimestamp);
+        $pickupTime = date('H:i:s', $pickupTimestamp);
+        $totalPriceFmt = number_format((float)$totalPrice, 2);
 
-/**
- * Generate a random numeric OTP.
- * 
- * @param int $length
- * @return string
- */
-function generateOTP($length = 6) {
-    $otp = '';
-    for ($i = 0; $i < $length; $i++) {
-        $otp .= random_int(0, 9);
+        $htmlBody = "
+            <div style='font-family: Arial, sans-serif; color: #333;'>
+                <h2>Hi {$firstName},</h2>
+                <p>This is a reminder regarding your upcoming vehicle rental.</p>
+                <table style='width: 100%; max-width: 400px; text-align: left; margin-bottom: 20px;'>
+                    <tr><th>Vehicle:</th><td>{$vehicleModel}</td></tr>
+                    <tr><th>Pickup:</th><td>{$startDate} at {$pickupTime}</td></tr>
+                    <tr><th>Total:</th><td>NPR {$totalPriceFmt}</td></tr>
+                </table>
+                <p>Please arrive on time. If you need to cancel or reschedule, visit your bookings page.</p>
+                <p>— TDRentals Team</p>
+            </div>
+        ";
+        
+        $mail->isHTML(true);
+        $mail->Body = $htmlBody;
+        
+        if ($mail->send()) {
+            $logStmt = $conn->prepare("INSERT INTO reminder_log (booking_id, reminder_type) VALUES (?, ?)");
+            $logStmt->bind_param('is', $bookingId, $reminderType);
+            $logStmt->execute();
+            return true;
+        }
+    } catch (Exception $e) {
+        error_log("Failed to send instant reminder email: " . $e->getMessage());
     }
-    return $otp;
+    return false;
 }
 ?>

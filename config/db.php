@@ -75,8 +75,11 @@ CREATE TABLE IF NOT EXISTS bookings (
     vehicle_id INT NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
+    pickup_time TIME DEFAULT '09:00:00',
     total_price DECIMAL(10,2) NOT NULL,
     status ENUM('confirmed', 'cancelled', 'completed') DEFAULT 'confirmed',
+    payment_status ENUM('pending', 'paid', 'failed') DEFAULT 'pending',
+    purchase_order_id VARCHAR(100) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
@@ -184,6 +187,19 @@ addColumn($conn, 'users', 'completed_rentals', "INT DEFAULT 0");
 
 addColumn($conn, 'bookings', 'discount_code', "VARCHAR(50) DEFAULT NULL");
 addColumn($conn, 'bookings', 'discount_amount', "DECIMAL(10,2) DEFAULT 0.00");
+addColumn($conn, 'bookings', 'pickup_time', "TIME DEFAULT '09:00:00'");
+addColumn($conn, 'bookings', 'return_time', "TIME DEFAULT '18:00:00'");
+
+// 6. Added: Reminder Log Table
+$conn->query("
+CREATE TABLE IF NOT EXISTS reminder_log (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id      INT          NOT NULL,
+    reminder_type   ENUM('email','sms','banner') NOT NULL,
+    sent_at         TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_booking_type (booking_id, reminder_type),
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE
+)");
 
 // Create reviews table if not exists
 $conn->query("

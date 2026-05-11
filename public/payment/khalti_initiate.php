@@ -40,9 +40,8 @@ if (!$data) {
 $basicprice = 500; // From paymentdetail.php
 $total_price_npr = ($data['price_per_day'] * $days) + $basicprice;
 
-// Apply Discount if provided
-$discount_code = filter_input(INPUT_GET, 'code', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-$discount_amount = 0.00;
+$discount_code = $_GET['discount_code'] ?? '';
+$discount_amount = 0;
 
 if (!empty($discount_code)) {
     $stmt = $conn->prepare("SELECT * FROM discount_codes WHERE code = ? AND is_active = 1");
@@ -51,36 +50,41 @@ if (!empty($discount_code)) {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        $c = $result->fetch_assoc();
-        // Check expiry and ownership
-        $valid = true;
-        if ($c['expires_at'] && $c['expires_at'] < date('Y-m-d')) $valid = false;
-        if ($c['max_uses'] !== null && $c['used_count'] >= $c['max_uses']) $valid = false;
-        if ($c['owner_user_id'] !== null && (int)$c['owner_user_id'] !== (int)$user_id) $valid = false;
+        $code_data = $result->fetch_assoc();
+        $code_id = $code_data['id'];
         
-        // Check if already used
-        $check_stmt = $conn->prepare("SELECT id FROM discount_code_uses WHERE user_id = ? AND code_id = ?");
-        $check_stmt->bind_param("ii", $user_id, $c['id']);
-        $check_stmt->execute();
-        if ($check_stmt->get_result()->num_rows > 0) $valid = false;
-        $check_stmt->close();
+        $valid = true;
+        if ($code_data['expires_at'] && $code_data['expires_at'] < date('Y-m-d')) $valid = false;
+        if ($code_data['max_uses'] !== null && $code_data['used_count'] >= $code_data['max_uses']) $valid = false;
+        if ($code_data['owner_user_id'] !== null && (int)$code_data['owner_user_id'] !== (int)$user_id) $valid = false;
+        
+        if ($valid) {
+            $check_stmt = $conn->prepare("SELECT id FROM discount_code_uses WHERE user_id = ? AND code_id = ?");
+            $check_stmt->bind_param("ii", $user_id, $code_id);
+            $check_stmt->execute();
+            if ($check_stmt->get_result()->num_rows > 0) $valid = false;
+            $check_stmt->close();
+        }
 
         if ($valid) {
-            if ($c['type'] === 'flat') {
-                $discount_amount = min($c['discount_flat'], $total_price_npr);
+            if ($code_data['type'] === 'flat') {
+                $discount_amount = min($code_data['discount_flat'], $total_price_npr);
             } else {
-                $discount_amount = ($total_price_npr * $c['discount_percent']) / 100;
+                $discount_amount = ($total_price_npr * $code_data['discount_percent']) / 100;
             }
             $total_price_npr -= $discount_amount;
+            
             $_SESSION['khalti_discount_code'] = $discount_code;
             $_SESSION['khalti_discount_amount'] = $discount_amount;
-            $_SESSION['khalti_discount_id'] = $c['id'];
+            $_SESSION['khalti_discount_code_id'] = $code_id;
         }
     }
     $stmt->close();
+} else {
+    unset($_SESSION['khalti_discount_code'], $_SESSION['khalti_discount_amount'], $_SESSION['khalti_discount_code_id']);
 }
 
-$amount_paisa = round($total_price_npr * 100); // Khalti expects amount in paisa
+$amount_paisa = $total_price_npr * 100; // Khalti expects amount in paisa
 
 // Generate a unique purchase order ID
 $purchase_order_id = "BOOK-" . $user_id . "-" . $vehicle_id . "-" . time();
@@ -97,11 +101,20 @@ $post_data = [
     'purchase_order_id' => $purchase_order_id,
     'purchase_order_name' => "Rental: " . $data['model'],
     'customer_info' => [
-        'name' => $admin_data['first_name'] ?? 'Admin',
-        'email' => $admin_data['email'] ?? 'admin@tdrentals.com',
-        'phone' => $admin_data['phone_number'] ?? '9800000000'
+        'name' => $data['first_name'] ?? 'User',
+        'email' => $data['email'] ?? 'user@tdrentals.com',
+        'phone' => $data['phone_number'] ?? '9800000000'
     ]
 ];
+
+// Pre-create the booking as pending
+$insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, created_at)
+               VALUES (?, ?, ?, ?, ?, 'confirmed', 'pending', ?, NOW())";
+$insert_stmt = $conn->prepare($insert_sql);
+$insert_stmt->bind_param("iissds", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $total_price_npr, $purchase_order_id);
+if (!$insert_stmt->execute()) {
+    die("Failed to create pending booking.");
+}
 
 $curl = curl_init();
 curl_setopt_array($curl, array(
@@ -114,6 +127,7 @@ curl_setopt_array($curl, array(
     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
     CURLOPT_CUSTOMREQUEST => 'POST',
     CURLOPT_POSTFIELDS => json_encode($post_data),
+    CURLOPT_SSL_VERIFYPEER => false,
     CURLOPT_HTTPHEADER => array(
         'Authorization: Key ' . $khalti_config['secret_key'],
         'Content-Type: application/json',
@@ -122,7 +136,6 @@ curl_setopt_array($curl, array(
 
 $response = curl_exec($curl);
 $err = curl_error($curl);
-curl_close($curl);
 
 if ($err) {
     die("cURL Error #:" . $err);
