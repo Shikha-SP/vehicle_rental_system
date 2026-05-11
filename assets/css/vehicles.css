@@ -2,26 +2,26 @@
    TD RENTALS — VEHICLES PAGE
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap');
 
 :root {
-    --bg:           #0e0e0e;
-    --bg-card:      #161616;
-    --bg-input:     #1e1e1e;
-    --border:       #2c2c2c;
-    --border-focus: #e03030;
-    --accent:       #e03030;
-    --accent-dim:   rgba(224, 48, 48, 0.18);
-    --accent-glow:  rgba(224, 48, 48, 0.30);
-    --text:         #f0f0f0;
-    --text-muted:   #777777;
-    --text-label:   #999999;
-    --font-head:    'Barlow Condensed', sans-serif;
-    --font-body:    'Barlow', sans-serif;
-    --radius:       4px;
+    --bg:           #0f0f10;
+    --bg-card:      #18181b;
+    --bg-input:     #242428;
+    --border:       rgba(255,255,255,0.09);
+    --border-focus: #C0392B;
+    --accent:       #C0392B;
+    --accent-dim:   rgba(192, 57, 43, 0.14);
+    --accent-glow:  rgba(192, 57, 43, 0.24);
+    --text:         #F5F4F2;
+    --text-muted:   #8A8A8E;
+    --text-label:   #8A8A8E;
+    --font-head:    'Bebas Neue', sans-serif;
+    --font-body:    'Inter', sans-serif;
+    --radius:       6px;
     --t:            0.22s ease;
-    --shadow:       0 4px 12px rgba(0,0,0,0.5);
-    --shadow-hover: 0 8px 24px rgba(0,0,0,0.6);
+    --shadow:       0 4px 16px rgba(0,0,0,0.45);
+    --shadow-hover: 0 10px 32px rgba(0,0,0,0.55);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -35,7 +35,7 @@ body {
 
 /* ── Hero ─────────────────────────────────────────────────── */
 .vehicles-hero {
-    background: linear-gradient(135deg, rgba(0,0,0,0.9) 0%, rgba(30,30,30,0.95) 100%),
+    background: linear-gradient(135deg, rgba(10,10,11,0.92) 0%, rgba(24,24,27,0.96) 100%),
                 url('../images/hero-car2.jpg');
     background-size: cover;
     background-position: center 30%;
@@ -48,8 +48,8 @@ body {
     content: '';
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(192,57,43,0.7), transparent);
 }
 .vehicles-hero-content h1 {
     font-family: var(--font-head);
@@ -58,13 +58,13 @@ body {
     letter-spacing: 0.04em;
     text-transform: uppercase;
     margin-bottom: 16px;
-    background: linear-gradient(135deg, #fff, var(--accent));
+    background: linear-gradient(135deg, #F5F4F2 30%, rgba(192,57,43,0.9) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
 .vehicles-hero-content p {
-    font-size: 18px;
+    font-size: 17px;
     color: var(--text-muted);
     max-width: 600px;
     margin: 0 auto;
@@ -79,16 +79,17 @@ body {
 
 /* ── Search section ───────────────────────────────────────── */
 .vehicles-search-section {
-    background: rgba(22,22,22,0.98);
-    border: 1px solid var(--border);
+    background: rgba(20,20,23,0.96);
+    border: 1px solid rgba(255,255,255,0.08);
     border-radius: var(--radius);
     padding: 24px;
     margin-bottom: 32px;
     position: sticky;
     top: 10px;
     z-index: 1000;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.5);
 }
 
 .search-row {
@@ -454,20 +455,20 @@ body {
 /* ── Vehicle card ─────────────────────────────────────────── */
 .vehicle-card {
     background: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(255,255,255,0.07);
     border-radius: var(--radius);
     overflow: hidden;
     transition: transform var(--t), box-shadow var(--t), border-color var(--t);
     animation: fadeInUp 0.5s ease-out both;
 }
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(18px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 .vehicle-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-hover);
-    border-color: rgba(224,48,48,0.3);
+    border-color: rgba(192,57,43,0.28);
 }
 
 .vehicle-image-wrapper { position: relative; overflow: hidden; height: 220px; }
@@ -508,15 +509,15 @@ body {
 .btn-view {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     width: 100%;
-    background: linear-gradient(135deg, #c82020 0%, #f04040 100%);
+    background: var(--accent);
     border: none; border-radius: var(--radius);
-    color: #fff; font-family: var(--font-head);
-    font-size: 14px; font-weight: 700;
-    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #fff; font-family: var(--font-body);
+    font-size: 13.5px; font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase;
     padding: 12px 20px; cursor: pointer; text-decoration: none;
-    transition: transform var(--t), box-shadow var(--t);
+    transition: background var(--t), transform var(--t), box-shadow var(--t);
 }
-.btn-view:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
+.btn-view:hover { background: #A93226; transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
 
 /* ── No vehicles ──────────────────────────────────────────── */
 .no-vehicles {

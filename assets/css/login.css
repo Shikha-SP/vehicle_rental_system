@@ -3,25 +3,25 @@
    Dark automotive theme — full-bleed centered layout
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap');
 
-/* ── Variables ─────────────────────────────────────────────── */
+/* ── Variables ────────────────────────────────────────────────────── */
 :root {
-    --bg: #0e0e0e;
-    --bg-card: #161616;
-    --bg-input: #1e1e1e;
-    --border: #2c2c2c;
-    --border-focus: #e03030;
-    --accent: #e03030;
-    --accent-dim: rgba(224, 48, 48, 0.18);
-    --accent-glow: rgba(224, 48, 48, 0.30);
-    --text: #f0f0f0;
-    --text-muted: #777777;
-    --text-label: #999999;
-    --font-head: 'Barlow Condensed', sans-serif;
-    --font-body: 'Barlow', sans-serif;
-    --radius: 4px;
-    --t: 0.22s ease;
+    --bg:           #0f0f10;
+    --bg-card:      #18181b;
+    --bg-input:     #242428;
+    --border:       rgba(255,255,255,0.09);
+    --border-focus: #C0392B;
+    --accent:       #C0392B;
+    --accent-dim:   rgba(192, 57, 43, 0.14);
+    --accent-glow:  rgba(192, 57, 43, 0.24);
+    --text:         #F5F4F2;
+    --text-muted:   #8A8A8E;
+    --text-label:   #8A8A8E;
+    --font-head:    'Bebas Neue', sans-serif;
+    --font-body:    'Inter', sans-serif;
+    --radius:       6px;
+    --t:            0.22s ease;
 }
 
 /* ── Reset ──────────────────────────────────────────────────── */
@@ -74,7 +74,7 @@ a:hover {
     z-index: 0;
 }
 
-/* Diagonal red slash accent */
+/* Diagonal accent slash */
 .login-page::after {
     content: '';
     position: fixed;
@@ -85,8 +85,8 @@ a:hover {
     background: linear-gradient(135deg,
             transparent 0%,
             transparent 48%,
-            rgba(224, 48, 48, 0.06) 48%,
-            rgba(224, 48, 48, 0.06) 52%,
+            rgba(192, 57, 43, 0.04) 48%,
+            rgba(192, 57, 43, 0.04) 52%,
             transparent 52%);
     transform: skewX(-8deg);
     pointer-events: none;
@@ -294,15 +294,15 @@ a:hover {
 /* Submit button */
 .login-form__submit {
     width: 100%;
-    padding: 16px 24px;
-    background: linear-gradient(135deg, #c82020 0%, #f04040 100%);
+    padding: 15px 24px;
+    background: var(--accent);
     border: none;
     border-radius: var(--radius);
     color: #fff;
-    font-family: var(--font-head);
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     cursor: pointer;
     display: flex;
@@ -311,7 +311,7 @@ a:hover {
     gap: 10px;
     position: relative;
     overflow: hidden;
-    transition: transform var(--t), box-shadow var(--t), opacity var(--t);
+    transition: background var(--t), transform var(--t), box-shadow var(--t);
     margin-bottom: 28px;
 }
 
@@ -323,24 +323,18 @@ a:hover {
     left: -75%;
     width: 50%;
     height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.12), transparent);
     transform: skewX(-20deg);
     transition: left 0.5s ease;
 }
-
-.login-form__submit:hover::after {
-    left: 140%;
-}
+.login-form__submit:hover::after { left: 140%; }
 
 .login-form__submit:hover {
+    background: #A93226;
     transform: translateY(-2px);
-    box-shadow: 0 10px 32px var(--accent-glow);
+    box-shadow: 0 8px 28px rgba(192,57,43,0.3);
 }
-
-.login-form__submit:active {
-    transform: translateY(0);
-    box-shadow: none;
-}
+.login-form__submit:active { transform: translateY(0); box-shadow: none; }
 
 /* ── Divider ────────────────────────────────────────────────── */
 .login-divider {
@@ -553,15 +547,15 @@ html[data-theme="light"] .login-theme-toggle .moon-icon { display: none; }
    ============================================================ */
 html[data-theme="light"],
 html[data-theme="light"] body {
-    --bg:           #f4f6f8;
-    --bg-card:      #ffffff;
-    --bg-input:     #ffffff;
-    --border:       #d1d5db;
-    --border-focus: #e03030;
-    --text:         #111111;
-    --text-muted:   #555555;
-    --text-label:   #6b7280;
-    --accent-dim:   rgba(224, 48, 48, 0.12);
+    --bg:           #F5F4F2;
+    --bg-card:      #FFFFFF;
+    --bg-input:     #FFFFFF;
+    --border:       rgba(0,0,0,0.1);
+    --border-focus: #C0392B;
+    --text:         #18181b;
+    --text-muted:   #4B4B4F;
+    --text-label:   #65656A;
+    --accent-dim:   rgba(192,57,43,0.1);
     background: var(--bg);
     color: var(--text);
 }
