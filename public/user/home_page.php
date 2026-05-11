@@ -29,6 +29,34 @@ $user_result = $stmt->get_result();
 $user_data = $user_result->fetch_assoc();
 $username = $user_data['first_name'] ?? 'Guest';
 
+// ── BOOKING REMINDER BANNER ──────────────────────────────────
+$reminder_booking = null;
+$banner_sql = "
+    SELECT
+        b.id,
+        b.start_date,
+        b.pickup_time,
+        v.model AS vehicle_model,
+        CONCAT(b.start_date, ' ', IFNULL(b.pickup_time, '09:00:00')) AS pickup_datetime,
+        TIMESTAMPDIFF(HOUR, NOW(),
+            CONCAT(b.start_date, ' ', IFNULL(b.pickup_time, '09:00:00'))
+        ) AS hours_until
+    FROM bookings b
+    JOIN vehicles v ON v.id = b.vehicle_id
+    WHERE b.user_id = ?
+      AND b.status  = 'confirmed'
+      AND CONCAT(b.start_date, ' ', IFNULL(b.pickup_time, '09:00:00'))
+            BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 24 HOUR)
+    ORDER BY pickup_datetime ASC
+    LIMIT 1
+";
+$banner_stmt = $conn->prepare($banner_sql);
+$banner_stmt->bind_param('i', $user_id);
+$banner_stmt->execute();
+$banner_result = $banner_stmt->get_result();
+$reminder_booking = $banner_result->fetch_assoc();
+// ─────────────────────────────────────────────────────────────
+
 // Gallery vehicles — booking-safe version
 $gallery_sql = "
 SELECT 
@@ -68,7 +96,42 @@ $brands_result = $conn->query($brands_sql);
 ?>
 
 <link rel="stylesheet" href="../../assets/css/Homepage.css">
+<link rel="stylesheet" href="../../assets/css/reminder_banner.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<?php if ($reminder_booking): ?>
+    <?php
+        $hours = (int) $reminder_booking['hours_until'];
+        $pickup_fmt = date('M j, Y \a\t g:i A',
+            strtotime($reminder_booking['pickup_datetime']));
+
+        if ($hours <= 2) {
+            $banner_class   = 'reminder-banner--urgent';
+            $banner_heading = 'Pickup in under 2 hours!';
+        } elseif ($hours <= 6) {
+            $banner_class   = 'reminder-banner--soon';
+            $banner_heading = 'Pickup today — get ready!';
+        } else {
+            $banner_class   = 'reminder-banner--tomorrow';
+            $banner_heading = 'Your rental starts tomorrow';
+        }
+    ?>
+    <div class="reminder-banner <?= $banner_class ?>">
+        <div class="reminder-banner__inner">
+
+            <div class="reminder-banner__text">
+                <strong><?= $banner_heading ?></strong>
+                <span>
+                    <?= e($reminder_booking['vehicle_model']) ?> —
+                    pickup on <?= e($pickup_fmt) ?>
+                </span>
+            </div>
+            <a href="../user/bookings.php" class="reminder-banner__link">
+                View Booking →
+            </a>
+        </div>
+    </div>
+<?php endif; ?>
 
 <main class="dashboard-content">
 

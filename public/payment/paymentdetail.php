@@ -24,16 +24,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Store booking params in session so they survive re-display
     if (isset($_POST['vehicle_id'])) {
         $_SESSION['payment_vehicle_id'] = (int) $_POST['vehicle_id'];
-        $_SESSION['payment_pickup'] = $_POST['pickup_date'] ?? '';
-        $_SESSION['payment_dropoff'] = $_POST['dropoff_date'] ?? '';
-        $_SESSION['payment_days'] = (int) ($_POST['days'] ?? 0);
+        $_SESSION['payment_pickup']      = $_POST['pickup_date'] ?? '';
+        $_SESSION['payment_dropoff']     = $_POST['dropoff_date'] ?? '';
+        $_SESSION['payment_days']        = (int) ($_POST['days'] ?? 0);
+        $_SESSION['payment_pickup_time'] = $_POST['pickup_time'] ?? '09:00:00';
+        $_SESSION['payment_return_time'] = $_POST['return_time'] ?? '18:00:00';
     }
 }
 
-$vehicle_id = $_SESSION['payment_vehicle_id'] ?? 0;
-$pickup_date = $_SESSION['payment_pickup'] ?? '';
+$vehicle_id   = $_SESSION['payment_vehicle_id'] ?? 0;
+$pickup_date  = $_SESSION['payment_pickup'] ?? '';
 $dropoff_date = $_SESSION['payment_dropoff'] ?? '';
-$days = $_SESSION['payment_days'] ?? 0;
+$days         = $_SESSION['payment_days'] ?? 0;
+$pickup_time  = $_SESSION['payment_pickup_time'] ?? '09:00:00';
+$return_time  = $_SESSION['payment_return_time'] ?? '18:00:00';
 
 if (!$vehicle_id) {
     header('Location: invoice.php');
@@ -168,10 +172,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
         }
         
         if (empty($errors)) {
-            $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, discount_code, discount_amount, created_at)
-                           VALUES (?, ?, ?, ?, ?, 'confirmed', ?, ?, NOW())";
+            $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, pickup_time, return_time, total_price, status, discount_code, discount_amount, created_at)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed', ?, ?, NOW())";
             $insert_stmt = $conn->prepare($insert_sql);
-            $insert_stmt->bind_param("iissdsd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $totalprice, $discount_code, $discount_amount);
+            $insert_stmt->bind_param("iissssdsd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $pickup_time, $return_time, $totalprice, $discount_code, $discount_amount);
 
         if ($insert_stmt->execute()) {
             $booking_id = $insert_stmt->insert_id;
@@ -291,20 +295,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                 $mail->addAddress($email, $first_name . ' ' . $last_name);
                 $mail->Subject = 'Booking Confirmation';
                 $mail->isHTML(true);
-                $mail->Body = "
-                            <p>Hi {$first_name},</p>
-        <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
-        <p>Pickup date: {$pickup_date}</p>
-        <p>Dropoff date: {$dropoff_date}</p>
-        <p>Total Paid: NPR " . number_format($totalprice, 2) . "</p>
-        {$savings_msg}
-        <p>Please find your invoice attached.</p>
-        <p>Thank you for choosing TD Rentals 🚀</p>
-        
-        <p>Best Regards,</p>
-        <p>TD Rentals Team</p>
+        $mail->Body = "
+                    <p>Hi {$first_name},</p>
+    <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
+    <p>Pickup: {$pickup_date} at " . date('g:i A', strtotime($pickup_time)) . "</p>
+    <p>Return: {$dropoff_date} at " . date('g:i A', strtotime($return_time)) . "</p>
+    <p>Total Paid: NPR " . number_format($totalprice, 2) . "</p>
+    {$savings_msg}
+    <p>Please find your invoice attached.</p>
+    <p>Thank you for choosing TD Rentals 🚀</p>
+    
+    <p>Best Regards,</p>
+    <p>TD Rentals Team</p>
 
-                        ";
+                ";
                 $mail->AltBody = "Hi {$first_name}, Your booking for {$vehicle['model']} is confirmed.";
                 // Attach PDF from string (no temp file needed)
                 $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
@@ -318,7 +322,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                 $_SESSION['payment_vehicle_id'],
                 $_SESSION['payment_pickup'],
                 $_SESSION['payment_dropoff'],
-                $_SESSION['payment_days']
+                $_SESSION['payment_days'],
+                $_SESSION['payment_pickup_time'],
+                $_SESSION['payment_return_time']
             );
             header("Location: bookingconfirmed.php?id=" . $booking_id);
             exit;
@@ -389,6 +395,8 @@ if ($uid) {
             <input type="hidden" name="pickup_date" value="<?= htmlspecialchars($pickup_date) ?>">
             <input type="hidden" name="dropoff_date" value="<?= htmlspecialchars($dropoff_date) ?>">
             <input type="hidden" name="days" value="<?= $days ?>">
+            <input type="hidden" name="pickup_time" value="<?= htmlspecialchars($pickup_time) ?>">
+            <input type="hidden" name="return_time" value="<?= htmlspecialchars($return_time) ?>">
             <input type="hidden" name="applied_discount_code" id="applied_discount_code" value="<?= htmlspecialchars($_POST['applied_discount_code'] ?? '') ?>">
 
             <?php if (!empty($errors['discount'])): ?>
@@ -531,7 +539,12 @@ if ($uid) {
             <div class="booking-meta">
                 <div>
                     <p class="booking-meta-label">Reservation Dates</p>
-                    <p class="booking-meta-value"><?= htmlspecialchars($pickup_date) ?> - <?= htmlspecialchars($dropoff_date) ?></p>
+                    <p class="booking-meta-value">
+                        📅 <?= htmlspecialchars($pickup_date) ?> at <strong><?= date('g:i A', strtotime($pickup_time)) ?></strong>
+                    </p>
+                    <p class="booking-meta-value">
+                        🔁 <?= htmlspecialchars($dropoff_date) ?> at <strong><?= date('g:i A', strtotime($return_time)) ?></strong>
+                    </p>
                 </div>
                 <div style="text-align: right;">
                     <p class="booking-meta-label">Duration</p>
@@ -712,6 +725,13 @@ if ($uid) {
                     
                     // Store applied code to hidden form input
                     appliedDiscountInput.value = code;
+
+                    // Update Khalti Button
+                    const khaltiBtn = document.getElementById('khalti-button');
+                    if (khaltiBtn) {
+                        khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + data.new_total.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                        khaltiBtn.href = 'khalti_initiate.php?discount_code=' + encodeURIComponent(code);
+                    }
                 } else {
                     discountMsg.textContent = data.message;
                     discountMsg.style.color = '#e74c3c';
@@ -721,6 +741,13 @@ if ($uid) {
                     payButton.innerHTML = 'CONFIRM & PAY NPR ' + baseTotal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
                     discountRow.style.display = 'none';
                     appliedDiscountInput.value = '';
+
+                    // Reset Khalti Button
+                    const khaltiBtn = document.getElementById('khalti-button');
+                    if (khaltiBtn) {
+                        khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + baseTotal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+                        khaltiBtn.href = 'khalti_initiate.php';
+                    }
                 }
             })
             .catch(error => {

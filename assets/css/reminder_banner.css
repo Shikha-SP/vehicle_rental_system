@@ -1,0 +1,100 @@
+/* =========================================================
+   Booking Reminder Banner
+   ========================================================= */
+.reminder-banner {
+    width: 100%;
+    padding: 0.85rem 1.5rem;
+    font-family: inherit;
+    display: flex;
+    justify-content: center;
+}
+
+.reminder-banner__inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 1200px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.reminder-banner__icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.reminder-banner__text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.reminder-banner__text strong {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.reminder-banner__text span {
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.reminder-banner__link {
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 0.35rem 0.9rem;
+    border-radius: 4px;
+    border: 2px solid currentColor;
+    white-space: nowrap;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* ── Variants ── */
+.reminder-banner--tomorrow {
+    background: #fffbea;
+    color: #7a5c00;
+    border-bottom: 2px solid #f5d76e;
+}
+.reminder-banner--tomorrow .reminder-banner__link:hover {
+    background: #7a5c00;
+    color: #fff;
+}
+
+.reminder-banner--soon {
+    background: #fff3e0;
+    color: #7c4400;
+    border-bottom: 2px solid #ff9800;
+}
+.reminder-banner--soon .reminder-banner__link:hover {
+    background: #7c4400;
+    color: #fff;
+}
+
+.reminder-banner--urgent {
+    background: #e03030;
+    color: #fff;
+    border-bottom: 2px solid #a00;
+    animation: pulse-bg 1.5s ease-in-out infinite alternate;
+}
+.reminder-banner--urgent .reminder-banner__link {
+    border-color: #fff;
+    color: #fff;
+}
+.reminder-banner--urgent .reminder-banner__link:hover {
+    background: #fff;
+    color: #e03030;
+}
+
+@keyframes pulse-bg {
+    from { background: #e03030; }
+    to   { background: #c00; }
+}
+
+@media (max-width: 600px) {
+    .reminder-banner__inner { gap: 0.6rem; }
+    .reminder-banner__link  { width: 100%; text-align: center; }
+}
