@@ -29,12 +29,17 @@ $pageTitle = 'My Fleet – TD Rentals';
 require_once '../../includes/header.php';
 ?>
 
+<link rel="stylesheet" href="../../assets/css/style.css">
 <link rel="stylesheet" href="../../assets/css/my_vehicles.css">
 
-<main class="my-vehicles">
-    <h1 style="font-family:'Inter',sans-serif; font-weight:900; font-size: 3.5rem; margin-bottom: 1rem; letter-spacing: -0.02em;">MY FLEET</h1>
+<section class="page-hero">
+    <div class="page-hero-content">
+        <h1>MY LISTINGS</h1>
+        <p>Manage and monitor your high-performance rental assets</p>
+    </div>
+</section>
 
-    <p style="color: #666; margin-bottom: 3.5rem; font-weight: 500;">Manage your listed high-performance vehicles</p>
+<main class="my-vehicles">
 
     <?php if (isset($_SESSION['message'])): ?>
         <div class="alert alert-<?= $_SESSION['message_type'] ?>">

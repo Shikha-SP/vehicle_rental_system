@@ -422,15 +422,21 @@ include '../../includes/header.php';
     .progress-fill    { height: 100%; background: linear-gradient(90deg, #e03030, #ff6b6b); border-radius: 100px; transition: width 0.5s ease; }
     .progress-ticks   { display: flex; justify-content: space-between; font-size: 0.65rem; color: #555; }
 </style>
+<link rel="stylesheet" href="../../assets/css/style.css">
+
+<section class="page-hero">
+    <div class="page-hero-content">
+        <h1>MY BOOKINGS</h1>
+        <?php if ($user_medal !== 'NONE'): ?>
+            <div style="margin-top: 10px; margin-bottom: 20px;">
+                <span class="medal-badge medal-<?= $user_medal ?>" style="font-size: 0.7rem; letter-spacing: 0.12em; padding: 6px 16px; font-weight: 800; border-radius: 4px;"> <?= $user_medal ?> MEMBER </span>
+            </div>
+        <?php endif; ?>
+        <p>A high-performance chronicle of your elite driving experiences</p>
+    </div>
+</section>
 
 <div class="bookings-container">
-    <h1 style="font-family:'Inter',sans-serif; font-weight: 900; font-size: 3.5rem; margin-bottom: 1rem; letter-spacing: -0.02em;">MY JOURNEYS
-
-        <?php if ($user_medal !== 'NONE'): ?>
-            <span class="medal-badge medal-<?= $user_medal ?>"> <?= $user_medal ?> MEMBER </span>
-        <?php endif; ?>
-    </h1>
-    <p style="color: #666; margin-bottom: 3.5rem; font-weight: 500;">History of your elite driving experiences</p>
 
     <?php if ($cancelSuccess): ?>
         <div class="alert alert-success">

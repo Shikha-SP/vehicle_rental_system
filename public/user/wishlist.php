@@ -26,18 +26,19 @@ $pageTitle = "My Wishlist – TD Rentals";
 include '../../includes/header.php';
 ?>
 
+<link rel="stylesheet" href="../../assets/css/style.css">
 <link rel="stylesheet" href="../../assets/css/vehicles.css">
 <link rel="stylesheet" href="../../assets/css/wishlist.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <main class="vehicles-page">
     <!-- HERO -->
-    <div class="vehicles-hero">
-        <div class="vehicles-hero-content">
-            <h1>My Collection</h1>
-            <p>Your curated selection of premium vehicles saved for later</p>
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <h1>MY WISHLIST</h1>
+            <p>Your curated collection of premium vehicles saved for later</p>
         </div>
-    </div>
+    </section>
 
     <div class="vehicles-container">
         <!-- STATS -->

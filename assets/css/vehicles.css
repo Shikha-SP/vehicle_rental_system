@@ -35,44 +35,8 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* ── Hero ─────────────────────────────────────────────────── */
-.vehicles-hero {
-    background: linear-gradient(135deg, rgba(10,10,11,0.92) 0%, rgba(24,24,27,0.96) 100%),
-                url('../images/hero-car2.jpg');
-    background-size: cover;
-    background-position: center 30%;
-    padding: 80px 24px;
+/* Legacy Hero removed - now using global .page-hero */
 
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-    position: relative;
-}
-.vehicles-hero::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(192,57,43,0.7), transparent);
-}
-.vehicles-hero-content h1 {
-    font-family: var(--font-head);
-    font-size: clamp(36px, 6vw, 56px);
-    font-weight: 900;
-    letter-spacing: -0.02em;
-
-    text-transform: uppercase;
-    margin-bottom: 16px;
-    background: linear-gradient(135deg, #F5F4F2 30%, rgba(192,57,43,0.9) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-.vehicles-hero-content p {
-    font-size: 17px;
-    color: var(--text-muted);
-    max-width: 600px;
-    margin: 0 auto;
-}
 
 /* ── Container ────────────────────────────────────────────── */
 .vehicles-container {

@@ -299,6 +299,95 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
   object-position: center;
   opacity: 0.7;
 }
+
+/* ── Page Hero (Shared) ────────────────────────────────────── */
+.page-hero {
+  position: relative;
+  background: linear-gradient(135deg, rgba(10,10,11,0.92) 0%, rgba(24,24,27,0.96) 100%), 
+              url('../images/hero-car2.jpg');
+  background-size: cover;
+  background-position: center 30%;
+  min-height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+  padding: 80px 24px;
+  overflow: hidden;
+}
+
+/* Subtle grid overlay for that "tech/blueprint" look */
+.page-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(192,57,43,0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+
+
+.page-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+}
+
+.page-hero-content {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.page-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 7vw, 4.5rem);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+  
+  color: #FFFFFF;
+  line-height: 1;
+  position: relative;
+  display: inline-block;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.page-hero h1::after {
+  content: '';
+  display: block;
+  width: 50px;
+  height: 4px;
+  background: var(--primary);
+  margin: 15px auto 0;
+  border-radius: 4px;
+  box-shadow: 0 0 15px var(--primary);
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; transform: scaleX(1); }
+  50%      { opacity: 1;   transform: scaleX(1.2); }
+}
+
+
+
+.page-hero p {
+  font-size: 1.1rem;
+  color: var(--fg-muted);
+  font-weight: 500;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 .hero-overlay {
   position: absolute;
   inset: 0;
@@ -553,9 +642,6 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 .auth-footer { margin-top: 1.25rem; text-align: center; font-size: var(--text-sm); color: var(--fg-muted); }
 .auth-footer a { color: var(--primary); }
 
-/* ── Page Hero ─────────────────────────────────────────────── */
-.page-hero { padding: 7rem 0 3rem; background: var(--bg-surface); }
-.page-title { font-family: var(--font-display); font-size: var(--text-4xl); letter-spacing: 0.04em; }
 
 /* ── Car Detail ────────────────────────────────────────────── */
 .car-detail-grid { display: grid; grid-template-columns: 1fr; gap: 2.5rem; padding: 3rem 0; }

@@ -23,24 +23,24 @@ $price         = $_POST['price']         ?? 2500;
 $color         = $_POST['color']         ?? '#e03030';
 ?>
 <?php require_once '../../includes/header.php'; ?>
+<link rel="stylesheet" href="../../assets/css/style.css">
 <link rel="stylesheet" href="../../assets/css/list_car.css">
 
 <main class="lc-page">
 
     <!-- ── Hero ─────────────────────────────────────────────── -->
-    <section class="lc-hero">
-        <?php if (isset($_SESSION['message'])): ?>
-            <div class="alert alert-<?= ($_SESSION['message_type'] === 'success') ? 'ok' : 'err' ?>" style="margin-bottom: 2rem;">
-                <?= htmlspecialchars($_SESSION['message']) ?>
-                <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
-            </div>
-        <?php endif; ?>
-        <div class="lc-hero__label">TD Rentals · Host Programme</div>
-        <h1 class="lc-hero__title">
-            <span>List Your</span>
-            <span class="lc-hero__title--accent">Vehicle</span>
-        </h1>
-        <p class="lc-hero__sub">Turn idle wheels into steady income. Fill in the details below and go live today.</p>
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <?php if (isset($_SESSION['message'])): ?>
+                <div class="alert alert-<?= ($_SESSION['message_type'] === 'success') ? 'ok' : 'err' ?>" style="margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    <?= htmlspecialchars($_SESSION['message']) ?>
+                    <?php unset($_SESSION['message'], $_SESSION['message_type']); ?>
+                </div>
+            <?php endif; ?>
+            <div style="font-family: var(--font-head); font-size: 11px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px;">TD Rentals · Host Programme</div>
+            <h1>LIST YOUR VEHICLE</h1>
+            <p>Turn idle wheels into steady income. Fill in the details below and go live on our elite rental network today.</p>
+        </div>
     </section>
 
     <!-- ── Form ──────────────────────────────────────────────── -->
