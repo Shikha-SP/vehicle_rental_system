@@ -32,7 +32,8 @@ require_once '../../includes/header.php';
 <link rel="stylesheet" href="../../assets/css/my_vehicles.css">
 
 <main class="my-vehicles">
-    <h1 style="font-family:'Bebas Neue',sans-serif; font-size: 5rem; margin-bottom: 1rem; letter-spacing: 0.02em;">MY FLEET</h1>
+    <h1 style="font-family:'Inter',sans-serif; font-weight:900; font-size: 3.5rem; margin-bottom: 1rem; letter-spacing: -0.02em;">MY FLEET</h1>
+
     <p style="color: #666; margin-bottom: 3.5rem; font-weight: 500;">Manage your listed high-performance vehicles</p>
 
     <?php if (isset($_SESSION['message'])): ?>

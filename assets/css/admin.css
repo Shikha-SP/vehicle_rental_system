@@ -17,7 +17,8 @@
   --green:#22c55e;
   --yellow:#f59e0b;
   --font:'Inter',sans-serif;
-  --display:'Bebas Neue',sans-serif;
+  --display:'Inter',sans-serif;
+
   --radius:12px;
   --glass:blur(12px) saturate(180%);
 }
@@ -28,8 +29,10 @@
 .admin-wrapper button{font-family:var(--font);cursor:pointer}
 
 /* MAIN */
-.main{ flex:1;display:flex;flex-direction:column; width: 100%; max-width: 1400px; margin: 0 auto; }
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:40; background:var(--bg); }
+.main{ flex:1;display:flex;flex-direction:column; width: 100%; max-width: 1440px; margin: 0 auto; }
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:24px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:40; background:var(--bg); }
+
 .topbar-left h1{font-family:var(--display);font-size:1.6rem;letter-spacing:.04em; margin:0;}
 .topbar-left p{font-size:.65rem;text-transform:uppercase;letter-spacing:.12em;color:var(--fg3);margin-top:1px; margin-bottom:0;}
 .topbar-right{display:flex;align-items:center;gap:1rem}
@@ -39,7 +42,8 @@
 .search-box svg{width:14px;height:14px;color:var(--fg3);flex-shrink:0}
 .icon-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:.5rem;display:flex;align-items:center;justify-content:center;transition:.15s}
 .icon-btn:hover{background:var(--bg4)} .icon-btn svg{width:16px;height:16px;color:var(--fg2)}
-.content{padding:1.5rem;flex:1}
+.content{padding:40px;flex:1}
+
 
 /* FLASH */
 .flash{padding:.75rem 1rem;border-radius:var(--radius);font-size:.8rem;margin-bottom:1.5rem;font-weight:500}

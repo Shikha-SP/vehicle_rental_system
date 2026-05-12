@@ -208,7 +208,8 @@ require_once '../../includes/header.php';
                         </div>
                         
                         <div style="margin-top: 24px;">
-                            <h3 style="font-family: var(--font-display); font-size: 18px; margin-bottom: 16px;">Quick Actions</h3>
+                            <h3>Quick Actions</h3>
+
                             <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                                 <a href="settings.php?section=password" class="settings-page-btn-primary" style="text-decoration: none;">
                                     <i class="fas fa-key"></i> Change Password
@@ -221,7 +222,8 @@ require_once '../../includes/header.php';
                         
                         <?php if (empty($_SESSION['is_admin'])): ?>
                         <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--clr-border);">
-                            <h3 style="font-family: var(--font-display); font-size: 18px; margin-bottom: 16px; color: #ff6b6b;">Danger Zone</h3>
+                            <h3 style="color: #ff5050;">Danger Zone</h3>
+
                             <a href="settings.php?section=delete" class="settings-page-btn-danger" style="text-decoration: none; display: inline-block;">
                                 <i class="fas fa-trash-alt"></i> Delete Account
                             </a>

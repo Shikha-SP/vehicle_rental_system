@@ -3,7 +3,8 @@
    Refined: muted crimson accent, warm surfaces, Inter
 ============================================================================= */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 
 :root {
     --bg-dark:      #0f0f10;
@@ -44,11 +45,12 @@ a {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
-    padding: 0 5%;
+    padding: 0 24px;
     width: 100%;
 }
+
 
 /* =============================================================================
    1. HERO SECTION
@@ -198,9 +200,10 @@ html[data-theme="light"] .btn-ghost:hover {
    3. GALLERY SECTION
 ============================================================================= */
 .gallery-section {
-    padding: 64px 0;
+    padding: 80px 0;
     background: var(--card-bg);
 }
+
 
 .section-label {
     font-size: 0.65rem;
@@ -222,8 +225,9 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .section-header h2 {
     font-size: 1.1rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+
     text-transform: uppercase;
 }
 
@@ -325,7 +329,8 @@ html[data-theme="light"] .btn-ghost:hover {
     display: flex;
     align-items: center;
     gap: 8px;
-    letter-spacing: 0.02em;
+    letter-spacing: -0.01em;
+
 }
 
 .badge {
@@ -419,7 +424,8 @@ html[data-theme="light"] .btn-ghost:hover {
     color: #666;
     font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.02em;
+
     text-transform: uppercase;
     border-right: 1px solid #222;
     white-space: nowrap;
@@ -445,8 +451,9 @@ html[data-theme="light"] .btn-ghost:hover {
 ============================================================================= */
 .red-banner {
     background: linear-gradient(135deg, #A93226 0%, #C0392B 60%, #B03228 100%);
-    padding: 48px 5%;
+    padding: 60px 0;
 }
+
 
 .banner-flex {
     display: flex;
@@ -460,7 +467,8 @@ html[data-theme="light"] .btn-ghost:hover {
     font-size: 1.8rem;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: -0.01em;
+
     margin-bottom: 6px;
 }
 
@@ -494,9 +502,10 @@ html[data-theme="light"] .btn-ghost:hover {
    5. SHOWROOM SECTION
 ============================================================================= */
 .showroom-section {
-    padding: 72px 5%;
+    padding: 80px 0;
     background: var(--bg-dark);
 }
+
 
 .grid-two {
     display: flex;

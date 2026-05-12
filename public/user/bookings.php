@@ -164,7 +164,13 @@ include '../../includes/header.php';
         color: #fff;
         transform: translateY(-1px);
     }
-    .bookings-container { padding: 5rem 40px; min-height: 80vh; width: 100%; max-width: none; margin: 0; }
+    .bookings-container { 
+        max-width: 1440px; 
+        margin: 0 auto; 
+        padding: 80px 24px; 
+        min-height: 80vh; 
+        width: 100%; 
+    }
     
     /* Policy Notice */
     .policy-box {
@@ -179,7 +185,8 @@ include '../../includes/header.php';
         align-items: center;
     }
     .policy-icon { font-size: 1.8rem; opacity: 0.8; }
-    .policy-content h4 { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; margin-bottom: 0.2rem; letter-spacing: 0.05em; }
+    .policy-content h4 { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.2rem; letter-spacing: 0.02em; }
+
     .policy-content p { font-size: 0.85rem; color: #888; line-height: 1.5; }
 
     /* Card Grid */
@@ -217,7 +224,8 @@ include '../../includes/header.php';
     }
 
     .card-content { padding: 1.4rem 1.6rem 1.6rem; flex-grow: 1; display: flex; flex-direction: column; }
-    .card-content h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.85rem; margin-bottom: 0.9rem; color: #fff; }
+    .card-content h3 { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 1.5rem; margin-bottom: 0.9rem; color: #fff; }
+
 
     /* Specs Row */
     .card-specs { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
@@ -271,7 +279,8 @@ include '../../includes/header.php';
 
     .empty-state { text-align: center; padding: 8rem 2rem; background: rgba(255,255,255,0.02); border-radius: 30px; border: 1px dashed rgba(255,255,255,0.1); }
     .empty-icon { font-size: 5rem; margin-bottom: 2rem; opacity: 0.2; }
-    .empty-state h2 { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; margin-bottom: 1rem; color: #fff; }
+    .empty-state h2 { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 2.5rem; margin-bottom: 1rem; color: #fff; }
+
     
     .btn-cancel { 
         background: rgba(220,38,38,0.1); 
@@ -415,7 +424,8 @@ include '../../includes/header.php';
 </style>
 
 <div class="bookings-container">
-    <h1 style="font-family:'Bebas Neue',sans-serif; font-size: 5rem; margin-bottom: 1rem; letter-spacing: 0.02em;">MY JOURNEYS
+    <h1 style="font-family:'Inter',sans-serif; font-weight: 900; font-size: 3.5rem; margin-bottom: 1rem; letter-spacing: -0.02em;">MY JOURNEYS
+
         <?php if ($user_medal !== 'NONE'): ?>
             <span class="medal-badge medal-<?= $user_medal ?>"> <?= $user_medal ?> MEMBER </span>
         <?php endif; ?>

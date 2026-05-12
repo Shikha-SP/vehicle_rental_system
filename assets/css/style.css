@@ -3,7 +3,8 @@
    Refined luxury theme: muted crimson, warm charcoals, off-whites
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 
 /* ── Design Tokens ─────────────────────────────────────────── */
 :root {
@@ -30,7 +31,8 @@
   --border-strong:    rgba(255, 255, 255, 0.12);
 
   /* Typography */
-  --font-display:     'Bebas Neue', sans-serif;
+  --font-display:     'Inter', sans-serif;
+
   --font-body:        'Inter', sans-serif;
 
   /* Type scale */
@@ -54,6 +56,14 @@
   --space-8:  2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  --container-max: 1440px;
+
+  --section-pad:   80px 0;
+  --section-pad-sm: 60px 0;
+
 
   /* Radius */
   --radius-sm:   3px;
@@ -113,10 +123,20 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 
 /* ── Layout ────────────────────────────────────────────────── */
 .container {
-  max-width: 1280px;
+  max-width: var(--container-max);
   margin: 0 auto;
   padding: 0 1.5rem;
+  width: 100%;
 }
+
+.section {
+  padding: var(--section-pad);
+}
+
+.section-sm {
+  padding: var(--section-pad-sm);
+}
+
 
 /* ── Utilities ─────────────────────────────────────────────── */
 .text-primary { color: var(--primary); }
@@ -137,7 +157,8 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
   cursor: pointer;
   font-weight: 600;
   font-size: var(--text-sm);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
+
   transition:
     background var(--ease-default),
     box-shadow var(--ease-default),
@@ -233,8 +254,9 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 }
 .brand {
   font-family: var(--font-display);
-  font-size: 1.5rem;
-  letter-spacing: 0.08em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+
   color: var(--primary);
 }
 .nav-links {
@@ -323,7 +345,8 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 .section-title {
   font-family: var(--font-display);
   font-size: clamp(1.6rem, 3vw, 2.5rem);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
+
   margin-bottom: 1.5rem;
 }
 .title-line {
@@ -484,7 +507,7 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 .fleet-card:hover .fleet-img-wrap img { transform: scale(1.04); }
 .fleet-info    { display: flex; align-items: flex-end; justify-content: space-between; }
 .fleet-info h3 { font-weight: 700; font-size: var(--text-base); }
-.fleet-sub     { font-size: var(--text-xs); color: var(--fg-muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.1rem; }
+.fleet-sub     { font-size: var(--text-xs); color: var(--fg-muted); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 0.1rem; }
 .fleet-price-wrap { text-align: right; }
 .fleet-price { font-family: var(--font-display); font-size: 1.3rem; }
 .fleet-unit  { font-size: 0.7rem; color: var(--fg-muted); }
@@ -508,7 +531,8 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
   gap: 0.5rem;
   font-size: var(--text-xs);
   color: var(--fg-muted);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.02em;
+
   text-transform: uppercase;
 }
 @media (min-width: 768px) { .footer-bottom { flex-direction: row; justify-content: space-between; } }
