@@ -44,44 +44,60 @@ require_once '../../includes/header.php';
 ?>
 
 <!-- Page specific CSS -->
+<link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/style.css">
 <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/settings.css">
 
 <!-- Wrap everything in main-content to avoid header overlap -->
 <div class="settings-page-main-content">
-    <div class="settings-page-container">
-        <div class="settings-page-header">
-            <div class="settings-page-header__rule"></div>
-            <h1>Account <span>Settings</span></h1>
-            <p>Manage your account security and preferences</p>
-        </div>
+    <button id="sidebarToggle" class="settings-sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div class="settings-page-dashboard">
 
-        <div class="settings-page-grid">
-            <!-- Sidebar Navigation -->
-            <div class="settings-page-sidebar">
-                <div class="settings-page-nav">
+        <!-- Sidebar Navigation -->
+        <aside class="settings-page-sidebar">
+            <div class="settings-sidebar-brand">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </div>
+
+            <nav class="settings-page-nav">
+                <div class="settings-nav-group">
+                    <div class="settings-nav-label">General</div>
                     <a href="settings.php?section=overview" class="settings-page-nav-item <?= $active_section === 'overview' ? 'active' : '' ?>">
-                        <i class="fas fa-sliders-h"></i>
+                        <i class="fas fa-user-circle"></i>
                         <span>Overview</span>
                     </a>
-                    <a href="settings.php?section=password" class="settings-page-nav-item <?= $active_section === 'password' ? 'active' : '' ?>">
-                        <i class="fas fa-key"></i>
-                        <span>Change Password</span>
-                    </a>
                     <a href="settings.php?section=name" class="settings-page-nav-item <?= $active_section === 'name' ? 'active' : '' ?>">
-                        <i class="fas fa-user-edit"></i>
+                        <i class="fas fa-id-card"></i>
                         <span>Change Name</span>
                     </a>
+                </div>
+
+                <div class="settings-nav-group">
+                    <div class="settings-nav-label">Security</div>
+                    <a href="settings.php?section=password" class="settings-page-nav-item <?= $active_section === 'password' ? 'active' : '' ?>">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Password & Security</span>
+                    </a>
                     <?php if (empty($_SESSION['is_admin'])): ?>
-                    <a href="settings.php?section=delete" class="settings-page-nav-item delete-item <?= $active_section === 'delete' ? 'active' : '' ?>">
-                        <i class="fas fa-trash-alt"></i>
-                        <span>Delete Account</span>
+                    <a href="settings.php?section=delete" class="settings-page-nav-item <?= $active_section === 'delete' ? 'active' : '' ?>">
+                        <i class="fas fa-user-slash"></i>
+                        <span>Danger Zone</span>
                     </a>
                     <?php endif; ?>
                 </div>
-            </div>
+            </nav>
 
-            <!-- Main Content Area -->
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="settings-page-content-area">
+            <div class="settings-page-content-header">
+                <h1><?= ucfirst($active_section) ?></h1>
+            </div>
             <div class="settings-page-content">
+
                 <?php if ($active_section === 'password'): ?>
                     <!-- Change Password Form -->
                     <div class="settings-page-card">
@@ -158,76 +174,89 @@ require_once '../../includes/header.php';
                         <h2><i class="fas fa-trash-alt"></i> Delete Account</h2>
                         <div class="settings-page-card__sub">Permanently remove your account</div>
                         
-                        <div class="settings-page-delete-warning">
-                            <h3><i class="fas fa-exclamation-triangle"></i> Warning: This action cannot be undone!</h3>
-                            <p class="settings-page-warning-text">Deleting your account will permanently remove:</p>
-                            <ul>
-                                <li>Your profile information (first name, last name, email)</li>
-                                <li>All your vehicle bookings</li>
-                                <li>Your rental history</li>
-                                <li>All associated data</li>
+                    <div class="settings-delete-grid">
+                        <div class="settings-delete-warning-box">
+                            <div class="warning-header">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <h3>CRITICAL WARNING</h3>
+                            </div>
+                            <p>Deleting your account is permanent. This action will immediately and irreversibly remove:</p>
+                            <ul class="delete-impact-list">
+                                <li><i class="fas fa-check"></i> Profile info (name, email, etc.)</li>
+                                <li><i class="fas fa-check"></i> All vehicle bookings & history</li>
+                                <li><i class="fas fa-check"></i> Rental listings & analytics</li>
+                                <li><i class="fas fa-check"></i> Wishlist & saved preferences</li>
                             </ul>
                         </div>
-                        
-                        <form>
-                            <div class="settings-page-form-group">
-                                <label for="delete_password">Enter your password to confirm *</label>
-                                <input type="password" id="delete_password" name="delete_password" 
-                                       placeholder="Enter your current password">
-                            </div>
-                            
-                            <div class="settings-page-form-group">
-                                <label for="confirm_text">Type <code class="settings-page-code">DELETE MY ACCOUNT</code> to confirm *</label>
-                                <input type="text" id="confirm_text" name="confirm_text" 
-                                       placeholder="Type: DELETE MY ACCOUNT">
-                                <small>This confirms you understand this action is permanent.</small>
-                            </div>
-                            
-                            <div class="settings-page-form-actions">
-                                <button type="submit" class="settings-page-btn-danger">Permanently Delete Account</button>
-                                <a href="settings.php?section=overview" class="settings-page-btn-secondary">Cancel</a>
-                            </div>
-                        </form>
+
+                        <div class="settings-delete-form-box">
+                            <form>
+                                <div class="settings-page-form-group">
+                                    <label for="delete_password">Account Password *</label>
+                                    <input type="password" id="delete_password" name="delete_password" 
+                                           placeholder="Enter password to verify identity">
+                                </div>
+                                
+                                <div class="settings-page-form-group">
+                                    <label for="confirm_text">Final Confirmation *</label>
+                                    <p class="confirm-instruction">Type <code class="settings-page-code">DELETE MY ACCOUNT</code> below</p>
+                                    <input type="text" id="confirm_text" name="confirm_text" 
+                                           placeholder="Type: DELETE MY ACCOUNT">
+                                </div>
+                                
+                                <div class="settings-page-form-actions">
+                                    <button type="submit" class="settings-page-btn-danger">I understand, delete my account</button>
+                                    <a href="settings.php?section=overview" class="settings-page-btn-secondary">Go Back</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
                     </div>
                 
                 <?php else: ?>
                     <!-- Overview / Default Settings View -->
                     <div class="settings-page-card">
-                        <h2><i class="fas fa-sliders-h"></i> Account Overview</h2>
-                        <div class="settings-page-card__sub">Your account information and settings</div>
-                        
-                        <div class="settings-page-user-info">
-                            <div class="settings-page-user-info__details">
-                                <h3><?= htmlspecialchars($full_name) ?></h3>
-                                <p><?= htmlspecialchars($user['email']) ?></p>
-                                <p style="font-size: 12px; margin-top: 8px;">Member since: <?= date('F j, Y', strtotime($user['created_at'])) ?></p>
+                    <div class="settings-profile-hero">
+                        <div class="settings-profile-left">
+                            <div class="settings-profile-avatar">
+                                <?= strtoupper(substr($user['first_name'], 0, 1) . substr($user['last_name'], 0, 1)) ?>
                             </div>
-                            <div class="settings-page-user-info__badge">
-                                <i class="fas fa-user"></i> Active Account
+                            <div class="settings-profile-main">
+                                <h3><?= htmlspecialchars($full_name) ?></h3>
+                                <p class="settings-profile-email"><?= htmlspecialchars($user['email']) ?></p>
                             </div>
                         </div>
-                        
-                        <div style="margin-top: 24px;">
+                        <div class="settings-profile-right">
+                            <div class="settings-meta-item">
+                                <span class="meta-label">Account Status</span>
+                                <span class="settings-profile-tag">Active Member</span>
+                            </div>
+                            <div class="settings-meta-item">
+                                <span class="meta-label">Member Since</span>
+                                <span class="meta-value"><?= date('F j, Y', strtotime($user['created_at'])) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                        <div class="settings-overview-section">
                             <h3>Quick Actions</h3>
-
-                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                                <a href="settings.php?section=password" class="settings-page-btn-primary" style="text-decoration: none;">
+                            <div class="settings-overview-actions">
+                                <a href="settings.php?section=password" class="settings-page-btn-primary">
                                     <i class="fas fa-key"></i> Change Password
                                 </a>
-                                <a href="settings.php?section=name" class="settings-page-btn-secondary" style="text-decoration: none;">
+                                <a href="settings.php?section=name" class="settings-page-btn-secondary">
                                     <i class="fas fa-user-edit"></i> Change Name
                                 </a>
                             </div>
                         </div>
                         
                         <?php if (empty($_SESSION['is_admin'])): ?>
-                        <div style="margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--clr-border);">
-                            <h3 style="color: #ff5050;">Danger Zone</h3>
-
-                            <a href="settings.php?section=delete" class="settings-page-btn-danger" style="text-decoration: none; display: inline-block;">
+                        <div class="settings-overview-section danger-zone">
+                            <h3 class="danger-title">Danger Zone</h3>
+                            <a href="settings.php?section=delete" class="settings-page-btn-danger">
                                 <i class="fas fa-trash-alt"></i> Delete Account
                             </a>
-                            <p style="font-size: 12px; color: var(--clr-muted); margin-top: 12px;">
+                            <p class="danger-help">
                                 Once you delete your account, there is no going back. Please be certain.
                             </p>
                         </div>
@@ -235,9 +264,10 @@ require_once '../../includes/header.php';
                     </div>
                 <?php endif; ?>
             </div>
-        </div>
+        </main>
     </div>
 </div>
+
 <!-- At the end of settings.php, after footer include -->
 <script src="/vehicle_rental_collab_project/assets/js/settings.js"></script>
 <?php require_once '../../includes/footer.php'; ?>

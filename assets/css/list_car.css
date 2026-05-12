@@ -26,15 +26,9 @@
 .lc-page {
     min-height: 100vh;
     background: var(--bg);
-    background-image: repeating-linear-gradient(
-        90deg, transparent, transparent 119px,
-        rgba(255,255,255,0.018) 120px
-    );
     color: var(--text);
     font-family: var(--font-body);
-    padding: 0 0 80px;
-
-
+    padding: 0 0 120px; /* Increased bottom padding */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -43,9 +37,9 @@
 
 .lc-page > .page-hero {
     width: 100%;
-    margin-bottom: 40px;
-    padding-top: 100px; /* Extra clearance from header */
+    margin-bottom: 80px; /* Increased gap to form */
 }
+
 
 
 
@@ -56,24 +50,27 @@
 /* ── Two-column form grid ────────────────────────────────────── */
 .lc-form {
     width: 100%;
-    max-width: 1100px;
-    padding: 0 24px;
+    max-width: 1400px; /* Matched to global container-max */
+    padding: 0 40px; /* Increased side padding */
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 60px; /* Increased gap to balance wider layout */
     align-items: start;
 }
-.lc-col { display: flex; flex-direction: column; gap: 16px; }
+
+.lc-col { display: flex; flex-direction: column; gap: 40px; } /* Increased gap between sections */
+
 
 /* ── Section cards ───────────────────────────────────────────── */
 .lc-section {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 24px 26px 28px;
+    border-radius: 12px;
+    padding: 40px; /* Much more spacious padding */
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 24px;
+
     animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
 }
 .lc-col:first-child .lc-section:nth-child(1) { animation-delay: 0.08s; }
@@ -105,8 +102,9 @@
 }
 
 /* ── Field & label ───────────────────────────────────────────── */
-.lc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.lc-field { display: flex; flex-direction: column; gap: 7px; }
+.lc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.lc-field { display: flex; flex-direction: column; gap: 10px; }
+
 .lc-label {
     font-family: var(--font-head);
     font-size: 11px;
