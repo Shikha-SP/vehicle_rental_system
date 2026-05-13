@@ -156,7 +156,8 @@ CREATE TABLE IF NOT EXISTS discount_codes (
 )");
 
 // 4. Added from Pratikshya: Helper function and dynamic column updates
-function addColumn($conn, $table, $column, $definition) {
+function addColumn($conn, $table, $column, $definition)
+{
     $check = $conn->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
     if ($check && $check->num_rows == 0) {
         $conn->query("ALTER TABLE `$table` ADD COLUMN `$column` $definition");
@@ -215,6 +216,17 @@ CREATE TABLE IF NOT EXISTS reviews (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );");
+
+//Create notification preference table
+$conn->query("
+    CREATE TABLE IF NOT EXISTS notification_preference (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    enabled TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+");
 
 // confirmation
 // echo "Database and tables are ready.";

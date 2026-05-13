@@ -1,7 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 require_once '../../config/db.php';
 require_once '../../config/mailer.php';
 require_once '../../includes/functions.php';
@@ -24,20 +21,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Store booking params in session so they survive re-display
     if (isset($_POST['vehicle_id'])) {
         $_SESSION['payment_vehicle_id'] = (int) $_POST['vehicle_id'];
-        $_SESSION['payment_pickup']      = $_POST['pickup_date'] ?? '';
-        $_SESSION['payment_dropoff']     = $_POST['dropoff_date'] ?? '';
-        $_SESSION['payment_days']        = (int) ($_POST['days'] ?? 0);
+        $_SESSION['payment_pickup'] = $_POST['pickup_date'] ?? '';
+        $_SESSION['payment_dropoff'] = $_POST['dropoff_date'] ?? '';
+        $_SESSION['payment_days'] = (int) ($_POST['days'] ?? 0);
         $_SESSION['payment_pickup_time'] = $_POST['pickup_time'] ?? '09:00:00';
         $_SESSION['payment_return_time'] = $_POST['return_time'] ?? '18:00:00';
     }
 }
 
-$vehicle_id   = $_SESSION['payment_vehicle_id'] ?? 0;
-$pickup_date  = $_SESSION['payment_pickup'] ?? '';
+$vehicle_id = $_SESSION['payment_vehicle_id'] ?? 0;
+$pickup_date = $_SESSION['payment_pickup'] ?? '';
 $dropoff_date = $_SESSION['payment_dropoff'] ?? '';
-$days         = $_SESSION['payment_days'] ?? 0;
-$pickup_time  = $_SESSION['payment_pickup_time'] ?? '09:00:00';
-$return_time  = $_SESSION['payment_return_time'] ?? '18:00:00';
+$days = $_SESSION['payment_days'] ?? 0;
+$pickup_time = $_SESSION['payment_pickup_time'] ?? '09:00:00';
+$return_time = $_SESSION['payment_return_time'] ?? '18:00:00';
 
 if (!$vehicle_id) {
     header('Location: invoice.php');
@@ -132,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
 
             if ($result->num_rows > 0) {
                 $code_data = $result->fetch_assoc();
-                $code_id   = $code_data['id'];
+                $code_id = $code_data['id'];
                 $stmt->close();
 
                 // Check expiry
@@ -142,9 +139,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                 // Check max uses
                 elseif ($code_data['max_uses'] !== null && $code_data['used_count'] >= $code_data['max_uses']) {
                     $errors['discount'] = "This code has reached its maximum uses.";
-                } 
+                }
                 // Check ownership if it's a personal code
-                elseif ($code_data['owner_user_id'] !== null && (int)$code_data['owner_user_id'] !== (int)$user_id) {
+                elseif ($code_data['owner_user_id'] !== null && (int) $code_data['owner_user_id'] !== (int) $user_id) {
                     $errors['discount'] = "This is a personal discount code and cannot be used by you.";
                 } else {
                     // Check user already used it
@@ -170,167 +167,167 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                 $errors['discount'] = "Invalid or inactive discount code.";
             }
         }
-        
+
         if (empty($errors)) {
             $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, pickup_time, return_time, total_price, status,payment_status, discount_code, discount_amount, created_at)
                            VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed','paid', ?, ?, NOW())";
             $insert_stmt = $conn->prepare($insert_sql);
             $insert_stmt->bind_param("iissssdsd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $pickup_time, $return_time, $totalprice, $discount_code, $discount_amount);
 
-        if ($insert_stmt->execute()) {
-            $booking_id = $insert_stmt->insert_id;
+            if ($insert_stmt->execute()) {
+                $booking_id = $insert_stmt->insert_id;
 
-            // Insert into transactions table
-            $card_last4 = substr($cardnumber_clean, -4);
-            $transaction_ref = 'TXN-' . strtoupper(bin2hex(random_bytes(8)));
-            $txn_sql = "INSERT INTO transactions (booking_id, user_id, amount, payment_method, card_last4, card_type, transaction_ref, created_at)
+                // Insert into transactions table
+                $card_last4 = substr($cardnumber_clean, -4);
+                $transaction_ref = 'TXN-' . strtoupper(bin2hex(random_bytes(8)));
+                $txn_sql = "INSERT INTO transactions (booking_id, user_id, amount, payment_method, card_last4, card_type, transaction_ref, created_at)
                         VALUES (?, ?, ?, 'card', ?, ?, ?, NOW())";
-            $txn_stmt = $conn->prepare($txn_sql);
-            $txn_stmt->bind_param("iidsss", $booking_id, $user_id, $totalprice, $card_last4, $card_type, $transaction_ref);
-            $txn_stmt->execute();
+                $txn_stmt = $conn->prepare($txn_sql);
+                $txn_stmt->bind_param("iidsss", $booking_id, $user_id, $totalprice, $card_last4, $card_type, $transaction_ref);
+                $txn_stmt->execute();
 
-            // Record discount usage & increment used_count
-            if ($discount_code_id) {
-                $stmt = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
-                $stmt->bind_param("ii", $user_id, $discount_code_id);
-                $stmt->execute();
-                $stmt->close();
-                // Increment the global used_count
-                $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = $discount_code_id");
+                // Record discount usage & increment used_count
+                if ($discount_code_id) {
+                    $stmt = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
+                    $stmt->bind_param("ii", $user_id, $discount_code_id);
+                    $stmt->execute();
+                    $stmt->close();
+                    // Increment the global used_count
+                    $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = $discount_code_id");
 
-                // ── GOLD RESET CYCLE ──────────────────────────────────────────
-                // If the code used was the user's personal GOLD code (20% off),
-                // reset their medal back to BRONZE so they climb the cycle again:
-                //   BRONZE → SILVER → GOLD → [use Gold code] → BRONZE → ...
-                $gold_check = $conn->query("
+                    // ── GOLD RESET CYCLE ──────────────────────────────────────────
+                    // If the code used was the user's personal GOLD code (20% off),
+                    // reset their medal back to BRONZE so they climb the cycle again:
+                    //   BRONZE → SILVER → GOLD → [use Gold code] → BRONZE → ...
+                    $gold_check = $conn->query("
                     SELECT id FROM discount_codes
                     WHERE id = $discount_code_id
                       AND owner_user_id = $user_id
                       AND discount_percent = 20
                     LIMIT 1
                 ");
-                if ($gold_check && $gold_check->num_rows > 0) {
-                    // Reset to Bronze level (completed_rentals = 3 keeps them at Bronze threshold)
-                    $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
+                    if ($gold_check && $gold_check->num_rows > 0) {
+                        // Reset to Bronze level (completed_rentals = 3 keeps them at Bronze threshold)
+                        $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
+                    }
+                    // ─────────────────────────────────────────────────────────────
                 }
-                // ─────────────────────────────────────────────────────────────
-            }
 
-            // Milestone logic — increment AFTER possible Gold reset
-            $conn->query("UPDATE users SET completed_rentals = completed_rentals + 1 WHERE id = $user_id");
-            $res = $conn->query("SELECT completed_rentals, medal FROM users WHERE id = $user_id");
-            if ($res && $res->num_rows > 0) {
-                $u_data = $res->fetch_assoc();
-                $rentals = (int)$u_data['completed_rentals'];
-                $current_medal = $u_data['medal'];
-                
-                $new_medal      = $current_medal;
-                $milestone_code    = '';
-                $milestone_percent = 0;
+                // Milestone logic — increment AFTER possible Gold reset
+                $conn->query("UPDATE users SET completed_rentals = completed_rentals + 1 WHERE id = $user_id");
+                $res = $conn->query("SELECT completed_rentals, medal FROM users WHERE id = $user_id");
+                if ($res && $res->num_rows > 0) {
+                    $u_data = $res->fetch_assoc();
+                    $rentals = (int) $u_data['completed_rentals'];
+                    $current_medal = $u_data['medal'];
 
-                // Updated thresholds: Bronze=3, Silver=7, Gold=15
-                if ($rentals >= 3 && $current_medal === 'NONE') {
-                    $new_medal         = 'BRONZE';
-                    $milestone_code    = 'BRONZE5';
-                    $milestone_percent = 5;
-                } elseif ($rentals >= 7 && $current_medal === 'BRONZE') {
-                    $new_medal         = 'SILVER';
-                    $milestone_code    = 'SILVER10';
-                    $milestone_percent = 10;
-                } elseif ($rentals >= 15 && $current_medal === 'SILVER') {
-                    $new_medal         = 'GOLD';
-                    $milestone_code    = 'GOLD20';
-                    $milestone_percent = 20;
-                }
-                
-                if ($new_medal !== $current_medal) {
-                    $conn->query("UPDATE users SET medal = '$new_medal' WHERE id = $user_id");
-                    
-                    if ($milestone_code !== '') {
-                        // Create a UNIQUE personal code for this user (max_uses = 1)
-                        $unique_suffix = substr(md5(uniqid($user_id, true)), 0, 4);
-                        $personal_code = $milestone_code . "-U" . $user_id . "-" . $unique_suffix;
-                        
-                        $conn->query("
+                    $new_medal = $current_medal;
+                    $milestone_code = '';
+                    $milestone_percent = 0;
+
+                    // Updated thresholds: Bronze=3, Silver=7, Gold=15
+                    if ($rentals >= 3 && $current_medal === 'NONE') {
+                        $new_medal = 'BRONZE';
+                        $milestone_code = 'BRONZE5';
+                        $milestone_percent = 5;
+                    } elseif ($rentals >= 7 && $current_medal === 'BRONZE') {
+                        $new_medal = 'SILVER';
+                        $milestone_code = 'SILVER10';
+                        $milestone_percent = 10;
+                    } elseif ($rentals >= 15 && $current_medal === 'SILVER') {
+                        $new_medal = 'GOLD';
+                        $milestone_code = 'GOLD20';
+                        $milestone_percent = 20;
+                    }
+
+                    if ($new_medal !== $current_medal) {
+                        $conn->query("UPDATE users SET medal = '$new_medal' WHERE id = $user_id");
+
+                        if ($milestone_code !== '') {
+                            // Create a UNIQUE personal code for this user (max_uses = 1)
+                            $unique_suffix = substr(md5(uniqid($user_id, true)), 0, 4);
+                            $personal_code = $milestone_code . "-U" . $user_id . "-" . $unique_suffix;
+
+                            $conn->query("
                             INSERT INTO discount_codes (code, type, discount_percent, discount_flat, max_uses, owner_user_id) 
                             VALUES ('$personal_code', 'percent', $milestone_percent, 0, 1, $user_id)
                         ");
+                        }
                     }
                 }
-            }
 
-            // Fetch user data for the confirmation email
-            $user_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
-            $user_stmt->bind_param("i", $user_id);
-            $user_stmt->execute();
-            $user_data = $user_stmt->get_result()->fetch_assoc();
-            $email = $user_data['email'] ?? '';
-            $first_name = $user_data['first_name'] ?? '';
-            $last_name = $user_data['last_name'] ?? '';
+                // Fetch user data for the confirmation email
+                $user_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
+                $user_stmt->bind_param("i", $user_id);
+                $user_stmt->execute();
+                $user_data = $user_stmt->get_result()->fetch_assoc();
+                $email = $user_data['email'] ?? '';
+                $first_name = $user_data['first_name'] ?? '';
+                $last_name = $user_data['last_name'] ?? '';
 
-            try {
-                $invoice_data = [
-                    'booking_id' => $booking_id,
-                    'first_name' => $first_name,
-                    'email' => $email,
-                    'model' => $vehicle['model'],
-                    'pickup_date' => $pickup_date,
-                    'dropoff_date' => $dropoff_date,
-                    'days' => $days,
-                    'price_per_day' => $vehicle['price_per_day'],
-                    'total_price' => $totalprice,
-                    'discount_code' => $discount_code,
-                    'discount_amount' => $discount_amount,
-                ];
+                try {
+                    $invoice_data = [
+                        'booking_id' => $booking_id,
+                        'first_name' => $first_name,
+                        'email' => $email,
+                        'model' => $vehicle['model'],
+                        'pickup_date' => $pickup_date,
+                        'dropoff_date' => $dropoff_date,
+                        'days' => $days,
+                        'price_per_day' => $vehicle['price_per_day'],
+                        'total_price' => $totalprice,
+                        'discount_code' => $discount_code,
+                        'discount_amount' => $discount_amount,
+                    ];
 
-                $pdf_string = generateInvoicePDF($invoice_data);
+                    $pdf_string = generateInvoicePDF($invoice_data);
 
-                $savings_msg = '';
-                if ($discount_amount > 0) {
-                    $savings_msg = "<p style='color: #2ecc71;'><strong>You saved NPR " . number_format($discount_amount, 2) . " with code " . htmlspecialchars($discount_code) . "!</strong></p>";
+                    $savings_msg = '';
+                    if ($discount_amount > 0) {
+                        $savings_msg = "<p style='color: #2ecc71;'><strong>You saved NPR " . number_format($discount_amount, 2) . " with code " . htmlspecialchars($discount_code) . "!</strong></p>";
+                    }
+
+                    // send mail
+                    $mail = createMailer();
+                    $mail->addAddress($email, $first_name . ' ' . $last_name);
+                    $mail->Subject = 'Booking Confirmation';
+                    $mail->isHTML(true);
+                    $mail->Body = "
+                            <p>Hi {$first_name},</p>
+                            <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
+                            <p>Pickup date: {$pickup_date}</p>
+                            <p>Dropoff date: {$dropoff_date}</p>
+                            <p>Total Paid: NPR " . number_format($totalprice, 2) . "</p>
+                            {$savings_msg}
+                            <p>Please find your invoice attached.</p>
+                            <p>Thank you for choosing TD Rentals 🚀</p>
+                            
+                            <p>Best Regards,</p>
+                            <p>TD Rentals Team</p>
+                        ";
+                    $mail->AltBody = "Hi {$first_name}, Your booking for {$vehicle['model']} is confirmed.";
+                    // Attach PDF from string (no temp file needed)
+                    $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
+
+                    if (isNotificationEnabled($conn, $user_id)) {
+                        $mail->send();
+                    }
+                } catch (Throwable $e) {
+                    // Temporarily dump the error to the screen so we can read it
+                    die("<h3>Email/System Error:</h3><p>" . $e->getMessage() . "</p><p>File: " . $e->getFile() . " on line " . $e->getLine() . "</p>");
                 }
-
-                // send mail
-                $mail = createMailer();
-                $mail->addAddress($email, $first_name . ' ' . $last_name);
-                $mail->Subject = 'Booking Confirmation';
-                $mail->isHTML(true);
-        $mail->Body = "
-                    <p>Hi {$first_name},</p>
-    <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
-    <p>Pickup: {$pickup_date} at " . date('g:i A', strtotime($pickup_time)) . "</p>
-    <p>Return: {$dropoff_date} at " . date('g:i A', strtotime($return_time)) . "</p>
-    <p>Total Paid: NPR " . number_format($totalprice, 2) . "</p>
-    {$savings_msg}
-    <p>Please find your invoice attached.</p>
-    <p>Thank you for choosing TD Rentals 🚀</p>
-    
-    <p>Best Regards,</p>
-    <p>TD Rentals Team</p>
-
-                ";
-                $mail->AltBody = "Hi {$first_name}, Your booking for {$vehicle['model']} is confirmed.";
-                // Attach PDF from string (no temp file needed)
-                $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
-                $mail->send();
-            } catch (Exception $e) {
-                // Mail failed — log it, but don't block the booking
-                error_log("Booking email failed: " . $e->getMessage());
+                // Clear session payment data
+                unset(
+                    $_SESSION['payment_vehicle_id'],
+                    $_SESSION['payment_pickup'],
+                    $_SESSION['payment_dropoff'],
+                    $_SESSION['payment_days']
+                );
+                header("Location: bookingconfirmed.php?id=" . $booking_id);
+                exit;
+            } else {
+                $errors['database'] = "Failed to create booking. Please try again.";
             }
-            // Clear session payment data
-            unset(
-                $_SESSION['payment_vehicle_id'],
-                $_SESSION['payment_pickup'],
-                $_SESSION['payment_dropoff'],
-                $_SESSION['payment_days'],
-                $_SESSION['payment_pickup_time'],
-                $_SESSION['payment_return_time']
-            );
-            header("Location: bookingconfirmed.php?id=" . $booking_id);
-            exit;
-        } else {
-            $errors['database'] = "Failed to create booking. Please try again.";
-        }
         }
     }
 }
@@ -365,9 +362,12 @@ if ($uid) {
     foreach ($raw_codes as $rc) {
         if ($rc['owner_user_id'] === null) {
             $cname = strtoupper($rc['code']);
-            if (strpos($cname, 'BRONZE') !== false && $u_medal === 'NONE') continue;
-            if (strpos($cname, 'SILVER') !== false && ($u_medal === 'NONE' || $u_medal === 'BRONZE')) continue;
-            if (strpos($cname, 'GOLD') !== false && $u_medal !== 'GOLD') continue;
+            if (strpos($cname, 'BRONZE') !== false && $u_medal === 'NONE')
+                continue;
+            if (strpos($cname, 'SILVER') !== false && ($u_medal === 'NONE' || $u_medal === 'BRONZE'))
+                continue;
+            if (strpos($cname, 'GOLD') !== false && $u_medal !== 'GOLD')
+                continue;
         }
         $available_codes[] = $rc;
     }
@@ -395,12 +395,12 @@ if ($uid) {
             <input type="hidden" name="pickup_date" value="<?= htmlspecialchars($pickup_date) ?>">
             <input type="hidden" name="dropoff_date" value="<?= htmlspecialchars($dropoff_date) ?>">
             <input type="hidden" name="days" value="<?= $days ?>">
-            <input type="hidden" name="pickup_time" value="<?= htmlspecialchars($pickup_time) ?>">
-            <input type="hidden" name="return_time" value="<?= htmlspecialchars($return_time) ?>">
-            <input type="hidden" name="applied_discount_code" id="applied_discount_code" value="<?= htmlspecialchars($_POST['applied_discount_code'] ?? '') ?>">
+            <input type="hidden" name="applied_discount_code" id="applied_discount_code"
+                value="<?= htmlspecialchars($_POST['applied_discount_code'] ?? '') ?>">
 
             <?php if (!empty($errors['discount'])): ?>
-                <div class="field-error" style="margin-bottom: 15px; padding: 10px; background: rgba(224, 48, 48, 0.1); border-left: 3px solid #e03030;">
+                <div class="field-error"
+                    style="margin-bottom: 15px; padding: 10px; background: rgba(224, 48, 48, 0.1); border-left: 3px solid #e03030;">
                     <?= e($errors['discount']) ?>
                 </div>
             <?php endif; ?>
@@ -516,7 +516,8 @@ if ($uid) {
             </a>
 
             <a href="esewa_initiate.php" id="esewa-button" class="payment-method-btn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Esewa_logo.webp" alt="eSewa" class="esewa-logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Esewa_logo.webp" alt="eSewa"
+                    class="esewa-logo">
                 <span>PAY NPR <?= number_format($totalprice, 0) ?></span>
             </a>
 
@@ -550,10 +551,12 @@ if ($uid) {
                 <div>
                     <p class="booking-meta-label">Reservation Dates</p>
                     <p class="booking-meta-value">
-                        📅 <?= htmlspecialchars($pickup_date) ?> at <strong><?= date('g:i A', strtotime($pickup_time)) ?></strong>
+                        📅 <?= htmlspecialchars($pickup_date) ?> at
+                        <strong><?= date('g:i A', strtotime($pickup_time)) ?></strong>
                     </p>
                     <p class="booking-meta-value">
-                        🔁 <?= htmlspecialchars($dropoff_date) ?> at <strong><?= date('g:i A', strtotime($return_time)) ?></strong>
+                        🔁 <?= htmlspecialchars($dropoff_date) ?> at
+                        <strong><?= date('g:i A', strtotime($return_time)) ?></strong>
                     </p>
                 </div>
                 <div style="text-align: right;">
@@ -585,16 +588,24 @@ if ($uid) {
             <div class="discount-section" style="margin-bottom: 20px;">
                 <p class="price-breakdown-label">Discount Code</p>
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="discount-input" class="input-field" placeholder="Enter code" style="margin-bottom: 0;">
-                    <button type="button" id="apply-discount-btn" class="primary-btn" style="width: auto; padding: 0 15px; font-size: 0.9rem;">APPLY</button>
+                    <input type="text" id="discount-input" class="input-field" placeholder="Enter code"
+                        style="margin-bottom: 0;">
+                    <button type="button" id="apply-discount-btn" class="primary-btn"
+                        style="width: auto; padding: 0 15px; font-size: 0.9rem;">APPLY</button>
                 </div>
                 <p id="discount-message" style="margin-top: 5px; font-size: 0.85rem;"></p>
                 <div style="margin-top: 10px; font-size: 0.8rem; color: #888;">
-                    <span style="display: block; margin-bottom: 6px; color: #aaa; text-transform: uppercase; font-weight: 600; font-size: 0.7rem;">Available Rewards:</span>
+                    <span
+                        style="display: block; margin-bottom: 6px; color: #aaa; text-transform: uppercase; font-weight: 600; font-size: 0.7rem;">Available
+                        Rewards:</span>
                     <?php if (!empty($available_codes)): ?>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <?php foreach($available_codes as $ac): ?>
-                                <span class="available-code-badge" onclick="document.getElementById('discount-input').value='<?= htmlspecialchars($ac['code']) ?>'" style="background: rgba(224,48,48,0.1); border: 1px solid rgba(224,48,48,0.3); color: var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600;" onmouseover="this.style.background='rgba(224,48,48,0.2)'" onmouseout="this.style.background='rgba(224,48,48,0.1)'">
+                            <?php foreach ($available_codes as $ac): ?>
+                                <span class="available-code-badge"
+                                    onclick="document.getElementById('discount-input').value='<?= htmlspecialchars($ac['code']) ?>'"
+                                    style="background: rgba(224,48,48,0.1); border: 1px solid rgba(224,48,48,0.3); color: var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600;"
+                                    onmouseover="this.style.background='rgba(224,48,48,0.2)'"
+                                    onmouseout="this.style.background='rgba(224,48,48,0.1)'">
                                     <?= htmlspecialchars($ac['code']) ?> (-<?= floatval($ac['discount_percent']) ?>%)
                                 </span>
                             <?php endforeach; ?>
@@ -696,7 +707,7 @@ if ($uid) {
     const payButton = document.getElementById('pay-button');
 
     if (applyBtn) {
-        applyBtn.addEventListener('click', function() {
+        applyBtn.addEventListener('click', function () {
             const code = discountInput.value.trim();
             if (!code) {
                 discountMsg.textContent = 'Please enter a code.';
@@ -715,57 +726,57 @@ if ($uid) {
                 },
                 body: 'code=' + encodeURIComponent(code) + '&total_price=' + encodeURIComponent(baseTotal)
             })
-            .then(response => response.json())
-            .then(data => {
-                applyBtn.textContent = 'APPLY';
-                applyBtn.disabled = false;
+                .then(response => response.json())
+                .then(data => {
+                    applyBtn.textContent = 'APPLY';
+                    applyBtn.disabled = false;
 
-                if (data.valid) {
-                    discountMsg.textContent = data.message;
-                    discountMsg.style.color = '#2ecc71';
-                    
-                    // Update UI Total
-                    finalTotalDisplay.innerHTML = 'NPR ' + data.new_total.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    payButton.innerHTML = 'CONFIRM & PAY NPR ' + data.new_total.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
-                    
-                    // Show discount row
-                    discountRow.style.display = 'flex';
-                    discountName.textContent = 'Discount (' + data.discount_percent + '% - ' + code + ')';
-                    discountAmountDisplay.textContent = '- NPR ' + data.discount_amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    
-                    // Store applied code to hidden form input
-                    appliedDiscountInput.value = code;
+                    if (data.valid) {
+                        discountMsg.textContent = data.message;
+                        discountMsg.style.color = '#2ecc71';
 
-                    // Update Khalti Button
-                    const khaltiBtn = document.getElementById('khalti-button');
-                    if (khaltiBtn) {
-                        khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + data.new_total.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
-                        khaltiBtn.href = 'khalti_initiate.php?discount_code=' + encodeURIComponent(code);
+                        // Update UI Total
+                        finalTotalDisplay.innerHTML = 'NPR ' + data.new_total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        payButton.innerHTML = 'CONFIRM & PAY NPR ' + data.new_total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+                        // Show discount row
+                        discountRow.style.display = 'flex';
+                        discountName.textContent = 'Discount (' + data.discount_percent + '% - ' + code + ')';
+                        discountAmountDisplay.textContent = '- NPR ' + data.discount_amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                        // Store applied code to hidden form input
+                        appliedDiscountInput.value = code;
+
+                        // Update Khalti Button
+                        const khaltiBtn = document.getElementById('khalti-button');
+                        if (khaltiBtn) {
+                            khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + data.new_total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                            khaltiBtn.href = 'khalti_initiate.php?discount_code=' + encodeURIComponent(code);
+                        }
+                    } else {
+                        discountMsg.textContent = data.message;
+                        discountMsg.style.color = '#e74c3c';
+
+                        // Reset to base total
+                        finalTotalDisplay.innerHTML = 'NPR ' + baseTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                        payButton.innerHTML = 'CONFIRM & PAY NPR ' + baseTotal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                        discountRow.style.display = 'none';
+                        appliedDiscountInput.value = '';
+
+                        // Reset Khalti Button
+                        const khaltiBtn = document.getElementById('khalti-button');
+                        if (khaltiBtn) {
+                            khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + baseTotal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                            khaltiBtn.href = 'khalti_initiate.php';
+                        }
                     }
-                } else {
-                    discountMsg.textContent = data.message;
+                })
+                .catch(error => {
+                    applyBtn.textContent = 'APPLY';
+                    applyBtn.disabled = false;
+                    discountMsg.textContent = 'Error verifying code. Try again.';
                     discountMsg.style.color = '#e74c3c';
-                    
-                    // Reset to base total
-                    finalTotalDisplay.innerHTML = 'NPR ' + baseTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                    payButton.innerHTML = 'CONFIRM & PAY NPR ' + baseTotal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
-                    discountRow.style.display = 'none';
-                    appliedDiscountInput.value = '';
-
-                    // Reset Khalti Button
-                    const khaltiBtn = document.getElementById('khalti-button');
-                    if (khaltiBtn) {
-                        khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + baseTotal.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
-                        khaltiBtn.href = 'khalti_initiate.php';
-                    }
-                }
-            })
-            .catch(error => {
-                applyBtn.textContent = 'APPLY';
-                applyBtn.disabled = false;
-                discountMsg.textContent = 'Error verifying code. Try again.';
-                discountMsg.style.color = '#e74c3c';
-            });
+                });
         });
     }
 
@@ -786,4 +797,5 @@ if ($uid) {
     }
 </script>
 </body>
+
 </html>

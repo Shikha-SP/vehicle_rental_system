@@ -85,31 +85,35 @@ function show404()
     exit();
 }
 // Luhn algorithm for credit card validation
-function isValidLuhn($number) {
+function isValidLuhn($number)
+{
     $number = preg_replace('/\D/', '', $number); // remove spaces
     $sum = 0;
     $alternate = false;
-    
+
     for ($i = strlen($number) - 1; $i >= 0; $i--) {
         $n = intval($number[$i]);
-        
+
         if ($alternate) {
             $n *= 2;
             if ($n > 9) {
                 $n -= 9;
             }
         }
-        
+
         $sum += $n;
         $alternate = !$alternate;
     }
-    
+
     return ($sum % 10 == 0);
 }
 
-function getCardType($number) {
-    if (preg_match('/^4/', $number)) return 'Visa';
-    if (preg_match('/^5[1-5]/', $number)) return 'Mastercard';
+function getCardType($number)
+{
+    if (preg_match('/^4/', $number))
+        return 'Visa';
+    if (preg_match('/^5[1-5]/', $number))
+        return 'Mastercard';
     return 'Unknown';
 }
 function getImageUrl($path)
@@ -142,14 +146,16 @@ function getImageUrl($path)
 /**
  * Send an instant reminder email based on time until pickup
  */
-function sendReminderEmail($conn, $bookingId, $userEmail, $firstName, $vehicleModel, $pickupDatetime, $totalPrice) {
+function sendReminderEmail($conn, $bookingId, $userEmail, $firstName, $vehicleModel, $pickupDatetime, $totalPrice)
+{
     require_once __DIR__ . '/../config/mailer.php';
 
     $pickupTimestamp = strtotime($pickupDatetime);
     $currentTimestamp = time();
     $hoursLeft = ($pickupTimestamp - $currentTimestamp) / 3600;
 
-    if ($hoursLeft < 0) return false; // Already passed
+    if ($hoursLeft < 0)
+        return false; // Already passed
 
     if ($hoursLeft < 0.5) {
         $reminderType = 'email_30min';
@@ -174,10 +180,10 @@ function sendReminderEmail($conn, $bookingId, $userEmail, $firstName, $vehicleMo
         $mail = createMailer();
         $mail->addAddress($userEmail, $firstName);
         $mail->Subject = $subject;
-        
+
         $startDate = date('Y-m-d', $pickupTimestamp);
         $pickupTime = date('H:i:s', $pickupTimestamp);
-        $totalPriceFmt = number_format((float)$totalPrice, 2);
+        $totalPriceFmt = number_format((float) $totalPrice, 2);
 
         $htmlBody = "
             <div style='font-family: Arial, sans-serif; color: #333;'>
@@ -192,10 +198,10 @@ function sendReminderEmail($conn, $bookingId, $userEmail, $firstName, $vehicleMo
                 <p>— TDRentals Team</p>
             </div>
         ";
-        
+
         $mail->isHTML(true);
         $mail->Body = $htmlBody;
-        
+
         if ($mail->send()) {
             $logStmt = $conn->prepare("INSERT INTO reminder_log (booking_id, reminder_type) VALUES (?, ?)");
             $logStmt->bind_param('is', $bookingId, $reminderType);
@@ -206,5 +212,23 @@ function sendReminderEmail($conn, $bookingId, $userEmail, $firstName, $vehicleMo
         error_log("Failed to send instant reminder email: " . $e->getMessage());
     }
     return false;
+}
+
+function isNotificationEnabled($conn, $user_id)
+{
+
+    $stmt = $conn->prepare("
+        SELECT enabled
+        FROM notification_preference
+        WHERE user_id = ?
+        LIMIT 1
+    ");
+
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+
+    $result = $stmt->get_result()->fetch_assoc();
+
+    return $result && $result['enabled'] == 1;
 }
 ?>

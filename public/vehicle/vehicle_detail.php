@@ -6,7 +6,7 @@ session_start();
 require_once '../../config/db.php';
 require_once '../../includes/functions.php';
 
-$id = (int)($_GET['id'] ?? 0);
+$id = (int) ($_GET['id'] ?? 0);
 if (!$id) {
     header('Location: vehicles.php');
     exit;
@@ -49,7 +49,7 @@ if ($user_id) {
     $wish_stmt = $conn->prepare($wish_sql);
     $wish_stmt->bind_param("ii", $user_id, $id);
     $wish_stmt->execute();
-    $inWishlist = (bool)$wish_stmt->get_result()->fetch_assoc();
+    $inWishlist = (bool) $wish_stmt->get_result()->fetch_assoc();
 }
 
 // Check if user has ANY booking (confirmed or cancelled) for review purposes
@@ -64,7 +64,7 @@ if ($user_id) {
     $review_row = $review_check_stmt->get_result()->fetch_assoc();
     $canReview = (bool) $review_row;
     $review_booking_id = $review_row['id'] ?? null;
-    
+
     // Also get active booking id if exists
     $booking_check_sql = "SELECT id FROM bookings WHERE user_id = ? AND vehicle_id = ? AND status = 'confirmed' AND end_date >= CURDATE() LIMIT 1";
     $booking_check_stmt = $conn->prepare($booking_check_sql);
@@ -128,10 +128,11 @@ include '../../includes/header.php';
     <!-- HERO SECTION -->
     <section class="vehicle-hero">
         <div class="hero-bg">
-            <img src="../../<?= htmlspecialchars($vehicle['image_path'] ?? 'assets/images/placeholder.png') ?>" alt="<?= htmlspecialchars($vehicle['model']) ?>">
+            <img src="../../<?= htmlspecialchars($vehicle['image_path'] ?? 'assets/images/placeholder.png') ?>"
+                alt="<?= htmlspecialchars($vehicle['model']) ?>">
             <div class="hero-overlay"></div>
         </div>
-        
+
         <div class="container hero-content">
             <div class="hero-text">
                 <span class="badge red"><?= htmlspecialchars(strtoupper($vehicle['license_type'])) ?> CATEGORY</span>
@@ -156,19 +157,29 @@ include '../../includes/header.php';
                 </div>
                 <div class="spec-card">
                     <span class="spec-label">TOP SPEED</span>
-                    <span class="spec-value"><?= htmlspecialchars($vehicle['top_speed'] ?? '—') ?> <small>KM/H</small></span>
+                    <span class="spec-value"><?= htmlspecialchars($vehicle['top_speed'] ?? '—') ?>
+                        <small>KM/H</small></span>
                 </div>
                 <div class="spec-card">
                     <span class="spec-label">CAPACITY</span>
-                    <span class="spec-value"><?= htmlspecialchars($vehicle['fuel_capacity'] ?? '—') ?> <small>LITERS</small></span>
+                    <span class="spec-value"><?= htmlspecialchars($vehicle['fuel_capacity'] ?? '—') ?>
+                        <small>LITERS</small></span>
                 </div>
             </div>
 
             <div class="vehicle-description">
                 <h2>Performance Excellence</h2>
-                <p>The <?= htmlspecialchars($vehicle['model']) ?> represents a masterclass in automotive engineering, meticulously finished in a striking <?= htmlspecialchars($vehicle['color'] ?? 'custom') ?> exterior. This performance-driven <?= htmlspecialchars($vehicle['fuel_type']) ?> vehicle is equipped with a precise <?= htmlspecialchars($vehicle['transmission']) ?> transmission, ensuring every mile is delivered with absolute control.</p>
-                <p>Boasting a top speed of <?= htmlspecialchars($vehicle['top_speed'] ?? 'N/A') ?> KM/H and a substantial <?= htmlspecialchars($vehicle['fuel_capacity'] ?? 'N/A') ?>-liter fuel capacity, this <?= htmlspecialchars(strtoupper($vehicle['license_type'])) ?> category vehicle is built for long-distance cruising and exhilarating performance alike.</p>
-                
+                <p>The <?= htmlspecialchars($vehicle['model']) ?> represents a masterclass in automotive engineering,
+                    meticulously finished in a striking <?= htmlspecialchars($vehicle['color'] ?? 'custom') ?> exterior.
+                    This performance-driven <?= htmlspecialchars($vehicle['fuel_type']) ?> vehicle is equipped with a
+                    precise <?= htmlspecialchars($vehicle['transmission']) ?> transmission, ensuring every mile is
+                    delivered with absolute control.</p>
+                <p>Boasting a top speed of <?= htmlspecialchars($vehicle['top_speed'] ?? 'N/A') ?> KM/H and a
+                    substantial <?= htmlspecialchars($vehicle['fuel_capacity'] ?? 'N/A') ?>-liter fuel capacity, this
+                    <?= htmlspecialchars(strtoupper($vehicle['license_type'])) ?> category vehicle is built for
+                    long-distance cruising and exhilarating performance alike.
+                </p>
+
                 <div class="color-swatch-box">
                     <strong>EXTERIOR FINISH:</strong>
                     <div class="swatch" style="background: <?= htmlspecialchars($vehicle['color'] ?? '#333') ?>"></div>
@@ -252,9 +263,47 @@ include '../../includes/header.php';
                         <span class="period">/ day</span>
                     </div>
                 </div>
-                <?php if ($userBooking): ?>
+
+                <?php
+                if ($userBooking): ?>
                     <div class="alert alert-success">You already have an active confirmed booking for this vehicle.</div>
                     <button type="button" class="btn-book btn-booked" disabled>Booked</button>
+
+                    <?php
+                    $ext_sql = "SELECT id, end_date FROM bookings WHERE user_id = ? AND vehicle_id = ? AND status = 'confirmed' AND end_date >= CURDATE() LIMIT 1";
+                    $ext_stmt = $conn->prepare($ext_sql);
+                    $ext_stmt->bind_param("ii", $user_id, $id);
+                    $ext_stmt->execute();
+                    $ext_row = $ext_stmt->get_result()->fetch_assoc();
+                    $current_end = $ext_row['end_date'] ?? date('Y-m-d');
+                    $active_booking_id = $ext_row['id'] ?? null;
+                    $min_extend = date('Y-m-d', strtotime($current_end . ' +1 day'));
+                    ?>
+
+                    <!-- Toggle button -->
+                    <button type="button" class="btn-extend-toggle" id="btn-extend-toggle">
+                        Extend Booking
+                    </button>
+
+                    <!-- Hidden panel, shown on click -->
+                    <div class="extension-box" id="extension-box" style="display:none;">
+                        <p class="ext-current">Current drop-off: <strong
+                                id="ext-current-display"><?= date('M d, Y', strtotime($current_end)) ?></strong></p>
+                        <div class="form-group">
+                            <label style="color: #555555;">New Drop-off Date</label>
+                            <input type="date" id="extend-date" min="<?= $min_extend ?>" value="<?= $min_extend ?>">
+                        </div>
+                        <div class="ext-price-preview" id="ext-price-preview" style="display:none;">
+                            <span>Extra days: <strong id="ext-days">0</strong></span>
+                            <span>Additional cost: <strong id="ext-cost">NPR 0</strong></span>
+                        </div>
+                        <button class="btn-book btn-extend" id="btn-extend" data-booking-id="<?= $active_booking_id ?>"
+                            data-current-end="<?= $current_end ?>" data-rate="<?= (float) $vehicle['price_per_day'] ?>">
+                            Confirm Extension
+                        </button>
+                        <p id="ext-msg" class="ext-msg"></p>
+                    </div>
+
                     <p class="secure-note">View your booking history for full trip details.</p>
                 <?php else: ?>
                     <form method="POST" action="../payment/paymentdetail.php" class="booking-form">
@@ -265,7 +314,8 @@ include '../../includes/header.php';
 
                         <div class="form-group">
                             <label>Pick-up Date</label>
-                            <input type="date" name="pickup_date" id="pickup-date" min="<?= date('Y-m-d') ?>" value="<?= $def_pickup ?>" required>
+                            <input type="date" name="pickup_date" id="pickup-date" min="<?= date('Y-m-d') ?>" value="<?= $def_pickup ?>"
+                                required>
                         </div>
 
                         <div class="form-group">
@@ -289,7 +339,8 @@ include '../../includes/header.php';
 
                         <div class="form-group">
                             <label>Drop-off Date</label>
-                            <input type="date" name="dropoff_date" id="dropoff-date" min="<?= date('Y-m-d') ?>" value="<?= $def_dropoff ?>" required>
+                            <input type="date" name="dropoff_date" id="dropoff-date" min="<?= date('Y-m-d') ?>"
+                                value="<?= $def_dropoff ?>" required>
                         </div>
 
                         <div class="form-group">
@@ -306,11 +357,13 @@ include '../../includes/header.php';
                         <div class="price-summary">
                             <div class="summary-line">
                                 <span>Base Rate (<span id="summary-days"><?= $def_days ?></span> days)</span>
-                                <span id="summary-total">NPR <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
+                                <span id="summary-total">NPR
+                                    <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
                             </div>
                             <div class="summary-line total">
                                 <span>Total Estimated</span>
-                                <span id="summary-grand">NPR <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
+                                <span id="summary-grand">NPR
+                                    <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
                             </div>
                         </div>
 
@@ -320,7 +373,8 @@ include '../../includes/header.php';
                 <?php endif; ?>
 
                 <div class="sidebar-wishlist">
-                    <button id="wishlist-btn" class="btn-wishlist-sidebar <?= $inWishlist ? 'active' : '' ?>" data-id="<?= $id ?>">
+                    <button id="wishlist-btn" class="btn-wishlist-sidebar <?= $inWishlist ? 'active' : '' ?>"
+                        data-id="<?= $id ?>">
                         <div class="wishlist-icon-box">
                             <i class="<?= $inWishlist ? 'fa-solid' : 'fa-regular' ?> fa-heart"></i>
                         </div>
@@ -351,7 +405,8 @@ include '../../includes/header.php';
 
 <!-- Review modal -->
 <?php if ($userBooking || $canReview): ?>
-    <div class="review-modal-overlay" id="reviewModal" data-rating="<?= $user_rating_value ?>" data-review="<?= htmlspecialchars($user_review_text) ?>">
+    <div class="review-modal-overlay" id="reviewModal" data-rating="<?= $user_rating_value ?>"
+        data-review="<?= htmlspecialchars($user_review_text) ?>">
         <div class="review-modal">
             <button class="modal-close" id="closeModal">&times;</button>
 
@@ -380,23 +435,25 @@ include '../../includes/header.php';
                 <?= $user_rating_value ? ['', 'Terrible', 'Poor', 'Average', 'Good', 'Excellent'][$user_rating_value] : 'Select a rating' ?>
             </p>
 
-            <textarea id="reviewText" placeholder="Describe your experience with this vehicle..." rows="5"><?= htmlspecialchars($user_review_text) ?></textarea>
+            <textarea id="reviewText" placeholder="Describe your experience with this vehicle..."
+                rows="5"><?= htmlspecialchars($user_review_text) ?></textarea>
 
-            <button class="btn-submit-review" id="submitReview"><?= $user_review_text ? 'Update Review' : 'Post Review' ?></button>
+            <button class="btn-submit-review"
+                id="submitReview"><?= $user_review_text ? 'Update Review' : 'Post Review' ?></button>
         </div>
     </div>
 <?php endif; ?>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const pIn   = document.getElementById('pickup-date');
-    const pOff  = document.getElementById('dropoff-date');
+    document.addEventListener('DOMContentLoaded', () => {
+        const pIn   = document.getElementById('pickup-date');
+        const pOff  = document.getElementById('dropoff-date');
     const tIn   = document.getElementById('pickup-time');
     const tOff  = document.getElementById('return-time');
-    const displayDays  = document.getElementById('summary-days');
-    const displayTotal = document.getElementById('summary-total');
-    const displayGrand = document.getElementById('summary-grand');
-    const dailyRate    = <?= (float)$vehicle['price_per_day'] ?>;
+        const displayDays  = document.getElementById('summary-days');
+        const displayTotal = document.getElementById('summary-total');
+        const displayGrand = document.getElementById('summary-grand');
+        const dailyRate    = <?= (float) $vehicle['price_per_day'] ?>;
 
     const today = new Date().toISOString().split('T')[0];
     const currentHour = new Date().getHours();
@@ -423,6 +480,11 @@ document.addEventListener('DOMContentLoaded', () => {
             tIn.value = firstEnabled.value;
         }
     }
+        // Booking Extension
+        const extendDate = document.getElementById('extend-date');
+        const btnExtend = document.getElementById('btn-extend');
+        const toggleBtn = document.getElementById('btn-extend-toggle');
+        const extensionBox = document.getElementById('extension-box');
 
     function updatePrice() {
         // Filter pickup times first (disable past times if today is selected)
@@ -469,65 +531,147 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    pIn.addEventListener('change', updatePrice);
-    pOff.addEventListener('change', updatePrice);
+        if (pIn && pOff) {
+            pIn.addEventListener('change', updatePrice);
+            pOff.addEventListener('change', updatePrice);
     tIn.addEventListener('change', updatePrice);
     tOff.addEventListener('change', updatePrice);
 
     // Run immediately on page load to filter times if today is already selected
     filterPickupTimes();
     updatePrice();
+        }
 
-    // Fetch AI Recommendations
-    const aiContainer = document.getElementById('ai-recommendations-container');
-    const vehicleId = <?= $id ?>;
-    
-    fetch(`../api/get_recommendations.php?id=${vehicleId}`)
-        .then(response => response.text())
-        .then(html => {
-            aiContainer.innerHTML = html;
-        })
-        .catch(error => {
-            console.error('Error fetching recommendations:', error);
-            aiContainer.innerHTML = '<p class="secure-note" style="text-align:center; padding: 2rem;">Unable to load recommendations.</p>';
-        });
+        // Fetch AI Recommendations
+        const aiContainer = document.getElementById('ai-recommendations-container');
+        const vehicleId = <?= $id ?>;
 
-    // Wishlist logic
-    const wishlistBtn = document.getElementById('wishlist-btn');
-    if (wishlistBtn) {
-        wishlistBtn.addEventListener('click', function() {
-            const vehicleId = this.getAttribute('data-id');
-            const isActive = this.classList.contains('active');
-            const action = isActive ? 'remove' : 'add';
-            
-            const formData = new FormData();
-            formData.append('vehicle_id', vehicleId);
-            formData.append('action', action);
-
-            fetch('../api/wishlist_action.php', {
-                method: 'POST',
-                body: formData
+        fetch(`../api/get_recommendations.php?id=${vehicleId}`)
+            .then(response => response.text())
+            .then(html => {
+                aiContainer.innerHTML = html;
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (data.in_wishlist) {
-                        this.classList.add('active');
-                        this.querySelector('i').classList.replace('fa-regular', 'fa-solid');
-                        this.querySelector('span').innerText = 'In Wishlist';
-                    } else {
-                        this.classList.remove('active');
-                        this.querySelector('i').classList.replace('fa-solid', 'fa-regular');
-                        this.querySelector('span').innerText = 'Add to Wishlist';
-                    }
+            .catch(error => {
+                console.error('Error fetching recommendations:', error);
+                aiContainer.innerHTML = '<p class="secure-note" style="text-align:center; padding: 2rem;">Unable to load recommendations.</p>';
+            });
+
+        // Wishlist logic
+        const wishlistBtn = document.getElementById('wishlist-btn');
+        if (wishlistBtn) {
+            wishlistBtn.addEventListener('click', function () {
+                const vehicleId = this.getAttribute('data-id');
+                const isActive = this.classList.contains('active');
+                const action = isActive ? 'remove' : 'add';
+
+                const formData = new FormData();
+                formData.append('vehicle_id', vehicleId);
+                formData.append('action', action);
+
+                fetch('../api/wishlist_action.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (data.in_wishlist) {
+                                this.classList.add('active');
+                                this.querySelector('i').classList.replace('fa-regular', 'fa-solid');
+                                this.querySelector('span').innerText = 'In Wishlist';
+                            } else {
+                                this.classList.remove('active');
+                                this.querySelector('i').classList.replace('fa-solid', 'fa-regular');
+                                this.querySelector('span').innerText = 'Add to Wishlist';
+                            }
+                        } else {
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        }
+
+        if (toggleBtn && extensionBox) {
+            toggleBtn.addEventListener('click', () => {
+                const isOpen = extensionBox.style.display !== 'none';
+                extensionBox.style.display = isOpen ? 'none' : 'block';
+                toggleBtn.textContent = isOpen ? '📅 Extend Booking' : '✖ Cancel';
+            });
+        }
+
+        if (extendDate && btnExtend) {
+            const dailyRateExt = parseFloat(btnExtend.dataset.rate);
+            const currentEnd = new Date(btnExtend.dataset.currentEnd);
+            const pricePreview = document.getElementById('ext-price-preview');
+            const extDaysEl = document.getElementById('ext-days');
+            const extCostEl = document.getElementById('ext-cost');
+            const extMsg = document.getElementById('ext-msg');
+
+            extendDate.addEventListener('change', () => {
+                const newEnd = new Date(extendDate.value);
+                if (newEnd > currentEnd) {
+                    const diffDays = Math.ceil((newEnd - currentEnd) / (1000 * 60 * 60 * 24));
+                    extDaysEl.textContent = diffDays;
+                    extCostEl.textContent = 'NPR ' + (diffDays * dailyRateExt).toLocaleString();
+                    pricePreview.style.display = 'flex';
                 } else {
-                    alert(data.message);
+                    pricePreview.style.display = 'none';
                 }
-            })
-            .catch(error => console.error('Error:', error));
-        });
-    }
-});
+            });
+
+            btnExtend.addEventListener('click', () => {
+                const newEnd = extendDate.value;
+                const bookingId = btnExtend.dataset.bookingId;
+
+                if (!newEnd || new Date(newEnd) <= currentEnd) {
+                    extMsg.textContent = 'Please pick a date after your current drop-off.';
+                    extMsg.className = 'ext-msg error';
+                    return;
+                }
+
+                btnExtend.disabled = true;
+                btnExtend.textContent = 'Processing…';
+
+                const fd = new FormData();
+                fd.append('booking_id', bookingId);
+                fd.append('new_end_date', newEnd);
+                fd.append('csrf_token', '<?= generateCsrfToken() ?>');
+
+                fetch('../api/extend_booking.php', { method: 'POST', body: fd })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.success) {
+                            
+                            extMsg.textContent = '✅ Booking extended to ' + data.new_end_date;
+                            showToast('Booking Extended!');
+                            extMsg.className = 'ext-msg success';
+                            // Update the displayed current drop-off
+                            document.querySelector('.ext-current strong').textContent = data.new_end_date;
+                            pricePreview.style.display = 'none';
+                            // Update min date for next extension
+                            const next = new Date(data.raw_end_date);
+                            next.setDate(next.getDate() + 1);
+                            extendDate.min = next.toISOString().split('T')[0];
+                            extendDate.value = next.toISOString().split('T')[0];
+                            btnExtend.dataset.currentEnd = data.raw_end_date;
+
+                            setTimeout(() => {
+                                extensionBox.style.display = 'none';
+                                toggleBtn.textContent = 'Extend Booking';
+                            }, 2000);
+                        } else {
+                            extMsg.textContent = '❌ ' + data.message;
+                            extMsg.className = 'ext-msg error';
+                        }
+                    })
+                    .catch(() => {
+                        extMsg.textContent = '❌ Network error. Please try again.';
+                        extMsg.className = 'ext-msg error';
+                    });
+            });
+        }
+    });
 </script>
 
 <script src="../../assets/js/ratings.js"></script>
