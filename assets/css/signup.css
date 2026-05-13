@@ -412,23 +412,71 @@ a:hover {
 
 
 /* ── Errors / Messages ──────────────────────────────────────── */
-.signup-errors {
-    background: rgba(224, 48, 48, 0.12);
-    border: 1px solid rgba(224, 48, 48, 0.4);
+.field-error {
+    color: #ff5050;
+    font-size: 11px;
+    font-weight: 500;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: slideInDown 0.2s ease forwards;
+}
+
+.signup-form__input.is-invalid {
+    border-color: #ff5050 !important;
+    background: rgba(255, 80, 80, 0.05) !important;
+}
+
+.toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toast {
+    background: var(--bg-card);
+    border-left: 4px solid var(--accent);
+    padding: 16px 24px;
     border-radius: var(--radius);
-    padding: 14px 18px;
-    margin-bottom: 24px;
-    list-style: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    animation: slideInRight 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
-.signup-errors li {
-    color: #ff8080;
+.toast--error {
+    border-left-color: #ff5050;
+}
+
+.toast__icon {
+    font-size: 18px;
+}
+
+.toast__msg {
     font-size: 13px;
-    line-height: 1.5;
+    font-weight: 500;
+    color: var(--text);
 }
 
-.signup-errors li+li {
-    margin-top: 4px;
+@keyframes slideInDown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.signup-errors {
+    display: none; /* Hide the old list at the top */
 }
 
 /* ── Success State ──────────────────────────────────────────── */

@@ -83,11 +83,12 @@
 .wishlist-text {
     font-family: var(--font-head);
     font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
+    font-weight: 800;
+    letter-spacing: 0.02em;
     color: #fff; /* CHANGED FROM RED TO WHITE */
     text-transform: uppercase;
 }
+
 
 .btn-wishlist-sidebar:hover {
     background: var(--accent);
@@ -155,8 +156,9 @@
     font-family: var(--font-head);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.02em;
     border-radius: var(--radius);
+
     transition: 0.3s;
 }
 

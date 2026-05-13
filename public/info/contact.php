@@ -27,7 +27,7 @@ include '../../includes/header.php';
 <link rel="stylesheet" href="../../assets/css/login.css">
 <style>
     .contact-container {
-        padding: 100px 20px;
+        padding: 80px 24px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -43,8 +43,10 @@ include '../../includes/header.php';
         box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
     .contact-card h1 {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 3rem;
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 2.5rem;
+
         margin-bottom: 0.5rem;
         color: var(--text-primary);
     }

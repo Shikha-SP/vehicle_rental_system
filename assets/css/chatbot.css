@@ -4,11 +4,11 @@
    ============================================================ */
 
 :root {
-    --chat-bg: rgba(22, 22, 22, 0.95);
-    --chat-accent: #e8192c; /* Racing Red */
-    --chat-border: rgba(255, 255, 255, 0.1);
-    --user-bubble: #2c2c2c;
-    --bot-bubble: rgba(232, 25, 44, 0.1);
+    --chat-bg: rgba(15, 15, 16, 0.95);
+    --chat-accent: #C0392B; /* Refined Crimson */
+    --chat-border: rgba(255, 255, 255, 0.08);
+    --user-bubble: #1e1e21;
+    --bot-bubble: rgba(192, 57, 43, 0.08);
 }
 
 /* ── Chat Widget Container ── */
@@ -32,7 +32,7 @@
     color: #fff;
     font-size: 24px;
     cursor: pointer;
-    box-shadow: 0 10px 25px rgba(232, 25, 44, 0.4);
+    box-shadow: 0 10px 25px rgba(192, 57, 43, 0.3);
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
     border: none;
     outline: none;
@@ -40,7 +40,7 @@
 
 .chatbot-toggle:hover {
     transform: scale(1.1);
-    box-shadow: 0 15px 35px rgba(232, 25, 44, 0.6);
+    box-shadow: 0 15px 35px rgba(192, 57, 43, 0.5);
 }
 
 .chatbot-toggle i {
@@ -80,7 +80,7 @@
 
 /* ── Chat Header ── */
 .chat-header {
-    background: linear-gradient(135deg, #111 0%, #222 100%);
+    background: linear-gradient(135deg, #0a0a0b 0%, #18181b 100%);
     padding: 20px;
     border-bottom: 1px solid var(--chat-border);
     display: flex;
@@ -98,7 +98,7 @@
     justify-content: center;
     color: #fff;
     font-size: 18px;
-    box-shadow: 0 0 15px rgba(232, 25, 44, 0.5);
+    box-shadow: 0 0 15px rgba(192, 57, 43, 0.4);
 }
 
 .chat-header-info h3 {
@@ -160,7 +160,7 @@
     background: var(--bot-bubble);
     color: #f0f0f0;
     border-bottom-left-radius: 2px;
-    border: 1px solid rgba(232, 25, 44, 0.2);
+    border: 1px solid rgba(192, 57, 43, 0.2);
 }
 
 .message.user {
@@ -177,7 +177,7 @@
     color: var(--chat-accent);
     text-decoration: none;
     font-weight: 600;
-    border-bottom: 1px solid rgba(232, 25, 44, 0.4);
+    border-bottom: 1px solid rgba(192, 57, 43, 0.4);
     transition: border-color 0.2s, opacity 0.2s;
 }
 .message.bot a.chat-link:hover {
@@ -188,7 +188,7 @@
 /* Vehicle recommendation cards */
 .chat-vehicle-card {
     background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(232, 25, 44, 0.25);
+    border: 1px solid rgba(192, 57, 43, 0.25);
     border-radius: 10px;
     padding: 10px 12px;
     margin: 6px 0;

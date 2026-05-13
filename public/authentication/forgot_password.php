@@ -13,10 +13,7 @@ if (!function_exists('e')) {
 
 session_start();
 
-$theme = 'light';
-if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
-    $theme = 'dark';
-}
+$theme = 'dark'; // Default to dark for premium feel
 
 $success = false;
 $errors = [];
@@ -25,8 +22,10 @@ $email = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = strtolower(trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)));
     
-    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Valid email is required.";
+    if (empty($email)) {
+        $errors['email'] = "Email is required.";
+    } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = "Please enter a valid email address.";
     }
     
     if (empty($errors)) {
@@ -39,99 +38,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = mysqli_stmt_get_result($stmt);
         
         if ($user = mysqli_fetch_assoc($result)) {
-            // Generate a secure, random token for the password reset link
-            $reset_token = bin2hex(random_bytes(32));
+            // Generate a 6-digit OTP for password reset
+            $otp = generateOTP(6);
             
-            // Delete any existing unused tokens for this user so only the newest link works
+            // Delete any existing unused tokens for this user
             $delete = mysqli_prepare($conn, "DELETE FROM password_resets WHERE user_id = ? AND used = 0");
             mysqli_stmt_bind_param($delete, "i", $user['id']);
             mysqli_stmt_execute($delete);
             
-            // Save the new token in the database and set it to expire in 1 hour
+            // Save the OTP in the database and set it to expire in 15 minutes
             $insert = mysqli_prepare($conn, 
-                "INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))"
+                "INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE))"
             );
-            mysqli_stmt_bind_param($insert, "is", $user['id'], $reset_token);
+            mysqli_stmt_bind_param($insert, "is", $user['id'], $otp);
             mysqli_stmt_execute($insert);
-            
-            // Build the full reset URL to send in the email
-            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-            $reset_link = $protocol . "://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . "/reset_password.php?token=" . $reset_token;
             
             // Prepare and send the password reset email using PHPMailer
             try {
                 $mail = createMailer();
                 $mail->addAddress($user['email'], $user['first_name'] . ' ' . $user['last_name']);
-                $mail->Subject = 'Reset Your Password - TD Rentals';
+                $mail->Subject = 'Your Password Reset Code - TD Rentals';
                 $mail->isHTML(true);
                 
                 // Build the HTML email template
                 $mail->Body = "
                     <html>
-                    <head>
-                        <style>
-                            body { font-family: Arial, sans-serif; }
-                            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                            .header { background: #2c3e50; color: white; padding: 20px; text-align: center; }
-                            .content { padding: 30px; background: #f9f9f9; }
-                            .button { 
-                                display: inline-block; 
-                                padding: 12px 24px; 
-                                background: #3498db; 
-                                color: white; 
-                                text-decoration: none; 
-                                border-radius: 4px;
-                                margin: 20px 0;
-                            }
-                            .footer { text-align: center; padding: 20px; font-size: 12px; color: #666; }
-                        </style>
-                    </head>
-                    <body>
-                        <div class='container'>
-                            <div class='header'>
-                                <h2>TD Rentals</h2>
+                    <body style='font-family: Arial, sans-serif; background-color: #f4f7f6; padding: 20px;'>
+                        <div style='max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; border: 1px solid #ddd;'>
+                            <h2 style='color: #2c3e50; text-align: center;'>TD RENTALS</h2>
+                            <h3 style='color: #333;'>Password Reset Request</h3>
+                            <p>Hello {$user['first_name']},</p>
+                            <p>We received a request to reset your password. Please use the following code to proceed:</p>
+                            <div style='background: #f4f7f6; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #e74c3c; margin: 20px 0; border-radius: 5px;'>
+                                {$otp}
                             </div>
-                            <div class='content'>
-                                <h3>Password Reset Request</h3>
-                                <p>Hello {$user['first_name']} {$user['last_name']},</p>
-                                <p>We received a request to reset your password. Click the button below to create a new password:</p>
-                                <p style='text-align: center;'>
-                                    <a href='{$reset_link}' class='button'>Reset Password</a>
-                                </p>
-                                <p>Or copy this link to your browser:</p>
-                                <p><a href='{$reset_link}'>{$reset_link}</a></p>
-                                <p>This link will expire in 1 hour.</p>
-                                <p>If you didn't request this, please ignore this email.</p>
-                            </div>
-                            <div class='footer'>
-                                <p>&copy; " . date('Y') . " TD Rentals. All rights reserved.</p>
-                            </div>
+                            <p>This code will expire in <strong>15 minutes</strong>.</p>
+                            <p>If you didn't request this, please ignore this email.</p>
+                            <hr style='border: 0; border-top: 1px solid #eee; margin: 20px 0;'>
+                            <p style='font-size: 12px; color: #777; text-align: center;'>&copy; " . date('Y') . " TD Rentals. All rights reserved.</p>
                         </div>
                     </body>
                     </html>
                 ";
                 
-                // Plain text version for email clients that don't support HTML
-                $mail->AltBody = "Password Reset Request\n\n" .
-                                 "Hello {$user['first_name']} {$user['last_name']},\n\n" .
-                                 "We received a request to reset your password.\n\n" .
-                                 "Click this link to reset your password:\n{$reset_link}\n\n" .
-                                 "This link will expire in 1 hour.\n\n" .
-                                 "If you didn't request this, please ignore this email.\n\n" .
-                                 "TD Rentals";
+                $mail->AltBody = "Hello {$user['first_name']}, your password reset code is: {$otp} (expires in 15 minutes)";
                 
                 $mail->send();
-                $success = true;
+                $_SESSION['reset_email'] = $email;
+                redirect('verify_password_otp.php');
                 
             } catch (Exception $e) {
-                // Log the exact error for debugging, but don't show technical details to the user
                 error_log("Password reset email failed: " . $mail->ErrorInfo);
                 $errors[] = "Unable to send reset email. Please try again later.";
             }
         } else {
-            // Security: Always show success regardless of whether the email exists.
-            // This prevents attackers from guessing which emails are registered.
-            $success = true;
+            // Security: Always redirect to verification page to prevent account enumeration
+            $_SESSION['reset_email'] = $email;
+            redirect('verify_password_otp.php');
         }
     }
 }
@@ -143,6 +106,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password — TD Rentals</title>
     <link rel="stylesheet" href="../../assets/css/login.css">
+    <script>
+      (function() {
+        const theme = localStorage.getItem('td-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
     <style>
         .login-success { 
             background: #d4edda; 
@@ -169,7 +138,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="login-page">
     <nav class="login-nav">
         <a href="../../public/landing_page.php" class="login-nav__logo">TD Rentals</a>
-        <a href="login.php" class="login-nav__signup">Back to Login</a>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <button id="themeToggleBtn" class="login-theme-toggle" aria-label="Toggle Theme">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+            <a href="login.php" class="login-nav__signup">Back to Login</a>
+        </div>
     </nav>
 
     <main class="login-main">
@@ -181,12 +156,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <span>Password?</span>
             </div>
             
-            <?php if (!empty($errors)): ?>
-                <ul class="login-errors">
+            <?php if (!empty($errors) && !isset($errors['email'])): ?>
+                <div class="toast-container">
                     <?php foreach ($errors as $error): ?>
-                        <li><?= e($error) ?></li>
+                        <div class="toast toast--error">
+                            <span class="toast__icon">⚠️</span>
+                            <span class="toast__msg"><?= e($error) ?></span>
+                        </div>
                     <?php endforeach; ?>
-                </ul>
+                </div>
             <?php endif; ?>
             
             <?php if ($success): ?>
@@ -199,8 +177,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <form class="login-form" method="POST" novalidate>
                     <div class="login-form__group">
                         <label class="login-form__label" for="email">Email Address</label>
-                        <input class="login-form__input" type="email" id="email" name="email"
+                        <input class="login-form__input <?= isset($errors['email']) ? 'is-invalid' : '' ?>" type="email" id="email" name="email"
                                placeholder="driver@velocity.com" value="<?= e($email) ?>" required>
+                        <?php if (isset($errors['email'])): ?>
+                            <span class="field-error">⚠️ <?= e($errors['email']) ?></span>
+                        <?php endif; ?>
                     </div>
                     
                     <button class="login-form__submit" type="submit">
@@ -211,5 +192,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </main>
 </div>
+
+<script>
+// Auto-dismiss toasts after 5 seconds
+document.querySelectorAll('.toast').forEach(toast => {
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(20px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 5000);
+});
+
+// Theme Toggle Logic
+const themeBtn = document.getElementById('themeToggleBtn');
+if (themeBtn) {
+    themeBtn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('td-theme', next);
+    });
+}
+</script>
 </body>
 </html>
