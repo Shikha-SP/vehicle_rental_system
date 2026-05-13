@@ -536,6 +536,8 @@ html[data-theme="light"] .secure-note {
     text-decoration: underline;
 }
 .review-card {
+    position: relative;
+    padding-left: 0;
     border-radius: 10px;
     padding: 1rem 1.2rem;
     margin-top: 1rem;
@@ -583,6 +585,83 @@ html[data-theme="light"] .secure-note {
     text-align: center;
     padding: 1rem 0;
 }
+/* Vehicle owner reply */
+.owner-reply {
+    position: relative;
+    padding-left: 0;
+    margin-left: 24px;
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.owner-reply-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    color: #fafafa;
+}
+
+.owner-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.btn-toggle-reply {
+    margin-top: 8px;
+    border-radius: 6px;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    background: var(--clr-accent);
+    color: #fff;
+}
+
+.btn-toggle-reply:hover { 
+    background: var(--clr-accent-hv);
+    transform: translateY(-2px);
+}
+
+.reply-input-box {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-color: #333333;
+}
+
+.reply-input-box textarea {
+    width: 100%;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 0.9rem;
+    resize: vertical;
+    border: 1px solid var(--clr-light-gray);
+    background-color: var(--clr-dark-bg);
+    color: #888888;
+}
+
+.btn-submit-reply {
+    align-self: flex-end;
+    background: var(--clr-accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-submit-reply:hover { 
+    background: var(--clr-accent-hv);
+    transform: translateY(-2px);
+}
+
+.reply-msg { font-size: 0.82rem; }
+
 /* book extention */
 .extension-box {
     margin-top: 1.2rem;
