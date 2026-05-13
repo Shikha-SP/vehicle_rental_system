@@ -1,19 +1,20 @@
 /* =============================================================================
    Homepage.css — Vehicle Rental System
-   Design: Cinematic dark theme, red accent var(--accent-red)
+   Refined: muted crimson accent, warm surfaces, Inter
 ============================================================================= */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
+
 :root {
-    --bg-dark: #09090b;
-    --text-main: #ffffff;
-    --text-muted: #888888;
-    --accent-red: #e62020;
-    --accent-hover: #ff3333;
-    --card-bg: #141416;
-    --card-hover: #1c1c1f;
-    --nav-text: #b3b3b3;
+    --bg-dark:      #0f0f10;
+    --text-main:    #F5F4F2;
+    --text-muted:   #8A8A8E;
+    --accent-red:   #C0392B;
+    --accent-hover: #A93226;
+    --card-bg:      #18181b;
+    --card-hover:   #222226;
+    --nav-text:     #8A8A8E;
 }
 
 html[data-theme="light"] {
@@ -53,11 +54,12 @@ a {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
-    padding: 0 5%;
+    padding: 0 24px;
     width: 100%;
 }
+
 
 /* =============================================================================
    1. HERO SECTION
@@ -173,7 +175,7 @@ a {
 
 .btn-red:hover {
     background: var(--accent-hover);
-    box-shadow: 0 6px 20px rgba(230, 32, 32, 0.4);
+    box-shadow: 0 6px 20px rgba(192, 57, 43, 0.32);
 }
 
 .btn-ghost {
@@ -207,9 +209,10 @@ html[data-theme="light"] .btn-ghost:hover {
    3. GALLERY SECTION
 ============================================================================= */
 .gallery-section {
-    padding: 64px 0;
+    padding: 80px 0;
     background: var(--card-bg);
 }
+
 
 .section-label {
     font-size: 0.65rem;
@@ -231,8 +234,9 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .section-header h2 {
     font-size: 1.1rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+
     text-transform: uppercase;
 }
 
@@ -258,17 +262,18 @@ html[data-theme="light"] .btn-ghost:hover {
 .car-card {
     flex: 1;
     background: var(--card-bg);
-    border: 1px solid #232323;
-    border-radius: 3px;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 5px;
     overflow: hidden;
     position: relative;
     display: flex;
     flex-direction: column;
-    transition: border-color 0.25s ease;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .car-card:hover {
-    border-color: var(--accent-red);
+    border-color: rgba(192,57,43,0.45);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.45);
 }
 
 /* Type badge (DB: type field) */
@@ -276,15 +281,15 @@ html[data-theme="light"] .btn-ghost:hover {
     position: absolute;
     top: 11px;
     left: 11px;
-    background: rgba(230, 32, 32, 0.92);
-    color: var(--text-main);
+    background: rgba(192, 57, 43, 0.90);
+    color: #fff;
     font-size: 0.58rem;
     font-weight: 700;
     letter-spacing: 0.14em;
     padding: 4px 9px;
     text-transform: uppercase;
     z-index: 1;
-    border-radius: 1px;
+    border-radius: 3px;
 }
 
 /* Car image wrapper (DB: image field) */
@@ -305,9 +310,8 @@ html[data-theme="light"] .btn-ghost:hover {
 }
 
 .car-card:hover .card-img-wrapper img {
-    transform: scale(1.5);
-    /* Increase this number to zoom more 3 display car */
-    filter: drop-shadow(0 0 12px rgba(230, 32, 32, 0.6));
+    transform: scale(1.4);
+    filter: drop-shadow(0 0 12px rgba(192, 57, 43, 0.45));
 }
 
 .no-img {
@@ -334,7 +338,8 @@ html[data-theme="light"] .btn-ghost:hover {
     display: flex;
     align-items: center;
     gap: 8px;
-    letter-spacing: 0.02em;
+    letter-spacing: -0.01em;
+
 }
 
 .badge {
@@ -344,7 +349,7 @@ html[data-theme="light"] .btn-ghost:hover {
     font-size: 0.58rem;
     font-weight: 700;
     letter-spacing: 0.06em;
-    border-radius: 1px;
+    border-radius: 3px;
 }
 
 /* Model name (DB: name) */
@@ -428,7 +433,8 @@ html[data-theme="light"] .btn-ghost:hover {
     color: var(--text-muted);
     font-size: 0.7rem;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.02em;
+
     text-transform: uppercase;
     border-right: 1px solid #222;
     white-space: nowrap;
@@ -453,9 +459,10 @@ html[data-theme="light"] .btn-ghost:hover {
    4. PROMOTIONAL BANNER
 ============================================================================= */
 .red-banner {
-    background: var(--accent-red);
-    padding: 48px 5%;
+    background: linear-gradient(135deg, #A93226 0%, #C0392B 60%, #B03228 100%);
+    padding: 60px 0;
 }
+
 
 .banner-flex {
     display: flex;
@@ -469,7 +476,8 @@ html[data-theme="light"] .btn-ghost:hover {
     font-size: 1.8rem;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: -0.01em;
+
     margin-bottom: 6px;
 }
 
@@ -481,22 +489,21 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .btn-white-outline {
     display: inline-block;
-    border: 2px solid rgba(255, 255, 255, 0.85);
-    color: var(--text-main);
+    border: 1.5px solid rgba(255,255,255,0.75);
+    color: #fff;
     background: transparent;
     padding: 13px 30px;
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    border-radius: 2px;
+    border-radius: 4px;
     white-space: nowrap;
-    transition: all 0.2s ease;
+    transition: all 0.22s ease;
 }
 
 .btn-white-outline:hover {
-    background: #fff;
-    color: var(--accent-red);
+    background: rgba(255,255,255,0.12);
     border-color: #fff;
 }
 
@@ -504,9 +511,10 @@ html[data-theme="light"] .btn-ghost:hover {
    5. SHOWROOM SECTION
 ============================================================================= */
 .showroom-section {
-    padding: 72px 5%;
+    padding: 80px 0;
     background: var(--bg-dark);
 }
+
 
 .grid-two {
     display: flex;
@@ -673,8 +681,15 @@ html[data-theme="light"] .btn-ghost:hover {
    Note: color overrides now handled by the html[data-theme="light"] :root block above.
    Only keeping border/structural overrides that variables don't cover.
 ============================================================================= */
-html[data-theme="light"] .brand-tab { border-right: 1px solid #ddd; }
-html[data-theme="light"] .brand-filters { border-top: 1px solid #ddd; }
+html[data-theme="light"] .contact-details li span { color: #4B4B4F; }
+html[data-theme="light"] .showroom-info > p { color: #55555A; }
+html[data-theme="light"] .brand-tab { border-right: 1px solid rgba(0,0,0,0.1); }
+html[data-theme="light"] .brand-filters { border-top: 1px solid rgba(0,0,0,0.1); }
 html[data-theme="light"] .brand-tab:hover { color: var(--accent-red); background: rgba(0,0,0,0.04); }
-html[data-theme="light"] .section-header { border-bottom: 1px solid #ddd; }
-html[data-theme="light"] .specs { border-top: 1px solid #ddd; }
+html[data-theme="light"] .model-name { color: #55555A; }
+html[data-theme="light"] .spec-item { color: #55555A; }
+html[data-theme="light"] .no-img { color: #9A9A9E; }
+html[data-theme="light"] .section-header { border-bottom: 1px solid rgba(0,0,0,0.1); }
+html[data-theme="light"] .specs { border-top: 1px solid rgba(0,0,0,0.1); }
+html[data-theme="light"] .car-card { border-color: rgba(0,0,0,0.1); }
+html[data-theme="light"] .red-banner { background: linear-gradient(135deg, #8C2016 0%, #A93226 100%); }

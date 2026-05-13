@@ -39,13 +39,13 @@
     width: 100%;
     max-width: 440px;
     height: 250px;
-    background: linear-gradient(135deg, #1d1d1d 0%, #111 100%);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: linear-gradient(135deg, #1e1e22 0%, #14141a 100%);
+    border: 1px solid rgba(255,255,255,0.09);
     border-radius: 20px;
     padding: 2rem;
     position: relative;
     margin-bottom: 3rem;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    box-shadow: 0 24px 56px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -59,7 +59,7 @@
     right: -10%;
     width: 200px;
     height: 200px;
-    background: radial-gradient(circle, rgba(232, 25, 44, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(192, 57, 43, 0.12) 0%, transparent 70%);
 }
 
 .card-chip {
@@ -131,41 +131,43 @@
 
 .payment-form input {
     width: 100%;
-    background: var(--clr-surface);
-    border: 1px solid var(--clr-border);
+    background: #18181b;
+    border: 1px solid rgba(255,255,255,0.09);
     padding: 14px;
-    color: var(--clr-text);
+    color: #F5F4F2;
     border-radius: 8px;
     font-size: 15px;
+    transition: border-color 0.22s ease, box-shadow 0.22s ease;
 }
 
 .payment-form input:focus {
-    border-color: var(--clr-accent);
+    border-color: #C0392B;
     outline: none;
-    box-shadow: 0 0 0 2px rgba(232,25,44,0.1);
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.12);
 }
 
 .btn-pay {
     width: 100%;
-    background: var(--clr-accent);
+    background: #C0392B;
     color: #fff;
     border: none;
-    padding: 18px;
+    padding: 17px;
     border-radius: 8px;
-    font-weight: 700;
+    font-weight: 600;
     font-size: 14px;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.1em;
     cursor: pointer;
-    transition: 0.3s;
+    transition: background 0.22s ease, transform 0.15s ease, box-shadow 0.22s ease;
     margin-top: 1rem;
 }
 
 .btn-pay:hover {
-    background: var(--clr-accent-hv);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    background: #A93226;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(192,57,43,0.3);
 }
+.btn-pay:active { transform: translateY(0); box-shadow: none; }
 
 .encryption-note {
     text-align: center;
@@ -240,10 +242,10 @@
 .price-line.grand-total {
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--clr-border);
+    border-top: 1px solid rgba(255,255,255,0.09);
     font-size: 20px;
     font-weight: 700;
-    color: var(--clr-accent);
+    color: #C0392B;
 }
 
 /* ── Mobile ── */

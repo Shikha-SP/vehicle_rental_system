@@ -36,7 +36,8 @@ if ($bRes) {
 require_once __DIR__ . '/../../includes/header.php';
 ?>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+
 <link rel="stylesheet" href="../../assets/css/admin.css">
 
 <div class="admin-wrapper">
@@ -129,7 +130,8 @@ require_once __DIR__ . '/../../includes/header.php';
 <!-- Timeout Modal -->
 <div id="timeoutModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; align-items:center; justify-content:center;">
     <div class="modal-content" style="background:#111; border:1px solid #333; padding:2rem; border-radius:12px; width:400px; max-width:90%;">
-        <h3 style="margin-top:0; color:#f59e0b; font-family:'Bebas Neue',sans-serif; font-size:2rem;">Set Timeout Duration</h3>
+        <h3 style="margin-top:0; color:#f59e0b; font-family:'Inter',sans-serif; font-weight:800; font-size:1.6rem; letter-spacing:0.02em;">Set Timeout Duration</h3>
+
         <p style="color:#aaa; font-size:0.9rem; margin-bottom:1.5rem;">The user will be temporarily suspended for the specified number of days.</p>
         <input type="hidden" id="timeoutUserId">
         <div style="margin-bottom:1.5rem; display:flex; gap:1rem;">

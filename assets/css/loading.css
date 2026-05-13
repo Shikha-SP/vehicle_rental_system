@@ -40,8 +40,10 @@
 }
 
 .loader-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 3rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  font-size: 2.2rem;
+
   color: #fff;
   letter-spacing: 2px;
 }

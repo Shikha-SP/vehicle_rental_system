@@ -3,25 +3,27 @@
    Dark automotive theme — full-bleed centered layout
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
-/* ── Variables ─────────────────────────────────────────────── */
+
+/* ── Variables ────────────────────────────────────────────────────── */
 :root {
-    --bg: #0e0e0e;
-    --bg-card: #161616;
-    --bg-input: #1e1e1e;
-    --border: #2c2c2c;
-    --border-focus: #e03030;
-    --accent: #e03030;
-    --accent-dim: rgba(224, 48, 48, 0.18);
-    --accent-glow: rgba(224, 48, 48, 0.30);
-    --text: #f0f0f0;
-    --text-muted: #777777;
-    --text-label: #999999;
-    --font-head: 'Barlow Condensed', sans-serif;
-    --font-body: 'Barlow', sans-serif;
-    --radius: 4px;
-    --t: 0.22s ease;
+    --bg:           #0f0f10;
+    --bg-card:      #18181b;
+    --bg-input:     #242428;
+    --border:       rgba(255,255,255,0.09);
+    --border-focus: #C0392B;
+    --accent:       #C0392B;
+    --accent-dim:   rgba(192, 57, 43, 0.14);
+    --accent-glow:  rgba(192, 57, 43, 0.24);
+    --text:         #F5F4F2;
+    --text-muted:   #8A8A8E;
+    --text-label:   #8A8A8E;
+    --font-head:    'Inter', sans-serif;
+    --font-body:    'Inter', sans-serif;
+
+    --radius:       6px;
+    --t:            0.22s ease;
 }
 
 /* ── Reset ──────────────────────────────────────────────────── */
@@ -74,7 +76,7 @@ a:hover {
     z-index: 0;
 }
 
-/* Diagonal red slash accent */
+/* Diagonal accent slash */
 .login-page::after {
     content: '';
     position: fixed;
@@ -85,8 +87,8 @@ a:hover {
     background: linear-gradient(135deg,
             transparent 0%,
             transparent 48%,
-            rgba(224, 48, 48, 0.06) 48%,
-            rgba(224, 48, 48, 0.06) 52%,
+            rgba(192, 57, 43, 0.04) 48%,
+            rgba(192, 57, 43, 0.04) 52%,
             transparent 52%);
     transform: skewX(-8deg);
     pointer-events: none;
@@ -108,7 +110,8 @@ a:hover {
     font-family: var(--font-head);
     font-weight: 800;
     font-size: 20px;
-    letter-spacing: 0.08em;
+    letter-spacing: -0.01em;
+
     text-transform: uppercase;
     color: var(--accent);
     text-decoration: none;
@@ -118,7 +121,8 @@ a:hover {
     font-family: var(--font-head);
     font-size: 13px;
     font-weight: 600;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.02em;
+
     text-transform: uppercase;
     color: var(--text-muted);
     text-decoration: none;
@@ -182,7 +186,8 @@ a:hover {
     font-weight: 800;
     font-size: clamp(40px, 7vw, 58px);
     line-height: 0.95;
-    letter-spacing: 0.04em;
+    letter-spacing: -0.01em;
+
     text-transform: uppercase;
 }
 
@@ -217,7 +222,8 @@ a:hover {
     font-family: var(--font-head);
     font-size: 11px;
     font-weight: 600;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.05em;
+
     text-transform: uppercase;
     color: var(--text-label);
     margin-bottom: 8px;
@@ -294,15 +300,16 @@ a:hover {
 /* Submit button */
 .login-form__submit {
     width: 100%;
-    padding: 16px 24px;
-    background: linear-gradient(135deg, #c82020 0%, #f04040 100%);
+    padding: 15px 24px;
+    background: var(--accent);
     border: none;
     border-radius: var(--radius);
     color: #fff;
-    font-family: var(--font-head);
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+
     text-transform: uppercase;
     cursor: pointer;
     display: flex;
@@ -311,7 +318,7 @@ a:hover {
     gap: 10px;
     position: relative;
     overflow: hidden;
-    transition: transform var(--t), box-shadow var(--t), opacity var(--t);
+    transition: background var(--t), transform var(--t), box-shadow var(--t);
     margin-bottom: 28px;
 }
 
@@ -323,24 +330,18 @@ a:hover {
     left: -75%;
     width: 50%;
     height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.12), transparent);
     transform: skewX(-20deg);
     transition: left 0.5s ease;
 }
-
-.login-form__submit:hover::after {
-    left: 140%;
-}
+.login-form__submit:hover::after { left: 140%; }
 
 .login-form__submit:hover {
+    background: #A93226;
     transform: translateY(-2px);
-    box-shadow: 0 10px 32px var(--accent-glow);
+    box-shadow: 0 8px 28px rgba(192,57,43,0.3);
 }
-
-.login-form__submit:active {
-    transform: translateY(0);
-    box-shadow: none;
-}
+.login-form__submit:active { transform: translateY(0); box-shadow: none; }
 
 /* ── Divider ────────────────────────────────────────────────── */
 .login-divider {
@@ -350,7 +351,8 @@ a:hover {
     margin-bottom: 20px;
     color: var(--text-muted);
     font-size: 11px;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.05em;
+
     text-transform: uppercase;
 }
 
@@ -383,28 +385,72 @@ a:hover {
     border-color: var(--accent);
 }
 
-/* ── Errors ─────────────────────────────────────────────────── */
-.login-errors {
-    background: rgba(224, 48, 48, 0.10);
-    border: 1px solid rgba(224, 48, 48, 0.35);
+/* ── Errors / Messages ──────────────────────────────────────── */
+.field-error {
+    color: #ff5050;
+    font-size: 11px;
+    font-weight: 500;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: slideInDown 0.2s ease forwards;
+}
+
+.login-form__input.is-invalid {
+    border-color: #ff5050 !important;
+    background: rgba(255, 80, 80, 0.05) !important;
+}
+
+.toast-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toast {
+    background: var(--bg-card);
+    border-left: 4px solid var(--accent);
+    padding: 16px 24px;
     border-radius: var(--radius);
-    padding: 13px 18px;
-    margin-bottom: 22px;
-    list-style: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    animation: slideInRight 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
-.login-errors li {
-    color: #ff8080;
+.toast--error {
+    border-left-color: #ff5050;
+}
+
+.toast__icon {
+    font-size: 18px;
+}
+
+.toast__msg {
     font-size: 13px;
-    line-height: 1.5;
+    font-weight: 500;
+    color: var(--text);
 }
 
-.login-errors li+li {
-    margin-top: 4px;
+@keyframes slideInDown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.login-errors a {
-    color: #ff9090;
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.login-errors {
+    display: none; /* Hide the old list at the top */
 }
 
 /* ── Trust strip ────────────────────────────────────────────── */
@@ -509,15 +555,15 @@ html[data-theme="light"] .login-theme-toggle .moon-icon { display: none; }
    ============================================================ */
 html[data-theme="light"],
 html[data-theme="light"] body {
-    --bg:           #f4f6f8;
-    --bg-card:      #ffffff;
-    --bg-input:     #ffffff;
-    --border:       #d1d5db;
-    --border-focus: #e03030;
-    --text:         #111111;
-    --text-muted:   #555555;
-    --text-label:   #6b7280;
-    --accent-dim:   rgba(224, 48, 48, 0.12);
+    --bg:           #F5F4F2;
+    --bg-card:      #FFFFFF;
+    --bg-input:     #FFFFFF;
+    --border:       rgba(0,0,0,0.1);
+    --border-focus: #C0392B;
+    --text:         #18181b;
+    --text-muted:   #4B4B4F;
+    --text-label:   #65656A;
+    --accent-dim:   rgba(192,57,43,0.1);
     background: var(--bg);
     color: var(--text);
 }

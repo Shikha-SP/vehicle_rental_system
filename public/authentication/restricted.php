@@ -91,15 +91,14 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
             color: #f87171;
             font-size: 1rem;
             line-height: 1.5;
-            text-align: left;
-        }
         .days-left {
-            font-size: 2.5rem;
-            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            font-family: 'Inter', sans-serif;
             font-weight: 800;
             color: #fff;
             margin: 0.5rem 0;
             text-align: center;
+            letter-spacing: -0.02em;
         }
         .form-group textarea {
             width: 100%;

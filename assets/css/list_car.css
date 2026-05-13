@@ -1,23 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 /* ── Variables ───────────────────────────────────────────────── */
 :root {
-    --bg:           #0e0e0e;
-    --bg-card:      #161616;
-    --bg-input:     #1e1e1e;
-    --border:       #2c2c2c;
-    --border-focus: #e03030;
-    --accent:       #e03030;
-    --accent-dim:   rgba(224, 48, 48, 0.15);
-    --accent-glow:  rgba(224, 48, 48, 0.30);
-    --text:         #f0f0f0;
-    --text-muted:   #777777;
-    --text-label:   #999999;
-    --font-head:    'Barlow Condensed', sans-serif;
-    --font-body:    'Barlow', sans-serif;
-    --radius:       4px;
+    --bg:           #0f0f10;
+    --bg-card:      #18181b;
+    --bg-input:     #242428;
+    --border:       rgba(255,255,255,0.08);
+    --border-focus: #C0392B;
+    --accent:       #C0392B;
+    --accent-dim:   rgba(192, 57, 43, 0.14);
+    --accent-glow:  rgba(192, 57, 43, 0.24);
+    --text:         #F5F4F2;
+    --text-muted:   #8A8A8E;
+    --text-label:   #8A8A8E;
+    --font-head:    'Inter', sans-serif;
+    --font-body:    'Inter', sans-serif;
+    --radius:       6px;
     --t:            0.22s ease;
 }
+
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -25,68 +26,51 @@
 .lc-page {
     min-height: 100vh;
     background: var(--bg);
-    background-image: repeating-linear-gradient(
-        90deg, transparent, transparent 119px,
-        rgba(255,255,255,0.018) 120px
-    );
     color: var(--text);
     font-family: var(--font-body);
-    padding: 56px 32px 80px;
+    padding: 0 0 120px; /* Increased bottom padding */
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 40px;
+    gap: 0;
 }
 
+.lc-page > .page-hero {
+    width: 100%;
+    margin-bottom: 80px; /* Increased gap to form */
+}
+
+
+
+
 /* ── Hero ────────────────────────────────────────────────────── */
-.lc-hero {
-    text-align: center;
-    max-width: 560px;
-    animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
-}
-.lc-hero__label {
-    font-family: var(--font-head);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 12px;
-}
-.lc-hero__title {
-    font-family: var(--font-head);
-    font-weight: 800;
-    font-size: clamp(44px, 7vw, 68px);
-    line-height: 0.93;
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 16px;
-}
-.lc-hero__title--accent { color: var(--accent); }
-.lc-hero__sub { font-size: 15px; color: var(--text-muted); line-height: 1.65; }
+/* Legacy Hero removed - now using global .page-hero */
+
 
 /* ── Two-column form grid ────────────────────────────────────── */
 .lc-form {
     width: 100%;
-    max-width: 1100px;
+    max-width: 1400px; /* Matched to global container-max */
+    padding: 0 40px; /* Increased side padding */
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 60px; /* Increased gap to balance wider layout */
     align-items: start;
 }
-.lc-col { display: flex; flex-direction: column; gap: 16px; }
+
+.lc-col { display: flex; flex-direction: column; gap: 40px; } /* Increased gap between sections */
+
 
 /* ── Section cards ───────────────────────────────────────────── */
 .lc-section {
     background: var(--bg-card);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 24px 26px 28px;
+    border-radius: 12px;
+    padding: 40px; /* Much more spacious padding */
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 24px;
+
     animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
 }
 .lc-col:first-child .lc-section:nth-child(1) { animation-delay: 0.08s; }
@@ -118,8 +102,9 @@
 }
 
 /* ── Field & label ───────────────────────────────────────────── */
-.lc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.lc-field { display: flex; flex-direction: column; gap: 7px; }
+.lc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.lc-field { display: flex; flex-direction: column; gap: 10px; }
+
 .lc-label {
     font-family: var(--font-head);
     font-size: 11px;
@@ -342,7 +327,7 @@
     gap: 12px;
     width: 100%;
     padding: 16px 24px;
-    background: linear-gradient(135deg, #c82020 0%, #f04040 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, #E74C3C 100%);
     border: none;
     border-radius: var(--radius);
     color: #fff;

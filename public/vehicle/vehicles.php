@@ -128,17 +128,18 @@ if (isset($_SESSION['user_id'])) {
 }
 ?>
 <?php require_once '../../includes/header.php'; ?>
+<link rel="stylesheet" href="../../assets/css/style.css">
 <link rel="stylesheet" href="../../assets/css/vehicles.css">
 <link rel="stylesheet" href="../../assets/css/wishlist.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <main class="vehicles-page">
-    <div class="vehicles-hero">
-        <div class="vehicles-hero-content">
+    <section class="page-hero">
+        <div class="page-hero-content">
             <h1>Available Vehicles</h1>
             <p>Browse our collection of premium rental vehicles</p>
         </div>
-    </div>
+    </section>
 
     <div class="vehicles-container">
         <div class="vehicles-search-section">

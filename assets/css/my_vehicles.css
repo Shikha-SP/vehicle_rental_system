@@ -3,7 +3,8 @@
    Dark automotive theme — Matches bookings.php UI 
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 
 :root {
     --bg: #0e0e0e;
@@ -16,12 +17,13 @@
 }
 
 .my-vehicles {
-    max-width: 1200px;
+    max-width: 1440px;
     margin: 0 auto;
-    padding: 5rem 40px;
+    padding: 80px 24px;
     min-height: 80vh;
     width: 100%;
 }
+
 
 /* Alerts */
 .alert {
@@ -60,11 +62,14 @@
 }
 
 .empty-state h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 3.5rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 2.5rem;
     margin-bottom: 1rem;
-    color: var(--clr-text);
+    color: #fff;
+    letter-spacing: -0.02em;
 }
+
 
 .empty-state p {
     font-family: 'Inter', sans-serif;
@@ -166,12 +171,14 @@
 }
 
 .card-content h3 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.2rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 1.6rem;
     margin-bottom: 1.2rem;
     color: #fff;
-    letter-spacing: 0.02em;
+    letter-spacing: -0.01em;
 }
+
 
 .card-specs {
     display: flex;
@@ -297,13 +304,17 @@
     justify-content: center;
     background: linear-gradient(135deg, #c82020 0%, #f04040 100%);
     color: #fff;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.2rem;
-    letter-spacing: 0.1em;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     text-decoration: none;
     border-radius: 8px;
+    padding: 12px 24px;
     transition: transform 0.2s, box-shadow 0.2s;
 }
+
 
 .my-vehicles .btn-primary:hover {
     transform: translateY(-2px);
