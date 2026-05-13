@@ -349,8 +349,11 @@ header nav {
 .theme-toggle .moon-icon { display: none; }
 .theme-toggle .sun-icon { display: block; }
 
-html[data-theme="light"] .theme-toggle .moon-icon { display: block; }
-html[data-theme="light"] .theme-toggle .sun-icon { display: none; }
+/* Theme toggle icon swap */
+html[data-theme="dark"]  .theme-toggle .sun-icon  { display: none; }
+html[data-theme="dark"]  .theme-toggle .moon-icon { display: block; }
+html[data-theme="light"] .theme-toggle .sun-icon  { display: block; }
+html[data-theme="light"] .theme-toggle .moon-icon { display: none; }
 
 /* Light Mode Overrides */
 html[data-theme="light"] {

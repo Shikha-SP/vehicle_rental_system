@@ -86,14 +86,14 @@ body, html {
 }
 
 .logout-box h2 {
-    color: #fff;
+    color: var(--clr-text);
     font-size: 1.5rem;
     font-weight: 700;
     margin: 0 0 12px 0;
 }
 
 .logout-box p {
-    color: #777;
+    color: var(--clr-muted);
     font-size: 0.95rem;
     line-height: 1.6;
     margin-bottom: 32px;
@@ -118,7 +118,7 @@ body, html {
 /* Solid Red - High Contrast */
 .btn-yes {
     background: var(--primary-red);
-    color: #fff;
+    color: var(--clr-text);
     border: none;
 }
 
@@ -128,22 +128,23 @@ body, html {
 
 /* Minimal Gray - Ghost Style */
 .btn-no {
-    background: #222;
-    color: #eee;
-    border: 1px solid #333;
+    background: var(--clr-surface, #222);
+    color: var(--clr-text, #eee);
+    border: 1px solid var(--clr-border, #333);
 }
 
 .btn-no:hover {
-    background: #2a2a2a;
-    border-color: #444;
+    background: var(--clr-bg, #2a2a2a);
+    border-color: rgba(255,255,255,0.2);
 }
 
 /* ============================================================
    LIGHT MODE OVERRIDES
+   Most colors handled by vars. Only keeping structural/shadow specifics.
    ============================================================ */
 html[data-theme="light"],
 html[data-theme="light"] body {
-    background-color: #f0f2f5;
+    background-color: var(--clr-bg, #f0f2f5);
 }
 
 html[data-theme="light"] .overlay {
@@ -155,22 +156,11 @@ html[data-theme="light"] .grid-overlay {
 }
 
 html[data-theme="light"] .logout-box {
-    background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.1);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-}
-
-html[data-theme="light"] .logout-box h2 {
-    color: #111111 !important;
-}
-
-html[data-theme="light"] .logout-box p {
-    color: #555555;
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
 html[data-theme="light"] .btn-no {
-    background: #ffffff;
-    color: #333333;
     border-color: #dddddd;
 }
 

@@ -59,7 +59,7 @@
 
 .badge.red {
     background: var(--clr-accent);
-    color: #fff;
+    color: var(--clr-text);
     padding: 4px 12px;
     font-size: 11px;
     font-weight: 700;
@@ -108,7 +108,7 @@
 
 .spec-card:hover {
     border-color: rgba(255, 255, 255, 0.15);
-    background: #181818;
+    background: var(--clr-surface);
 }
 
 .spec-label {
@@ -122,7 +122,7 @@
 .spec-value {
     font-size: 1.25rem;
     font-weight: 500;
-    color: #fff;
+    color: var(--clr-text);
 }
 
 .spec-value small {
@@ -138,7 +138,7 @@
 }
 
 .vehicle-description p {
-    color: #ccc;
+    color: var(--clr-muted);
     font-size: 16px;
     line-height: 1.6;
     margin-bottom: 2rem;
@@ -148,7 +148,7 @@
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    background: #111;
+    background: var(--clr-surface);
     padding: 12px 20px;
     border-radius: 40px;
     border: 1px solid var(--clr-border);
@@ -160,10 +160,12 @@
     border-radius: 50%;
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
-
+html[data-theme="light"] .swatch {
+    border: 2px solid rgba(0, 0, 0, 0.25);
+}
 /* ── Booking Sidebar ── */
 .booking-card {
-    background: #181818;
+    background: var(--clr-surface);
     border: 1px solid var(--clr-border);
     border-radius: 12px;
     padding: 2rem;
@@ -188,7 +190,7 @@
 .rate .amount {
     font-size: 2.25rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--clr-text);
 }
 
 .rate .period {
@@ -198,7 +200,7 @@
 
 .booking-form .form-group {
     margin-bottom: 1.25rem;
-    color: #555555;
+    color: var(--clr-muted);
 }
 
 .booking-form label {
@@ -213,10 +215,10 @@
 
 .booking-form input {
     width: 100%;
-    background: #222;
-    border: 1px solid #333;
+    background: var(--clr-bg);
+    border: 1px solid var(--clr-border);
     padding: 12px;
-    color: #fff;
+    color: var(--clr-text);
     border-radius: 6px;
     outline: none;
 }
@@ -226,7 +228,7 @@
 }
 
 .price-summary {
-    background: #121212;
+    background: var(--clr-bg);
     padding: 1rem;
     border-radius: 8px;
     margin: 1.5rem 0;
@@ -236,15 +238,15 @@
     display: flex;
     justify-content: space-between;
     font-size: 13px;
-    color: #888;
+    color: var(--clr-muted);
     margin-bottom: 8px;
 }
 
 .summary-line.total {
     margin-top: 12px;
     padding-top: 12px;
-    border-top: 1px solid #222;
-    color: #fff;
+    border-top: 1px solid var(--clr-border);
+    color: var(--clr-text);
     font-weight: 700;
     font-size: 15px;
 }
@@ -252,7 +254,7 @@
 .btn-book {
     width: 100%;
     background: var(--clr-accent);
-    color: #fff;
+    color: var(--clr-text);
     border: none;
     padding: 16px;
     font-size: 13px;
@@ -307,7 +309,45 @@
     color: #f87171;
     border: 1px solid rgba(220, 38, 38, 0.25);
 }
+html[data-theme="light"] .rating-box .fa-star {
+    color: #777;
+}
 
+html[data-theme="light"] .rating-box .fa-star.active {
+    color: #f59e0b;
+}
+
+html[data-theme="light"] .rating-box {
+    background: #f8f8f8;
+    border: 1px solid #e5e5e5;
+}
+/* DARK MODE ONLY */
+html[data-theme="dark"] select#pickup-time,
+html[data-theme="dark"] select#return-time {
+    background: #111;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.08);
+}
+
+html[data-theme="dark"] select#pickup-time option,
+html[data-theme="dark"] select#return-time option {
+    background: #111;
+    color: #fff;
+}
+
+/* LIGHT MODE */
+html[data-theme="light"] select#pickup-time,
+html[data-theme="light"] select#return-time {
+    background: #fff;
+    color: #111;
+    border: 1px solid #dcdcdc;
+}
+
+html[data-theme="light"] select#pickup-time option,
+html[data-theme="light"] select#return-time option {
+    background: #fff;
+    color: #111;
+}
 /* ── Mobile ── */
 @media (max-width: 900px) {
     .main-grid {
@@ -325,87 +365,23 @@
 }
 
 /* ============================================================
-   MANUAL LIGHT MODE FIXES
+   LIGHT MODE FIXES
+   Most overrides now handled by var() in base rules + header.css :root redefinition.
+   Only keeping border/box-shadow specifics.
    ============================================================ */
-
 html[data-theme="light"] .spec-card {
-    background: #ffffff;
+    background: var(--clr-surface);
+    border-color: var(--clr-border);
 }
-
-html[data-theme="light"] .spec-value {
-    color: #111 !important;
-}
-
-html[data-theme="light"] .spec-label {
-    color: #555 !important;
-}
-
-html[data-theme="light"] .spec-value small {
-    color: #555 !important;
-}
-
-/* Description text */
-html[data-theme="light"] .vehicle-description h2 {
-    color: #111 !important;
-}
-
-html[data-theme="light"] .vehicle-description p {
-    color: #222 !important;
-}
-
-/* Exterior finish box */
-html[data-theme="light"] .color-swatch-box {
-    background: #ffffff !important;
-    border: 1px solid #ddd !important;
-    color: #111 !important;
-}
-
-/* Booking card */
 html[data-theme="light"] .booking-card {
-    background: #ffffff !important;
-    border: 1px solid #ddd !important;
+    border-color: var(--clr-border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
-
-/* Price section */
-html[data-theme="light"] .rate .amount {
-    color: #111 !important;
-}
-
-html[data-theme="light"] .rate .currency,
-html[data-theme="light"] .rate .period {
-    color: #555 !important;
-}
-
-/* Form labels */
-html[data-theme="light"] .booking-form label {
-    color: #555 !important;
-}
-
-/* Date inputs */
-html[data-theme="light"] .booking-form input {
-    background: rgba(255, 255, 255, 0.7) !important;
-    color: #111 !important;
-    border: 1px solid #ccc !important;
-}
-
-/* Summary box */
 html[data-theme="light"] .price-summary {
-    background: rgba(255, 255, 255, 0.65) !important;
-    border: 1px solid #ddd !important;
+    border: 1px solid var(--clr-border);
 }
-
-html[data-theme="light"] .summary-line {
-    color: #444 !important;
-}
-
 html[data-theme="light"] .summary-line.total {
-    color: #111 !important;
-    border-top: 1px solid #ddd !important;
-}
-
-/* Secure note */
-html[data-theme="light"] .secure-note {
-    color: #555 !important;
+    border-top-color: var(--clr-border);
 }
 
 /* stars rating css */

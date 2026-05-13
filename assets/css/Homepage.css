@@ -16,6 +16,15 @@
     --nav-text: #b3b3b3;
 }
 
+html[data-theme="light"] {
+    --bg-dark: #ffffff;
+    --text-main: #111111;
+    --card-bg: #f5f5f5;
+    --card-hover: #ebebeb;
+    --text-muted: #444444;
+    --nav-text: #333333;
+}
+
 /* =============================================================================
    0. RESET & BASE
 ============================================================================= */
@@ -159,7 +168,7 @@ a {
 
 .btn-red {
     background: var(--accent-red);
-    color: #fff;
+    color: var(--text-main);
 }
 
 .btn-red:hover {
@@ -268,7 +277,7 @@ html[data-theme="light"] .btn-ghost:hover {
     top: 11px;
     left: 11px;
     background: rgba(230, 32, 32, 0.92);
-    color: #fff;
+    color: var(--text-main);
     font-size: 0.58rem;
     font-weight: 700;
     letter-spacing: 0.14em;
@@ -302,7 +311,7 @@ html[data-theme="light"] .btn-ghost:hover {
 }
 
 .no-img {
-    color: #2a2a2a;
+    color: var(--text-muted);
     font-size: 0.7rem;
     letter-spacing: 0.12em;
     font-weight: 700;
@@ -330,7 +339,7 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .badge {
     background: var(--accent-red);
-    color: #fff;
+    color: var(--text-main);
     padding: 2px 7px;
     font-size: 0.58rem;
     font-weight: 700;
@@ -340,7 +349,7 @@ html[data-theme="light"] .btn-ghost:hover {
 
 /* Model name (DB: name) */
 .model-name {
-    color: #777;
+    color: var(--text-muted);
     font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -354,7 +363,7 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .spec-item {
     font-size: 0.76rem;
-    color: #999;
+    color: var(--text-muted);
 }
 
 /* Price + rent button (DB: price_per_day) */
@@ -375,8 +384,8 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .btn-rent {
     display: inline-block;
-    background: #242424;
-    color: #fff;
+    background: var(--card-hover);
+    color: var(--text-main);
     padding: 8px 16px;
     border-radius: 2px;
     font-size: 0.7rem;
@@ -388,7 +397,7 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .btn-rent:hover {
     background: var(--accent-red);
-    color: #fff;
+    color: var(--text-main);
 }
 
 /* Light Mode Button Styling Overrides */
@@ -416,7 +425,7 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .brand-tab {
     padding: 15px 26px;
-    color: #666;
+    color: var(--text-muted);
     font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.12em;
@@ -427,13 +436,13 @@ html[data-theme="light"] .btn-ghost:hover {
 }
 
 .brand-tab:hover {
-    color: #fff;
+    color: var(--text-main);
     background: var(--card-hover);
 }
 
 /* No vehicles message */
 .no-vehicle-message {
-    color: #555;
+    color: var(--text-muted);
     font-size: 0.9rem;
     padding: 40px 0;
     text-align: center;
@@ -473,7 +482,7 @@ html[data-theme="light"] .btn-ghost:hover {
 .btn-white-outline {
     display: inline-block;
     border: 2px solid rgba(255, 255, 255, 0.85);
-    color: #fff;
+    color: var(--text-main);
     background: transparent;
     padding: 13px 30px;
     font-size: 0.8rem;
@@ -520,7 +529,7 @@ html[data-theme="light"] .btn-ghost:hover {
 }
 
 .showroom-info>p {
-    color: #777;
+    color: var(--text-muted);
     font-size: 0.88rem;
     margin-bottom: 28px;
     line-height: 1.6;
@@ -560,7 +569,7 @@ html[data-theme="light"] .btn-ghost:hover {
 
 .contact-details li span {
     font-size: 0.87rem;
-    color: #ccc;
+    color: var(--nav-text);
     line-height: 1.5;
 }
 
@@ -661,14 +670,11 @@ html[data-theme="light"] .btn-ghost:hover {
 
 /* =============================================================================
    7. LIGHT MODE TEXT OVERRIDES
+   Note: color overrides now handled by the html[data-theme="light"] :root block above.
+   Only keeping border/structural overrides that variables don't cover.
 ============================================================================= */
-html[data-theme="light"] .contact-details li span { color: #555555; }
-html[data-theme="light"] .showroom-info > p { color: #444444; }
 html[data-theme="light"] .brand-tab { border-right: 1px solid #ddd; }
 html[data-theme="light"] .brand-filters { border-top: 1px solid #ddd; }
 html[data-theme="light"] .brand-tab:hover { color: var(--accent-red); background: rgba(0,0,0,0.04); }
-html[data-theme="light"] .model-name { color: #666666; }
-html[data-theme="light"] .spec-item { color: #666666; }
-html[data-theme="light"] .no-img { color: #999999; }
 html[data-theme="light"] .section-header { border-bottom: 1px solid #ddd; }
 html[data-theme="light"] .specs { border-top: 1px solid #ddd; }

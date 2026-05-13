@@ -450,6 +450,9 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 28px;
 }
+html[data-theme="light"] .spec svg {
+    border-color: rgba(0,0,0,0.12);
+}
 
 /* ── Vehicle card ─────────────────────────────────────────── */
 .vehicle-card {

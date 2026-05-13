@@ -22,7 +22,9 @@ if (session_status() === PHP_SESSION_NONE) {
     <!-- From Gaurav: Theme Initialization Script (Prevents FOUC) -->
     <script>
       (function() {
-        const theme = localStorage.getItem('td-theme') || 'dark';
+        const saved = localStorage.getItem('td-theme');
+        const osPrefers = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        const theme = saved || osPrefers;
         document.documentElement.setAttribute('data-theme', theme);
       })();
     </script>

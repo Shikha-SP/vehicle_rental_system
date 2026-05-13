@@ -131,10 +131,10 @@
 
 .payment-form input {
     width: 100%;
-    background: #111;
+    background: var(--clr-surface);
     border: 1px solid var(--clr-border);
     padding: 14px;
-    color: #fff;
+    color: var(--clr-text);
     border-radius: 8px;
     font-size: 15px;
 }
@@ -176,7 +176,7 @@
 
 /* ── Right Side: Summary ── */
 .summary-card {
-    background: #111;
+    background: var(--clr-surface);
     border: 1px solid var(--clr-border);
     padding: 2rem;
     border-radius: 12px;

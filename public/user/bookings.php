@@ -215,6 +215,12 @@ include '../../includes/header.php';
         font-weight: 700; font-size: 0.9rem;
         border: 1px solid rgba(255,255,255,0.1);
     }
+    html[data-theme="light"] .price-tag {
+    background: rgba(255, 255, 255, 0.85);
+    color: #111;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
 
     .card-content { padding: 1.4rem 1.6rem 1.6rem; flex-grow: 1; display: flex; flex-direction: column; }
     .card-content h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.85rem; margin-bottom: 0.9rem; color: #fff; }
@@ -412,6 +418,63 @@ include '../../includes/header.php';
     .progress-track   { background: #222; border-radius: 100px; height: 6px; overflow: hidden; margin-bottom: 8px; }
     .progress-fill    { height: 100%; background: linear-gradient(90deg, #e03030, #ff6b6b); border-radius: 100px; transition: width 0.5s ease; }
     .progress-ticks   { display: flex; justify-content: space-between; font-size: 0.65rem; color: #555; }
+
+    /* Light Mode - Medal Panel */
+    html[data-theme="light"] .medal-panel {
+        background: #ffffff;
+        border-color: #e5e5e5;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    html[data-theme="light"] .medal-tier-card {
+        background: #f9f9f9;
+        border-color: #e5e5e5;
+    }
+    html[data-theme="light"] .medal-tier-card.active-tier {
+        background: #fff0f0;
+        border-color: #ffcccc;
+    }
+    html[data-theme="light"] .tier-sub { color: #666; }
+    html[data-theme="light"] .stat-box {
+        background: #f9f9f9;
+        border-color: #e5e5e5;
+    }
+    html[data-theme="light"] .stat-label { color: #666; }
+    html[data-theme="light"] .progress-header { color: #666; }
+    html[data-theme="light"] .progress-track { background: #e5e5e5; }
+    html[data-theme="light"] .progress-ticks { color: #666; }
+
+    /* Light Mode - Booking Cards */
+    html[data-theme="light"] .booking-card {
+        background: #ffffff;
+        border-color: #e5e5e5;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    html[data-theme="light"] .booking-card:hover {
+        border-color: #ffcccc;
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+    }
+    html[data-theme="light"] .card-content h3 { color: #111; }
+    html[data-theme="light"] .spec-pill { 
+        background: #f0f0f0; 
+        color: #555; 
+    }
+    html[data-theme="light"] .rental-dates {
+        background: #f9f9f9;
+        border-color: #e5e5e5;
+    }
+    html[data-theme="light"] .date-row { color: #666; }
+    html[data-theme="light"] .date-row[style*="border-top"] { border-top-color: #e5e5e5 !important; }
+    html[data-theme="light"] .date-val { color: #111; }
+    html[data-theme="light"] .card-footer { border-color: #e5e5e5; }
+    html[data-theme="light"] .total-label { color: #666; }
+    html[data-theme="light"] .btn-cancel[style*="background: transparent"] {
+        border-color: #e5e5e5 !important;
+        color: #555 !important;
+    }
+    html[data-theme="light"] .btn-cancel[style*="background: transparent"]:hover {
+        background: #f0f0f0 !important;
+        color: #111 !important;
+    }
 </style>
 
 <div class="bookings-container">
@@ -456,7 +519,7 @@ include '../../includes/header.php';
                 <div class="stat-label">RENTALS DONE</div>
             </div>
             <div class="stat-box">
-                <div class="stat-val" style="color: <?= $user_medal !== 'NONE' ? ($medal_tiers[$user_medal]['color'] ?? '#e03030') : '#555' ?>">
+                <div class="stat-val" style="color: <?= $user_medal !== 'NONE' ? ($medal_tiers[$user_medal]['color'] ?? '#e03030') : 'var(--clr-muted, #888)' ?>">
                     <?= $user_medal !== 'NONE' ? $medal_tiers[$user_medal]['label'] : '—' ?>
                 </div>
                 <div class="stat-label">MEDAL</div>

@@ -215,7 +215,7 @@
     outline: none;
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-dim);
-    background: #222222;
+    background: var(--bg-input);
 }
 
 .form-group textarea {
@@ -228,13 +228,13 @@
 .form-group select:read-only {
     opacity: 0.6;
     cursor: not-allowed;
-    background: #181818;
+    background: var(--bg);
 }
 
 /* Placeholder styling */
 .form-group input::placeholder,
 .form-group textarea::placeholder {
-    color: #555555;
+    color: var(--text-muted);
     font-weight: 400;
 }
 

@@ -18,7 +18,7 @@
 
 .footer-tagline {
     font-size: 1rem;
-    color: #ccc;
+    color: var(--clr-muted);
     margin-bottom: 1.25rem;
     max-width: 500px;
     margin-left: auto;
@@ -31,7 +31,7 @@
 }
 
 .footer-links a {
-    color: #aaa;
+    color: var(--clr-muted);
     margin: 0 1rem;
     text-decoration: none;
     font-size: 0.95rem;
@@ -41,13 +41,13 @@
 }
 
 .footer-links a:hover {
-    color: #fff;
-    background-color: rgba(255, 77, 77, 0.2); /* subtle hover effect */
+    color: var(--clr-text);
+    background-color: rgba(255, 77, 77, 0.2);
 }
 
 .footer-copy {
     font-size: 0.85rem;
-    color: #888;
+    color: var(--clr-muted);
     margin-top: 1rem;
 }
 
@@ -58,7 +58,7 @@
 .footer-social a {
     display: inline-block;
     margin: 0 0.5rem;
-    color: #aaa;
+    color: var(--clr-muted);
     font-size: 1.1rem;
     transition: all 0.25s ease;
 }

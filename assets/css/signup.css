@@ -322,7 +322,7 @@ a:hover {
     background: linear-gradient(135deg, #e03030 0%, #ff5050 100%);
     border: none;
     border-radius: var(--radius);
-    color: #fff;
+    color: var(--text);
     font-family: var(--font-head);
     font-size: 15px;
     font-weight: 700;
@@ -379,7 +379,7 @@ a:hover {
 .signup-hero {
     position: relative;
     overflow: hidden;
-    background: #0d0d0d;
+    background: var(--bg-card);
 }
 
 .signup-hero__img {
@@ -469,7 +469,7 @@ a:hover {
     align-items: center;
     gap: 8px;
     background: var(--accent);
-    color: #fff;
+    color: var(--text);
     text-decoration: none;
     padding: 13px 28px;
     border-radius: var(--radius);
@@ -483,7 +483,7 @@ a:hover {
 
 .signup-success__back:hover {
     opacity: 0.85;
-    color: #fff;
+    color: var(--text);
 }
 
 /* ── Footer ─────────────────────────────────────────────────── */
@@ -528,7 +528,7 @@ a:hover {
 .signup-footer__copy {
     font-size: 11px;
     letter-spacing: 0.08em;
-    color: #555;
+    color: var(--text-muted);
     text-transform: uppercase;
 }
 
@@ -670,9 +670,9 @@ html[data-theme="light"] .signup-hero__overlay {
 
 html[data-theme="light"] .signup-form__input,
 html[data-theme="light"] .signup-form__select {
-    background: #ffffff;
+    background: var(--bg-input);
     border-color: var(--border);
-    color: #111111;
+    color: var(--text);
 }
 html[data-theme="light"] .signup-form__input::placeholder { color: #aaaaaa; }
 
@@ -696,7 +696,7 @@ html[data-theme="light"] .signup-form__back-btn:hover {
     background: rgba(0,0,0,0.03);
 }
 
-html[data-theme="light"] .signup-footer__copy { color: #999999; }
+/* footer copy now handled by base rule using local var */
 
 html[data-theme="light"] .signup-success__title { color: var(--text); }
 html[data-theme="light"] .signup-success__email { color: var(--text); }

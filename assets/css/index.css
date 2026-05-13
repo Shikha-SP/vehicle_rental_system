@@ -647,10 +647,12 @@ h4 {
 
 /* ============================================================
    LIGHT MODE OVERRIDES
+   Note: body background/color handled by header.css html[data-theme=light] :root.
+   Only keeping structural/component overrides not covered by variables.
    ============================================================ */
 html[data-theme="light"] body {
-    background-color: #f7f7f7;
-    color: #111111;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
 }
 
 html[data-theme="light"] .hero {
@@ -658,17 +660,15 @@ html[data-theme="light"] .hero {
 }
 
 html[data-theme="light"] .hero-desc {
-    color: #444444;
+    color: var(--text-muted);
 }
 
-
-
 html[data-theme="light"] .section-heading {
-    color: #111111;
+    color: var(--text-main);
 }
 
 html[data-theme="light"] .feature-card {
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     border: 1px solid #e0e0e0;
 }
 
@@ -677,17 +677,17 @@ html[data-theme="light"] .feature-number {
 }
 
 html[data-theme="light"] .stat-num {
-    color: #111111;
+    color: var(--text-main);
 }
 
 html[data-theme="light"] .stat-label {
-    color: #666666;
+    color: var(--text-muted);
 }
 
 html[data-theme="light"] .feature-title {
-    color: #111111;
+    color: var(--text-main);
 }
 
 html[data-theme="light"] .feature-desc {
-    color: #555555;
+    color: var(--text-muted);
 }

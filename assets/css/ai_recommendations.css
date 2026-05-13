@@ -91,7 +91,9 @@
     display: flex;
     flex-direction: column;
 }
-
+html[data-theme="light"] .rec-info h3 {
+    color: #111;
+}
 .rec-info h3 {
     font-size: 1.25rem;
     margin: 0 0 0.5rem 0;
