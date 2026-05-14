@@ -15,7 +15,6 @@ if (!isset($_SESSION['user_id']) || (!empty($_SESSION['is_admin']))) {
 
 // DB + INCLUDES
 include('../../config/db.php');
-include('../../includes/header.php');
 require_once('../../includes/functions.php');
 
 $user_id = $_SESSION['user_id'];
@@ -93,11 +92,17 @@ ORDER BY license_type
 ";
 
 $brands_result = $conn->query($brands_sql);
-?>
 
+// Page CSS goes into <head> via header.php ($extraStyles) so it loads with the rest of the layout, not before <!DOCTYPE>.
+$extraStyles = '
 <link rel="stylesheet" href="../../assets/css/Homepage.css">
+<link rel="stylesheet" href="../../assets/css/scroll-reveal.css">
 <link rel="stylesheet" href="../../assets/css/reminder_banner.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+';
+
+include '../../includes/header.php';
+?>
 
 <?php if ($reminder_booking): ?>
     <?php
@@ -150,14 +155,20 @@ $brands_result = $conn->query($brands_sql);
                     WELCOME BACK, <?php echo e(strtoupper($username)); ?>
                 </p>
                 <h1 class="hero-heading">
-                    ENGINEERED FOR<br>
-                    <span class="text-red">PERFORMANCE.</span><br>
-                    DRIVEN BY YOU.
+                    <span class="hero-heading__line hero-heading__line--1">
+                        <span class="hero-heading__line-inner">ENGINEERED FOR</span>
+                    </span>
+                    <span class="hero-heading__line hero-heading__line--2">
+                        <span class="hero-heading__line-inner"><span class="text-red">PERFORMANCE.</span></span>
+                    </span>
+                    <span class="hero-heading__line hero-heading__line--3">
+                        <span class="hero-heading__line-inner">DRIVEN BY YOU.</span>
+                    </span>
                 </h1>
 
                 <div class="hero-btns">
                     <a href="../vehicle/vehicles.php" class="btn btn-red">BOOK NOW</a>
-                    <a href="../vehicle/vehicles.php" class="btn btn-ghost">VIEW FLEET</a>
+                    <a href="../vehicle/vehicles.php" class="btn btn-ghosts">VIEW FLEET</a>
                 </div>
 
             </div>
@@ -189,7 +200,7 @@ $brands_result = $conn->query($brands_sql);
                         $fuel = $car['fuel_capacity'] ? $car['fuel_capacity'] . ' L' : 'N/A';
                         ?>
 
-                        <div class="car-card">
+                        <div class="car-card element-class">
 
                             <div class="card-type-badge">
                                 <?php echo e(strtoupper($car['license_type'] ?? 'CAR')); ?>
@@ -241,7 +252,7 @@ $brands_result = $conn->query($brands_sql);
 
                 <?php else: ?>
 
-                    <div class="no-vehicle-message">
+                    <div class="no-vehicle-message element-class">
                         <p>No vehicles available at the moment.</p>
                     </div>
 
@@ -260,7 +271,7 @@ $brands_result = $conn->query($brands_sql);
                         ?>
 
                         <a href="../vehicle/vehicles.php?license_type=<?php echo urlencode($b['license_type']); ?>"
-                            class="brand-tab">
+                            class="brand-tab element-class">
 
                             <?php echo e(strtoupper($b['license_type'])); ?>
 
@@ -282,12 +293,12 @@ $brands_result = $conn->query($brands_sql);
     <div class="red-banner">
         <div class="container banner-flex">
 
-            <div class="banner-text">
+            <div class="banner-text element-class">
                 <h3>Rent your vehicle</h3>
                 <p>Rent your vehicle and earn some money</p>
             </div>
 
-            <a href="../renter/list_car.php" class="btn-white-outline">
+            <a href="../renter/list_car.php" class="btn-white-outline element-class">
                 Rent and earn
             </a>
 
@@ -300,7 +311,7 @@ $brands_result = $conn->query($brands_sql);
     <section class="showroom-section">
         <div class="container grid-two">
 
-            <div class="showroom-info">
+            <div class="showroom-info element-class">
 
                 <h2>OUR SHOWROOMS</h2>
 

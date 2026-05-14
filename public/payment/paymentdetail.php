@@ -665,8 +665,6 @@ if ($uid) {
     </div>
 </div>
 
-<?php require '../../includes/footer.php'; ?>
-
 <script>
     // Auto-format card number: space after every 4 digits
     const cardInput = document.getElementById('card-number');
@@ -747,11 +745,27 @@ if ($uid) {
                         // Store applied code to hidden form input
                         appliedDiscountInput.value = code;
 
-                        // Update Khalti Button
+                        const fmt0 = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                        const dcParam = 'discount_code=' + encodeURIComponent(code);
+
                         const khaltiBtn = document.getElementById('khalti-button');
                         if (khaltiBtn) {
-                            khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + data.new_total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-                            khaltiBtn.href = 'khalti_initiate.php?discount_code=' + encodeURIComponent(code);
+                            khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + fmt0(data.new_total);
+                            khaltiBtn.href = 'khalti_initiate.php?' + dcParam;
+                        }
+
+                        const esewaBtn = document.getElementById('esewa-button');
+                        if (esewaBtn) {
+                            const esewaSpan = esewaBtn.querySelector('span');
+                            if (esewaSpan) esewaSpan.textContent = 'PAY NPR ' + fmt0(data.new_total);
+                            esewaBtn.href = 'esewa_initiate.php?' + dcParam;
+                        }
+
+                        const qrBtn = document.getElementById('qr-button');
+                        if (qrBtn) {
+                            const qrSpan = qrBtn.querySelector('span');
+                            if (qrSpan) qrSpan.textContent = 'SCAN QR & PAY NPR ' + fmt0(data.new_total);
+                            qrBtn.href = 'qr_initiate.php?' + dcParam;
                         }
                     } else {
                         discountMsg.textContent = data.message;
@@ -763,11 +777,26 @@ if ($uid) {
                         discountRow.style.display = 'none';
                         appliedDiscountInput.value = '';
 
-                        // Reset Khalti Button
+                        const fmt0b = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
                         const khaltiBtn = document.getElementById('khalti-button');
                         if (khaltiBtn) {
-                            khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + baseTotal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                            khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + fmt0b(baseTotal);
                             khaltiBtn.href = 'khalti_initiate.php';
+                        }
+
+                        const esewaBtn = document.getElementById('esewa-button');
+                        if (esewaBtn) {
+                            const esewaSpan = esewaBtn.querySelector('span');
+                            if (esewaSpan) esewaSpan.textContent = 'PAY NPR ' + fmt0b(baseTotal);
+                            esewaBtn.href = 'esewa_initiate.php';
+                        }
+
+                        const qrBtn = document.getElementById('qr-button');
+                        if (qrBtn) {
+                            const qrSpan = qrBtn.querySelector('span');
+                            if (qrSpan) qrSpan.textContent = 'SCAN QR & PAY NPR ' + fmt0b(baseTotal);
+                            qrBtn.href = 'qr_initiate.php';
                         }
                     }
                 })
@@ -796,6 +825,5 @@ if ($uid) {
         });
     }
 </script>
-</body>
 
-</html>
+<?php require '../../includes/footer.php'; ?>

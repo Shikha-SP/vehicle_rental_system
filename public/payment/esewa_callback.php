@@ -56,7 +56,16 @@ $vehicle_id = $_SESSION['payment_vehicle_id'] ?? 0;
 $pickup_date = $_SESSION['payment_pickup'] ?? '';
 $dropoff_date = $_SESSION['payment_dropoff'] ?? '';
 $days = $_SESSION['payment_days'] ?? 0;
-$totalprice = $_SESSION['esewa_amount'] ?? 0;
+$totalprice = (float) ($_SESSION['esewa_amount'] ?? 0);
+
+$paid_amount = (float) $total_amount;
+if (abs($paid_amount - $totalprice) > 0.05) {
+    die("Amount mismatch. Expected NPR {$totalprice}, received NPR {$paid_amount}.");
+}
+
+$discount_code_saved = (string) ($_SESSION['esewa_discount_code'] ?? '');
+$discount_amount_saved = (float) ($_SESSION['esewa_discount_amount'] ?? 0);
+$discount_code_id = isset($_SESSION['esewa_discount_code_id']) ? (int) $_SESSION['esewa_discount_code_id'] : 0;
 
 if (!$vehicle_id) {
     die("Booking session expired.");
@@ -67,10 +76,20 @@ $conn->begin_transaction();
 
 try {
     // Insert into bookings
-    $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, created_at)
-                   VALUES (?, ?, ?, ?, ?, 'confirmed', 'paid', ?, NOW())";
+    $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, discount_code, discount_amount, created_at)
+                   VALUES (?, ?, ?, ?, ?, 'confirmed', 'paid', ?, ?, ?, NOW())";
     $insert_stmt = $conn->prepare($insert_sql);
-    $insert_stmt->bind_param("iissds", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $totalprice, $transaction_uuid);
+    $insert_stmt->bind_param(
+        "iissdssd",
+        $user_id,
+        $vehicle_id,
+        $pickup_date,
+        $dropoff_date,
+        $totalprice,
+        $transaction_uuid,
+        $discount_code_saved,
+        $discount_amount_saved
+    );
     
     if (!$insert_stmt->execute()) {
         throw new Exception("Failed to create booking.");
@@ -87,6 +106,14 @@ try {
     
     if (!$txn_stmt->execute()) {
         throw new Exception("Failed to record transaction.");
+    }
+
+    if ($discount_code_id > 0 && $discount_amount_saved > 0) {
+        $u = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
+        $u->bind_param("ii", $user_id, $discount_code_id);
+        $u->execute();
+        $u->close();
+        $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = " . (int) $discount_code_id);
     }
 
     // Fetch vehicle data for email
@@ -116,6 +143,8 @@ try {
             'days' => $days,
             'price_per_day' => $vehicle['price_per_day'],
             'total_price' => $totalprice,
+            'discount_code' => $discount_code_saved,
+            'discount_amount' => $discount_amount_saved,
         ];
 
         $pdf_string = generateInvoicePDF($invoice_data);
@@ -152,7 +181,10 @@ try {
         $_SESSION['payment_dropoff'],
         $_SESSION['payment_days'],
         $_SESSION['esewa_transaction_uuid'],
-        $_SESSION['esewa_amount']
+        $_SESSION['esewa_amount'],
+        $_SESSION['esewa_discount_code'],
+        $_SESSION['esewa_discount_amount'],
+        $_SESSION['esewa_discount_code_id']
     );
 
     header("Location: bookingconfirmed.php?id=" . $booking_id);

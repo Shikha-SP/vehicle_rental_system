@@ -18,3 +18,5 @@
     <!-- Copyright notice with dynamic year -->
     <p class="footer-copy">© <?= date("Y") ?> TD Rentals — Engineered for Performance.</p>
 </footer>
+</body>
+</html>

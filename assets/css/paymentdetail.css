@@ -33,6 +33,11 @@ body {
   background-color: var(--clr-surface);
   color: var(--clr-muted);
 }
+.primary-btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1px solid var(--btn-border);
+}
 .input-field {
   background-color: var(--clr-surface);
   color: var(--clr-text);
@@ -366,10 +371,27 @@ html[data-theme="light"] body {
 
 html[data-theme="light"] .input-field,
 html[data-theme="light"] .expiry-dropdowns select {
+  background: #ffffff;
+  color: #111111;
   border: 1px solid #cccccc;
+  
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+html[data-theme="dark"] {
+  --btn-bg: #6366f1;
+  --btn-text: #fff;
+  --btn-border: #6366f1;
 }
 
+html[data-theme="light"] {
+  --btn-bg: #ffffff;
+  --btn-text: #111;
+  --btn-border: #cccccc;
+}
+html[data-theme="light"] .primary-btn:hover {
+  background: #f5f5f5;
+  border-color: #999999;
+}
+}
 html[data-theme="light"] #summary-section {
   border: 1px solid #e0e0e0;
   border-radius: 6px;
@@ -560,4 +582,4 @@ html[data-theme="light"] #qr-button {
         font-size: 20px;
     }
 }
-
+

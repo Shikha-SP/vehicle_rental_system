@@ -320,6 +320,28 @@
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(224, 48, 48, 0.4);
 }
+html[data-theme="light"] .card-content h3 {
+    color: #111111;
+}
+
+html[data-theme="light"] .spec-pill {
+    background: #f5f5f5;
+    color: #111111;
+    border: 1px solid #e5e5e5;
+}
+
+html[data-theme="light"] .vehicle-info-block {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+}
+
+html[data-theme="light"] .vehicle-info-block .info-row span {
+    color: #111111;
+}
+
+html[data-theme="light"] .vehicle-info-block .info-val {
+    color: #111111;
+}
 
 @media (max-width: 768px) {
     .my-vehicles {

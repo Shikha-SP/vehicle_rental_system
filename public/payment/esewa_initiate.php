@@ -34,8 +34,62 @@ if (!$vehicle) {
     die("Vehicle not found.");
 }
 
+$stmt->close();
+
 $basicprice = 500; // From paymentdetail.php
 $total_price_npr = ($vehicle['price_per_day'] * $days) + $basicprice;
+
+$discount_code = strtoupper(trim((string) ($_GET['discount_code'] ?? '')));
+$discount_amount = 0;
+
+if ($discount_code !== '') {
+    $dc_stmt = $conn->prepare("SELECT * FROM discount_codes WHERE code = ? AND is_active = 1");
+    $dc_stmt->bind_param("s", $discount_code);
+    $dc_stmt->execute();
+    $result = $dc_stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $code_data = $result->fetch_assoc();
+        $code_id = (int) $code_data['id'];
+
+        $valid = true;
+        if ($code_data['expires_at'] && $code_data['expires_at'] < date('Y-m-d')) {
+            $valid = false;
+        }
+        if ($code_data['max_uses'] !== null && $code_data['used_count'] >= $code_data['max_uses']) {
+            $valid = false;
+        }
+        if ($code_data['owner_user_id'] !== null && (int) $code_data['owner_user_id'] !== (int) $user_id) {
+            $valid = false;
+        }
+
+        if ($valid) {
+            $check_stmt = $conn->prepare("SELECT id FROM discount_code_uses WHERE user_id = ? AND code_id = ?");
+            $check_stmt->bind_param("ii", $user_id, $code_id);
+            $check_stmt->execute();
+            if ($check_stmt->get_result()->num_rows > 0) {
+                $valid = false;
+            }
+            $check_stmt->close();
+        }
+
+        if ($valid) {
+            if ($code_data['type'] === 'flat') {
+                $discount_amount = min((float) $code_data['discount_flat'], $total_price_npr);
+            } else {
+                $discount_amount = ($total_price_npr * (float) $code_data['discount_percent']) / 100;
+            }
+            $total_price_npr -= $discount_amount;
+
+            $_SESSION['esewa_discount_code'] = $discount_code;
+            $_SESSION['esewa_discount_amount'] = $discount_amount;
+            $_SESSION['esewa_discount_code_id'] = $code_id;
+        }
+    }
+    $dc_stmt->close();
+} else {
+    unset($_SESSION['esewa_discount_code'], $_SESSION['esewa_discount_amount'], $_SESSION['esewa_discount_code_id']);
+}
 
 // Generate a unique transaction UUID
 $transaction_uuid = "ESEWA-" . $user_id . "-" . $vehicle_id . "-" . time();

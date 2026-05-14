@@ -26,6 +26,7 @@ require_once('../includes/functions.php');
      External Stylesheets
 ====================================================== -->
 <link rel="stylesheet" href="../assets/css/index.css">
+<link rel="stylesheet" href="../assets/css/scroll-reveal.css">
 
 <main class="dashboard-content">
     <!-- Hero Section -->
@@ -57,7 +58,7 @@ require_once('../includes/functions.php');
         <h2 class="section-heading">CURATED COLLECTIONS</h2>
         <div class="collections-grid">
             <!-- Item 1: Supercars -->
-            <div class="collection-card card-tl">
+            <div class="collection-card card-tl element-class">
                 <img src="../assets/images/LandingPageD1.png" alt="Supercars image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: PERFORMANCE</span>
@@ -66,7 +67,7 @@ require_once('../includes/functions.php');
             </div>
 
             <!-- Item 2: Classics -->
-            <div class="collection-card card-tr">
+            <div class="collection-card card-tr element-class">
                 <img src="../assets/images/LandingPageD2.png" alt="Classics image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: HERITAGE</span>
@@ -75,7 +76,7 @@ require_once('../includes/functions.php');
             </div>
 
             <!-- Item 3: Luxury SUVs -->
-            <div class="collection-card card-bl">
+            <div class="collection-card card-bl element-class">
                 <img src="../assets/images/LandingPageD3.png" alt="Luxury SUVs image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: POWER</span>
@@ -84,7 +85,7 @@ require_once('../includes/functions.php');
             </div>
 
             <!-- Item 4: Custom Fleet -->
-            <div class="collection-card card-br">
+            <div class="collection-card card-br element-class">
                 <img src="../assets/images/LandingPageD4.png" alt="Custom Fleet image">
                 <div class="card-content">
                     <span class="card-category">CATEGORY: BESPOKE</span>
@@ -97,7 +98,7 @@ require_once('../includes/functions.php');
     <!-- Detailed Stats & Features Section -->
     <section class="features">
         <!-- Feature 1 -->
-        <div class="feature-card border-accent">
+        <div class="feature-card border-accent element-class">
             <div class="feature-icon"><i class="fa-solid fa-gauge-high"></i></div>
             <h3 class="feature-title">24/7 CONCIERGE</h3>
             <p class="feature-desc">Personal liaison for logistics, route planning, and dedicated support across all
@@ -106,7 +107,7 @@ require_once('../includes/functions.php');
         </div>
 
         <!-- Feature 2 -->
-        <div class="feature-card border-accent">
+        <div class="feature-card border-accent element-class">
             <div class="feature-icon"><i class="fa-solid fa-earth-americas"></i></div>
             <h3 class="feature-title">GLOBAL NETWORK</h3>
             <p class="feature-desc">Inter-connected hubs in major capitals ensuring your preferred machine is always
@@ -115,7 +116,7 @@ require_once('../includes/functions.php');
         </div>
 
         <!-- Feature 3 -->
-        <div class="feature-card border-accent">
+        <div class="feature-card border-accent element-class">
             <div class="feature-icon"><i class="fa-solid fa-bolt"></i></div>
             <h3 class="feature-title">Track Ready</h3>
             <p class="feature-desc">Every vehicle is meticulously maintained by master technicians to factory-fresh
@@ -128,7 +129,7 @@ require_once('../includes/functions.php');
     <section class="global-footprint">
         <h2 class="section-heading text-center">OUR GLOBAL FOOTPRINT</h2>
 
-        <div class="map-container">
+        <div class="map-container element-class">
             <img src="../assets/images/LandingPageMap.png" alt="World Map Silhouette">
             <div class="map-dots">
                 <!-- Example geographic pins (using percentage positioning) -->
@@ -140,15 +141,15 @@ require_once('../includes/functions.php');
 
         <!-- Statistics Counter -->
         <div class="stats-counter">
-            <div class="stat-item">
+            <div class="stat-item element-class">
                 <h3 class="stat-num">15+</h3>
                 <p class="stat-label">LOCATIONS</p>
             </div>
-            <div class="stat-item">
+            <div class="stat-item element-class">
                 <h3 class="stat-num">500+</h3>
                 <p class="stat-label">VEHICLES</p>
             </div>
-            <div class="stat-item">
+            <div class="stat-item element-class">
                 <h3 class="stat-num">10K</h3>
                 <p class="stat-label">CLIENTS</p>
             </div>
@@ -157,12 +158,12 @@ require_once('../includes/functions.php');
 
     <!-- Call to Action Banner -->
     <section class="cta">
-        <div class="cta-content">
+        <div class="cta-content element-class">
             <h2 class="cta-title">READY FOR THE <br>THROTTLE?</h2>
             <p class="cta-desc">Join the inner circle of the world's most exclusive driving club. Experience the
                 pinnacle of velocity.</p>
         </div>
-        <div class="cta-action-area">
+        <div class="cta-action-area element-class">
             <a href="authentication/login.php" class="btn btn-white">DISCOVER CARS</a>
         </div>
         <!-- Decorative background element for CTA -->

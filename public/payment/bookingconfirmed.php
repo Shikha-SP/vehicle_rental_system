@@ -76,6 +76,3 @@ $booking = $stmt->get_result()->fetch_assoc();
 
 </div>
 <?php require '../../includes/footer.php'; ?>
-</body>
-
-</html>

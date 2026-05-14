@@ -129,6 +129,27 @@ if (isset($khalti_data['status']) && $khalti_data['status'] === 'Completed') {
                 throw new Exception("Transaction insert failed.");
             }
 
+            $disc_id = (int) ($_SESSION['khalti_discount_code_id'] ?? 0);
+            $disc_amt = (float) ($_SESSION['khalti_discount_amount'] ?? 0);
+            $disc_code = (string) ($_SESSION['khalti_discount_code'] ?? '');
+            if ($disc_id > 0 && $disc_amt > 0 && $disc_code !== '') {
+                $ub = $conn->prepare("UPDATE bookings SET discount_code = ?, discount_amount = ? WHERE id = ?");
+                $ub->bind_param("sdi", $disc_code, $disc_amt, $booking_id);
+                if (!$ub->execute()) {
+                    throw new Exception("Failed to save discount on booking.");
+                }
+                $chk_use = $conn->prepare("SELECT id FROM discount_code_uses WHERE user_id = ? AND code_id = ? LIMIT 1");
+                $chk_use->bind_param("ii", $user_id, $disc_id);
+                $chk_use->execute();
+                if ($chk_use->get_result()->num_rows === 0) {
+                    $ins_use = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
+                    $ins_use->bind_param("ii", $user_id, $disc_id);
+                    $ins_use->execute();
+                    $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = " . (int) $disc_id);
+                }
+                $chk_use->close();
+            }
+
             // Calculate days for email
             $days = max(1, (new DateTime($dropoff_date))->diff(new DateTime($pickup_date))->days);
 
@@ -158,6 +179,8 @@ if (isset($khalti_data['status']) && $khalti_data['status'] === 'Completed') {
                     'days'         => $days,
                     'price_per_day' => $vehicle['price_per_day'],
                     'total_price'  => $totalprice,
+                    'discount_code' => (string) ($_SESSION['khalti_discount_code'] ?? ''),
+                    'discount_amount' => (float) ($_SESSION['khalti_discount_amount'] ?? 0),
                 ];
                 $pdf_string = generateInvoicePDF($invoice_data);
 
@@ -195,7 +218,10 @@ if (isset($khalti_data['status']) && $khalti_data['status'] === 'Completed') {
             $_SESSION['payment_days'],
             $_SESSION['khalti_purchase_order_id'],
             $_SESSION['khalti_amount'],
-            $_SESSION['khalti_pidx']
+            $_SESSION['khalti_pidx'],
+            $_SESSION['khalti_discount_code'],
+            $_SESSION['khalti_discount_amount'],
+            $_SESSION['khalti_discount_code_id']
         );
 
         echo json_encode(['status' => 'paid', 'booking_id' => $booking_id]);

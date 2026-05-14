@@ -75,51 +75,420 @@ $medal_tiers = [
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/css/admin.css">
 <style>
-    .page-wrap { max-width: 960px; margin: 40px auto; font-family: 'Inter', sans-serif; }
-    .back-link { display: inline-block; color: #666; text-decoration: none; font-size: 0.85rem; margin-bottom: 24px; }
-    .back-link:hover { color: #fff; }
-    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 32px; color: #fff; }
-    h1 span { color: #e03030; }
-    .msg { padding: 12px 18px; border-radius: 8px; margin-bottom: 24px; font-size: 0.9rem; }
-    .msg.success { background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3); color: #2ecc71; }
-    .msg.error   { background: rgba(224,48,48,0.1); border: 1px solid rgba(224,48,48,0.3); color: #e03030; }
-    .section-title { font-size: 0.8rem; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 16px; }
-    .create-card { background: #181818; border: 1px solid #2a2a2a; border-radius: 12px; padding: 28px; margin-bottom: 40px; }
-    .create-card h2 { font-size: 1rem; font-weight: 600; margin-bottom: 24px; color: #ddd; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-    .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
-    .form-full { grid-column: 1 / -1; }
-    .field label { display: block; font-size: 0.75rem; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
-    input[type="text"], input[type="number"], input[type="date"], select { width: 100%; padding: 12px 14px; background: #111; border: 1px solid #2a2a2a; color: #fff; border-radius: 8px; font-size: 0.9rem; font-family: 'Inter', sans-serif; transition: border-color 0.2s; appearance: none; }
-    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
-    input:focus, select:focus { outline: none; border-color: #e03030; }
-    input::placeholder { color: #444; }
-    .btn-create { width: 100%; padding: 14px; background: #1a1a1a; border: 1px solid #333; color: #fff; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 8px; cursor: pointer; margin-top: 8px; transition: background 0.2s, border-color 0.2s; }
-    .btn-create:hover { background: #222; border-color: #555; }
-    .codes-section { margin-bottom: 48px; }
-    .code-row { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid #1e1e1e; gap: 16px; }
-    .code-row:first-child { border-top: 1px solid #1e1e1e; }
-    .code-badge { background: #e03030; color: #fff; font-size: 0.8rem; font-weight: 700; padding: 5px 12px; border-radius: 6px; letter-spacing: 0.05em; white-space: nowrap; min-width: 90px; text-align: center; }
-    .code-badge.inactive { background: #333; color: #888; }
-    .code-type { flex: 1; font-size: 0.85rem; color: #bbb; }
-    .code-uses { font-size: 0.85rem; color: #888; white-space: nowrap; min-width: 80px; text-align: right; }
-    .code-expiry { font-size: 0.8rem; color: #666; white-space: nowrap; min-width: 100px; text-align: right; }
-    .code-status { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
-    .code-status.active { background: rgba(46,204,113,0.15); color: #2ecc71; }
-    .code-status.inactive { background: rgba(150,150,150,0.15); color: #888; }
-    .code-actions { display: flex; gap: 8px; }
-    .btn-sm { padding: 5px 12px; font-size: 0.75rem; font-weight: 600; border-radius: 6px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
-    .btn-toggle { background: #222; color: #aaa; border-color: #333; }
-    .btn-toggle:hover { border-color: #555; color: #fff; }
-    .btn-del { background: transparent; color: #e03030; border-color: rgba(224,48,48,0.3); }
-    .btn-del:hover { background: rgba(224,48,48,0.1); }
-    .empty-codes { color: #555; font-size: 0.9rem; padding: 20px 0; }
-    .medal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
-    .medal-card { background: #181818; border: 1px solid #2a2a2a; border-radius: 12px; padding: 24px 20px; text-align: center; }
-    .medal-icon { font-size: 2.5rem; margin-bottom: 10px; display: block; }
-    .medal-name { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-    .medal-sub { font-size: 0.8rem; color: #666; margin-bottom: 6px; }
-    .medal-discount { font-size: 0.85rem; }
+
+/* =========================================================
+   DARK MODE DEFAULT
+   ========================================================= */
+
+:root{
+    --bg: #0f0f10;
+    --surface: #181818;
+    --surface-2: #111111;
+
+    --border: #2a2a2a;
+    --border-soft: #1e1e1e;
+
+    --text: #ffffff;
+    --text-soft: #bbbbbb;
+    --text-muted: #777777;
+
+    --accent: #e03535;
+    --accent-hover: #c92f2f;
+
+    --input-bg: #111111;
+    --input-border: #2a2a2a;
+
+    --success: #2ecc71;
+    --danger: #e03535;
+
+    --shadow: none;
+}
+
+/* =========================================================
+   LIGHT MODE
+   ========================================================= */
+
+html[data-theme="light"]{
+
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --surface-2: #fafafa;
+
+    --border: #dddddd;
+    --border-soft: #e9e9e9;
+
+    --text: #181818;
+    --text-soft: #666666;
+    --text-muted: #888888;
+
+    --accent: #e03535;
+    --accent-hover: #c92f2f;
+
+    --input-bg: #ffffff;
+    --input-border: #d8d8d8;
+
+    --success: #2ecc71;
+    --danger: #e03535;
+
+    --shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+/* =========================================================
+   GLOBAL
+   ========================================================= */
+
+html,
+body,
+.admin-wrapper,
+.main{
+    background: var(--bg);
+    color: var(--text);
+    transition:
+        background 0.25s ease,
+        color 0.25s ease;
+}
+
+/* =========================================================
+   PAGE
+   ========================================================= */
+
+.page-wrap{
+    max-width: 960px;
+    margin: 40px auto;
+    font-family: 'Inter', sans-serif;
+}
+
+h1{
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 32px;
+    color: var(--text);
+}
+
+h1 span{
+    color: var(--accent);
+}
+
+/* =========================================================
+   ALERTS
+   ========================================================= */
+
+.msg{
+    padding: 12px 18px;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+}
+
+.msg.success{
+    background: rgba(46,204,113,0.10);
+    border: 1px solid rgba(46,204,113,0.30);
+    color: var(--success);
+}
+
+.msg.error{
+    background: rgba(224, 53, 53, 0.10);
+    border: 1px solid rgba(224, 53, 53, 0.30);
+    color: var(--danger);
+}
+
+/* =========================================================
+   SECTION TITLE
+   ========================================================= */
+
+.section-title{
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+}
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.create-card,
+.medal-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    transition: all 0.25s ease;
+}
+
+.create-card{
+    padding: 28px;
+    margin-bottom: 40px;
+}
+
+.medal-card{
+    padding: 24px 20px;
+    text-align: center;
+}
+
+.create-card h2{
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+    color: var(--text);
+}
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.form-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.form-grid.three{
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.field label{
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-soft);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.field label span{
+    color: var(--text-muted);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select{
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text);
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+    appearance: none;
+}
+
+input::placeholder{
+    color: var(--text-muted);
+}
+
+input:focus,
+select:focus{
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(224, 53, 53, 0.12);
+}
+
+/* =========================================================
+   DATE INPUT
+   ========================================================= */
+
+input[type="date"]{
+    color-scheme: dark;
+}
+
+html[data-theme="light"] input[type="date"]{
+    color-scheme: light;
+}
+
+/* =========================================================
+   SELECT
+   ========================================================= */
+
+select{
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23888' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.btn-create{
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.25s ease;
+}
+
+.btn-create:hover{
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   CODE LIST
+   ========================================================= */
+
+.code-row{
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-soft);
+    gap: 16px;
+}
+
+.code-row:first-child{
+    border-top: 1px solid var(--border-soft);
+}
+
+.code-badge{
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    min-width: 90px;
+    text-align: center;
+}
+
+.code-badge.inactive{
+    background: #555;
+    color: #ccc;
+}
+
+.code-type{
+    flex: 1;
+    color: var(--text-soft);
+}
+
+.code-uses,
+.code-expiry{
+    color: var(--text-muted);
+}
+
+.code-status{
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+.code-status.active{
+    background: rgba(46,204,113,0.15);
+    color: var(--success);
+}
+
+.code-status.inactive{
+    background: rgba(150,150,150,0.15);
+    color: var(--text-muted);
+}
+
+/* =========================================================
+   SMALL BUTTONS
+   ========================================================= */
+
+.code-actions{
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sm{
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn-toggle{
+    background: var(--surface-2);
+    color: var(--text-soft);
+    border: 1px solid var(--border);
+}
+
+.btn-toggle:hover{
+    border-color: var(--accent);
+    color: var(--text);
+}
+
+.btn-del{
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(224, 53, 53, 0.30);
+}
+
+.btn-del:hover{
+    background: rgba(224, 53, 53, 0.08);
+}
+
+/* =========================================================
+   MEDALS
+   ========================================================= */
+
+.medal-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.medal-icon{
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.medal-name{
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.medal-sub{
+    font-size: 0.8rem;
+    color: var(--text-soft);
+}
+
+.medal-discount{
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px){
+
+    .form-grid,
+    .form-grid.three{
+        grid-template-columns: 1fr;
+    }
+
+    .code-row{
+        flex-wrap: wrap;
+    }
+
+    .medal-grid{
+        grid-template-columns: 1fr;
+    }
+}
+
 </style>
 <div class="admin-wrapper">
   <div class="main">

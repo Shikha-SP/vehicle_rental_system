@@ -1,0 +1,467 @@
+/**
+ * Showroom — scroll-driven motion + home hero load sequence
+ * Theme: --accent-red, --text-main, etc. (incl. html[data-theme="light"] .dashboard-content)
+ */
+
+/* -------------------------------------------------------------------------- */
+/* Fallbacks                                                                  */
+/* -------------------------------------------------------------------------- */
+
+.element-class {
+    opacity: 1;
+    transform: none;
+    filter: none;
+}
+
+.dashboard-content .section-header h2,
+.dashboard-content .hero-title,
+.dashboard-content .section-heading {
+    clip-path: none;
+}
+
+.dashboard-content .hero-section .hero-heading,
+.dashboard-content .hero-section .hero-heading__line-inner {
+    clip-path: none;
+    animation: none;
+}
+
+.dashboard-content .hero-section .hero-car-img {
+    transform: none;
+    animation: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Reduced motion                                                             */
+/* -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .element-class,
+    .dashboard-content .section-header h2,
+    .dashboard-content .hero-title,
+    .dashboard-content .section-heading,
+    .dashboard-content .hero-car-img img,
+    .dashboard-content .hero-bg-wrapper .hero-bg,
+    .dashboard-content .hero-section .hero-car-img,
+    .dashboard-content .hero-section .hero-heading,
+    .dashboard-content .hero-section .hero-heading__line-inner {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        clip-path: none !important;
+        filter: none !important;
+    }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Home hero — page load (time-based, .hero-section)                          */
+/* -------------------------------------------------------------------------- */
+
+@keyframes showroom-hero-car-slide-in {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Shell: vertical mask rise (same logic as scroll mask, on load) */
+@keyframes showroom-hero-heading-shell-rise {
+    from {
+        clip-path: inset(0 0 100% 0);
+    }
+
+    to {
+        clip-path: inset(0 0 0% 0);
+    }
+}
+
+/* Line typing: horizontal clip + steps (runs inside shell; does not replace shell clip-path) */
+@keyframes showroom-hero-line-type-l1 {
+    from {
+        clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes showroom-hero-line-type-l2 {
+    from {
+        clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes showroom-hero-line-type-l3 {
+    from {
+        clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+.dashboard-content .hero-section .hero-car-img {
+    transform: translateX(100%);
+    animation: showroom-hero-car-slide-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change: transform;
+}
+
+.dashboard-content .hero-section .hero-heading {
+    clip-path: inset(0 0 100% 0);
+    animation: showroom-hero-heading-shell-rise 0.78s cubic-bezier(0.16, 1, 0.3, 1) 0.08s forwards;
+}
+
+.dashboard-content .hero-section .hero-heading__line {
+    display: block;
+    overflow: hidden;
+}
+
+.dashboard-content .hero-section .hero-heading__line-inner {
+    display: inline-block;
+    padding-bottom: 0.06em;
+    clip-path: inset(0 100% 0 0);
+}
+
+.dashboard-content .hero-section .hero-heading__line--1 .hero-heading__line-inner {
+    animation: showroom-hero-line-type-l1 0.72s steps(15, end) 0.42s forwards;
+}
+
+.dashboard-content .hero-section .hero-heading__line--2 .hero-heading__line-inner {
+    animation: showroom-hero-line-type-l2 0.68s steps(12, end) 0.72s forwards;
+}
+
+.dashboard-content .hero-section .hero-heading__line--3 .hero-heading__line-inner {
+    animation: showroom-hero-line-type-l3 0.72s steps(15, end) 1.02s forwards;
+}
+
+.dashboard-content .hero-section .hero-heading .text-red {
+    color: var(--accent-red);
+    transition: color 0.25s ease, text-shadow 0.35s ease;
+}
+
+.dashboard-content .hero-section .hero-heading:hover .text-red {
+    color: var(--accent-red);
+    text-shadow: 0 0 42px color-mix(in srgb, var(--accent-red) 38%, transparent);
+}
+
+html[data-theme="light"] .dashboard-content .hero-section .hero-heading .text-red {
+    color: var(--accent-red);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Scroll-driven showroom                                                      */
+/* -------------------------------------------------------------------------- */
+
+@supports (animation-timeline: view()) {
+
+    .dashboard-content .car-grid {
+        perspective: 1500px;
+        transform-style: preserve-3d;
+    }
+
+    /* --- Default card / block (non-gallery grids) ------------------------ */
+
+    @keyframes showroom-card-enter {
+        from {
+            opacity: 0;
+            filter: blur(10px);
+            transform: rotateX(12deg) translateY(80px) scale(0.92);
+        }
+
+        30% {
+            filter: blur(0);
+        }
+
+        to {
+            opacity: 1;
+            filter: blur(0);
+            transform: rotateX(0deg) translateY(0) scale(1);
+        }
+    }
+
+    .element-class {
+        transform-origin: center bottom;
+        opacity: 0;
+        filter: blur(10px);
+        transform: rotateX(12deg) translateY(80px) scale(0.92);
+        animation: showroom-card-enter 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        animation-timeline: view();
+        animation-range: entry 5% cover 42%;
+        transform-style: preserve-3d;
+        backface-visibility: hidden;
+    }
+
+    /* --- Home gallery: directional dock + blur clears by ~30% progress --- */
+
+    @keyframes showroom-gallery-dock-left {
+        from {
+            opacity: 0;
+            filter: blur(10px);
+            transform: rotateX(10deg) translateX(-100px) translateY(72px) scale(0.94);
+        }
+
+        30% {
+            filter: blur(0);
+            opacity: 1;
+        }
+
+        to {
+            opacity: 1;
+            filter: blur(0);
+            transform: rotateX(0deg) translateX(0) translateY(0) scale(1);
+        }
+    }
+
+    @keyframes showroom-gallery-dock-center {
+        from {
+            opacity: 0;
+            filter: blur(10px);
+            transform: rotateX(18deg) translateY(64px) scale(0.88);
+        }
+
+        30% {
+            filter: blur(0);
+            opacity: 1;
+        }
+
+        to {
+            opacity: 1;
+            filter: blur(0);
+            transform: rotateX(0deg) translateY(0) scale(1);
+        }
+    }
+
+    @keyframes showroom-gallery-dock-right {
+        from {
+            opacity: 0;
+            filter: blur(10px);
+            transform: rotateX(10deg) translateX(100px) translateY(72px) scale(0.94);
+        }
+
+        30% {
+            filter: blur(0);
+            opacity: 1;
+        }
+
+        to {
+            opacity: 1;
+            filter: blur(0);
+            transform: rotateX(0deg) translateX(0) translateY(0) scale(1);
+        }
+    }
+
+    .dashboard-content .car-grid > .car-card.element-class {
+        animation: showroom-gallery-dock-center 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        animation-timeline: view();
+        animation-range: entry 10% cover 45%;
+        animation-delay: 0ms;
+    }
+
+    .dashboard-content .car-grid > .car-card.element-class:nth-child(1) {
+        animation-name: showroom-gallery-dock-left;
+    }
+
+    .dashboard-content .car-grid > .car-card.element-class:nth-child(2) {
+        animation-name: showroom-gallery-dock-center;
+    }
+
+    .dashboard-content .car-grid > .car-card.element-class:nth-child(3) {
+        animation-name: showroom-gallery-dock-right;
+    }
+
+    .dashboard-content .car-grid > .car-card.element-class:nth-child(n + 4) {
+        animation: showroom-card-enter 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        animation-timeline: view();
+        animation-range: entry 10% cover 45%;
+        animation-delay: 0ms;
+    }
+
+    .dashboard-content .car-grid > .no-vehicle-message.element-class {
+        animation: showroom-card-enter 1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        animation-timeline: view();
+        animation-range: entry 10% cover 45%;
+        animation-delay: 0ms;
+    }
+
+    /**
+     * Stagger (non-home-gallery): keep ripple; home gallery cards use delay 0 above
+     */
+    :is(
+        .dashboard-content .collections-grid,
+        .dashboard-content .features,
+        .dashboard-content .stats-counter,
+        .dashboard-content .brand-filters,
+        .dashboard-content .banner-flex,
+        .dashboard-content .cta
+    ) > .element-class:nth-child(1) {
+        animation-delay: 0ms;
+    }
+
+    :is(
+        .dashboard-content .collections-grid,
+        .dashboard-content .features,
+        .dashboard-content .stats-counter,
+        .dashboard-content .brand-filters,
+        .dashboard-content .banner-flex,
+        .dashboard-content .cta
+    ) > .element-class:nth-child(2) {
+        animation-delay: 100ms;
+    }
+
+    :is(
+        .dashboard-content .collections-grid,
+        .dashboard-content .features,
+        .dashboard-content .stats-counter,
+        .dashboard-content .brand-filters,
+        .dashboard-content .banner-flex,
+        .dashboard-content .cta
+    ) > .element-class:nth-child(3) {
+        animation-delay: 200ms;
+    }
+
+    :is(
+        .dashboard-content .collections-grid,
+        .dashboard-content .features,
+        .dashboard-content .stats-counter,
+        .dashboard-content .brand-filters,
+        .dashboard-content .banner-flex,
+        .dashboard-content .cta
+    ) > .element-class:nth-child(4) {
+        animation-delay: 300ms;
+    }
+
+    :is(
+        .dashboard-content .collections-grid,
+        .dashboard-content .features,
+        .dashboard-content .stats-counter,
+        .dashboard-content .brand-filters,
+        .dashboard-content .banner-flex,
+        .dashboard-content .cta
+    ) > .element-class:nth-child(5) {
+        animation-delay: 400ms;
+    }
+
+    :is(
+        .dashboard-content .collections-grid,
+        .dashboard-content .features,
+        .dashboard-content .stats-counter,
+        .dashboard-content .brand-filters,
+        .dashboard-content .banner-flex,
+        .dashboard-content .cta
+    ) > .element-class:nth-child(6) {
+        animation-delay: 500ms;
+    }
+
+    /* --- User home hero: scroll depth on image only (wrapper = load slide) -- */
+
+    @keyframes showroom-hero-depth {
+        from {
+            transform: scale(1) translateY(0);
+        }
+
+        to {
+            transform: scale(1.15) translateY(-50px);
+        }
+    }
+
+    .dashboard-content .hero-section {
+        view-timeline-name: --showroom-user-hero;
+        view-timeline-axis: block;
+    }
+
+    .dashboard-content .hero-section .hero-car-img img {
+        animation: showroom-hero-depth linear both;
+        animation-timeline: --showroom-user-hero;
+        animation-range: entry 0% exit 100%;
+        transition: filter 0.35s ease, box-shadow 0.35s ease;
+        will-change: transform;
+    }
+
+    .dashboard-content .hero-section .hero-car-img img:hover {
+        filter: drop-shadow(-24px 14px 64px rgba(0, 0, 0, 0.88))
+            drop-shadow(0 0 28px color-mix(in srgb, var(--accent-red) 28%, transparent));
+    }
+
+    /* --- Landing hero depth ------------------------------------------------ */
+
+    .dashboard-content .hero {
+        view-timeline-name: --showroom-landing-hero;
+        view-timeline-axis: block;
+    }
+
+    .dashboard-content .hero-bg-wrapper .hero-bg {
+        animation: showroom-hero-depth linear both;
+        animation-timeline: --showroom-landing-hero;
+        animation-range: entry 0% exit 100%;
+        will-change: transform;
+    }
+
+    /* --- Masked typography (not home .hero-heading — load sequence above) -- */
+
+    @keyframes showroom-mask-rise {
+        from {
+            clip-path: inset(0 0 100% 0);
+        }
+
+        to {
+            clip-path: inset(0 0 0% 0);
+        }
+    }
+
+    .dashboard-content .section-header h2,
+    .dashboard-content .hero-title,
+    .dashboard-content .section-heading {
+        clip-path: inset(0 0 100% 0);
+        animation: showroom-mask-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 38%;
+    }
+
+    .dashboard-content .section-header h2,
+    .dashboard-content .section-heading {
+        box-decoration-break: clone;
+        -webkit-box-decoration-break: clone;
+    }
+
+    .dashboard-content .hero-title .text-red {
+        transition: color 0.25s ease, text-shadow 0.35s ease;
+    }
+
+    .dashboard-content .hero-title:hover .text-red {
+        color: var(--accent-red);
+        text-shadow: 0 0 42px color-mix(in srgb, var(--accent-red) 35%, transparent);
+    }
+
+    /* --- Theme-aware gallery card chrome ----------------------------------- */
+
+    .dashboard-content .car-grid > .element-class .card-type-badge {
+        background: var(--accent-red);
+        color: var(--text-main);
+        transition: background-color 0.22s ease,
+            color 0.22s ease,
+            box-shadow 0.28s ease,
+            transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .dashboard-content .car-grid > .element-class .badge {
+        background: var(--accent-red);
+        color: var(--text-main);
+        transition: background-color 0.22s ease,
+            color 0.22s ease,
+            box-shadow 0.28s ease;
+    }
+
+    .dashboard-content .car-grid > .element-class .price {
+        color: var(--text-main);
+        transition: color 0.22s ease, opacity 0.22s ease;
+    }
+}

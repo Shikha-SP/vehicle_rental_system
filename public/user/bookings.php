@@ -677,8 +677,6 @@ include '../../includes/header.php';
     <?php endif; ?>
 </div>
 
-<?php include '../../includes/footer.php'; ?>
-
 <!-- Chat Modal -->
 <div class="chat-modal-overlay" id="chatModal">
     <div class="chat-window">
@@ -788,3 +786,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<?php include '../../includes/footer.php'; ?>

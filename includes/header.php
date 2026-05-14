@@ -6,7 +6,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <!DOCTYPE html>
 <html lang="en">
+  
 <head>
+  <?php if (!empty($extraStyles)) echo $extraStyles; ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TD Rentals</title>
@@ -41,14 +43,16 @@ if (session_status() === PHP_SESSION_NONE) {
   <div id="td-overlay-msg">Loading…</div>
 </div>
 
-<header>
-  <nav>
+<header class="td-site-header">
+  <nav class="td-site-header__inner" aria-label="Main navigation">
 
     <!-- BRAND -->
-    <a href="/vehicle_rental_collab_project/public/landing_page.php" class="brand">
-      TD <span>RENTALS</span>
-    </a>
-
+<a href="<?= !empty($_SESSION['is_admin']) 
+    ? '/vehicle_rental_collab_project/public/admin/dashboard.php' 
+    : '/vehicle_rental_collab_project/public/landing_page.php' 
+?>" class="brand">
+  TD <span>RENTALS</span>
+</a>
     <?php if (isset($_SESSION['user_id'])): ?>
         <!-- NAV LINKS (only for logged-in users) -->
         <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
@@ -102,11 +106,21 @@ if (session_status() === PHP_SESSION_NONE) {
         <!-- RIGHT SIDE -->
         <div class="nav-auth" id="navAuth">
           <div class="profile-menu">
-            <button class="profile-btn" onclick="toggleDropdown()">
+            <button type="button" class="profile-btn" onclick="toggleDropdown()" aria-haspopup="true" aria-expanded="false" id="profileMenuBtn">
               <?= isset($_SESSION['username']) ? strtoupper(substr($_SESSION['username'], 0, 1)) : 'U' ?>
             </button>
 
-            <div class="dropdown" id="dropdownMenu">
+            <div class="dropdown" id="dropdownMenu" role="menu" aria-labelledby="profileMenuBtn">
+              <?php if (empty($_SESSION['is_admin'])): ?>
+                <a href="/vehicle_rental_collab_project/public/user/wishlist.php">My Wishlist</a>
+              <?php else: ?>
+                <a href="/vehicle_rental_collab_project/public/admin/inquiries.php">Messages</a>
+              <?php endif; ?>
+              <a href="/vehicle_rental_collab_project/public/user/settings.php">Settings</a>
+              <a href="/vehicle_rental_collab_project/public/authentication/logout.php?return=<?= urlencode($_SERVER['REQUEST_URI']) ?>">Logout</a>
+            </div>
+
+            <div class="profile-mobile-links" aria-label="Account">
               <?php if (empty($_SESSION['is_admin'])): ?>
                 <a href="/vehicle_rental_collab_project/public/user/wishlist.php">My Wishlist</a>
               <?php else: ?>
@@ -139,9 +153,12 @@ if (session_status() === PHP_SESSION_NONE) {
     </button>
 
     <!-- MOBILE TOGGLE -->
-    <button class="nav-toggle"
-      onclick="document.getElementById('navLinks').classList.toggle('open'); 
-               document.getElementById('navAuth').classList.toggle('open')">
+    <button type="button"
+      class="nav-toggle"
+      id="navToggle"
+      aria-label="Open menu"
+      aria-expanded="false"
+      aria-controls="navAuth">
       <span></span><span></span><span></span>
     </button>
 
@@ -185,20 +202,26 @@ if (session_status() === PHP_SESSION_NONE) {
 <script src="/vehicle_rental_collab_project/assets/js/chatbot.js"></script>
 
 <script>
-// Combined Scripts
 function toggleDropdown() {
-  document.getElementById("dropdownMenu").classList.toggle("show");
+  if (window.innerWidth <= 768) return;
+  const dropdown = document.getElementById("dropdownMenu");
+  const btn = document.getElementById("profileMenuBtn");
+  if (!dropdown || !btn) return;
+  const open = dropdown.classList.toggle("show");
+  btn.setAttribute("aria-expanded", open ? "true" : "false");
 }
 
 window.onclick = function(e) {
   if (!e.target.matches('.profile-btn')) {
     const dropdown = document.getElementById("dropdownMenu");
+    const btn = document.getElementById("profileMenuBtn");
     if (dropdown && dropdown.classList.contains('show')) {
       dropdown.classList.remove('show');
+      if (btn) btn.setAttribute("aria-expanded", "false");
     }
   }
-}
-// Theme Toggle Logic 
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   const themeBtn = document.getElementById('themeToggleBtn');
   if (themeBtn) {
@@ -209,10 +232,101 @@ document.addEventListener('DOMContentLoaded', () => {
       localStorage.setItem('td-theme', next);
     });
   }
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  const navAuth = document.getElementById('navAuth');
+
+  function closeMobileNav() {
+    if (!navToggle) return;
+    navToggle.classList.remove('is-open');
+    navToggle.setAttribute('aria-expanded', 'false');
+    navToggle.setAttribute('aria-label', 'Open menu');
+    navLinks?.classList.remove('open');
+    navAuth?.classList.remove('open');
+    document.body.classList.remove('td-nav-open');
+    const dropdown = document.getElementById('dropdownMenu');
+    const pbtn = document.getElementById('profileMenuBtn');
+    if (dropdown) dropdown.classList.remove('show');
+    if (pbtn) pbtn.setAttribute('aria-expanded', 'false');
+  }
+
+  if (navToggle) {
+    navToggle.addEventListener('click', () => {
+      const willOpen = !navToggle.classList.contains('is-open');
+      navToggle.classList.toggle('is-open', willOpen);
+      navToggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+      navToggle.setAttribute('aria-label', willOpen ? 'Close menu' : 'Open menu');
+      navLinks?.classList.toggle('open', willOpen);
+      navAuth?.classList.toggle('open', willOpen);
+      document.body.classList.toggle('td-nav-open', willOpen);
+    });
+  }
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (window.innerWidth > 768) closeMobileNav();
+    }, 150);
+  });
+
+  /* Close drawer when user tries to scroll the page (wheel / touch drag) */
+  function menuOpenBlocksPageScroll() {
+    return document.body.classList.contains('td-nav-open') && window.innerWidth <= 768;
+  }
+
+  window.addEventListener(
+    'wheel',
+    () => {
+      if (menuOpenBlocksPageScroll()) closeMobileNav();
+    },
+    { passive: true }
+  );
+
+  let touchScrollCloseStartY = null;
+  window.addEventListener(
+    'touchstart',
+    (e) => {
+      if (!menuOpenBlocksPageScroll()) {
+        touchScrollCloseStartY = null;
+        return;
+      }
+      touchScrollCloseStartY = e.touches[0].clientY;
+    },
+    { passive: true }
+  );
+  window.addEventListener(
+    'touchmove',
+    (e) => {
+      if (!menuOpenBlocksPageScroll() || touchScrollCloseStartY === null) return;
+      const dy = e.touches[0].clientY - touchScrollCloseStartY;
+      if (Math.abs(dy) > 10) {
+        closeMobileNav();
+        touchScrollCloseStartY = null;
+      }
+    },
+    { passive: true }
+  );
+
+  document.querySelectorAll('.td-site-header .nav-links a').forEach((link) => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 768) closeMobileNav();
+    });
+  });
+
+  document.querySelectorAll('.profile-mobile-links a').forEach((link) => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 768) closeMobileNav();
+    });
+  });
+
+  document.querySelectorAll('.nav-auth .btn-primary').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (window.innerWidth <= 768) closeMobileNav();
+    });
+  });
 });
 </script>
 
 <script src="/vehicle_rental_collab_project/assets/js/loading.js?v=<?= time() ?>"></script>
-
-</body>
-</html>
