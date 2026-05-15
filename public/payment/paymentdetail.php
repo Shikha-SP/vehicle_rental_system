@@ -292,18 +292,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                     $mail->addAddress($email, $first_name . ' ' . $last_name);
                     $mail->Subject = 'Booking Confirmation';
                     $mail->isHTML(true);
-                    $mail->Body = '  
-                        <html><body style="font-family: Montserrat, Arial, sans-serif; max-width: 600px; margin: auto;">
-                        <h1 style="color: #333;">TD Rentals</h1>
-                        <p>Hi ' . $first_name . ',</p>
-                        <p>Your booking for <strong>' . $vehicle['model'] . '</strong> is confirmed.</p>
-                        <hr>
-                        <p><strong>Pickup:</strong> ' . $pickup_date . '</p>
-                        <p><strong>Dropoff:</strong> ' . $dropoff_date . '</p>
-                        <hr>
-                        <p>Please find your invoice attached.</p>
-                        <p>Thank you for choosing TD Rentals 🚀</p>
-                        </body></html>';
+                    $mail->Body = "
+                            <p>Hi {$first_name},</p>
+                            <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
+                            <p>Pickup date: {$pickup_date}</p>
+                            <p>Dropoff date: {$dropoff_date}</p>
+                            <p>Total Paid: NPR " . number_format($totalprice, 2) . "</p>
+                            {$savings_msg}
+                            <p>Please find your invoice attached.</p>
+                            <p>Thank you for choosing TD Rentals 🚀</p>
+                            
+                            <p>Best Regards,</p>
+                            <p>TD Rentals Team</p>
+                        ";
                     $mail->AltBody = "Hi {$first_name}, Your booking for {$vehicle['model']} is confirmed.";
                     // Attach PDF from string (no temp file needed)
                     $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');

@@ -144,7 +144,7 @@ document.getElementById('submitReview')
                 if (data.success) {
                     document.getElementById('reviewModal').classList.remove('active');
                     showToast(data.updated ? '⭐ Review updated!' : '⭐ Review posted!');
-                    
+
                     const trigger = document.getElementById('openReviewModal');
                     if (trigger) trigger.textContent = 'Edit your review';
 

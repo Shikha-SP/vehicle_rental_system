@@ -7,6 +7,7 @@ require_once '../../config/db.php';
 require_once '../../includes/functions.php';
 
 $id = (int) ($_GET['id'] ?? 0);
+$id = (int) ($_GET['id'] ?? 0);
 if (!$id) {
     header('Location: vehicles.php');
     exit;
@@ -37,6 +38,7 @@ $isOwner = ($user_id && $user_id == $vehicle['user_id']);
 
 // Check whether the current user already has an active confirmed booking for this vehicle
 $userBooking = false;
+$booking_id = null;
 if ($user_id) {
     $booking_check_sql = "SELECT id FROM bookings WHERE user_id = ? AND vehicle_id = ? AND status = 'confirmed' AND end_date >= CURDATE() LIMIT 1";
     $booking_check_stmt = $conn->prepare($booking_check_sql);
@@ -139,8 +141,11 @@ include '../../includes/header.php';
         <div class="hero-bg">
             <img src="../../<?= htmlspecialchars($vehicle['image_path'] ?? 'assets/images/placeholder.png') ?>"
                 alt="<?= htmlspecialchars($vehicle['model']) ?>">
+            <img src="../../<?= htmlspecialchars($vehicle['image_path'] ?? 'assets/images/placeholder.png') ?>"
+                alt="<?= htmlspecialchars($vehicle['model']) ?>">
             <div class="hero-overlay"></div>
         </div>
+
 
         <div class="container hero-content">
             <div class="hero-text">
@@ -168,9 +173,13 @@ include '../../includes/header.php';
                     <span class="spec-label">TOP SPEED</span>
                     <span class="spec-value"><?= htmlspecialchars($vehicle['top_speed'] ?? '—') ?>
                         <small>KM/H</small></span>
+                    <span class="spec-value"><?= htmlspecialchars($vehicle['top_speed'] ?? '—') ?>
+                        <small>KM/H</small></span>
                 </div>
                 <div class="spec-card">
                     <span class="spec-label">CAPACITY</span>
+                    <span class="spec-value"><?= htmlspecialchars($vehicle['fuel_capacity'] ?? '—') ?>
+                        <small>LITERS</small></span>
                     <span class="spec-value"><?= htmlspecialchars($vehicle['fuel_capacity'] ?? '—') ?>
                         <small>LITERS</small></span>
                 </div>
@@ -178,6 +187,17 @@ include '../../includes/header.php';
 
             <div class="vehicle-description">
                 <h2>Performance Excellence</h2>
+                <p>The <?= htmlspecialchars($vehicle['model']) ?> represents a masterclass in automotive engineering,
+                    meticulously finished in a striking <?= htmlspecialchars($vehicle['color'] ?? 'custom') ?> exterior.
+                    This performance-driven <?= htmlspecialchars($vehicle['fuel_type']) ?> vehicle is equipped with a
+                    precise <?= htmlspecialchars($vehicle['transmission']) ?> transmission, ensuring every mile is
+                    delivered with absolute control.</p>
+                <p>Boasting a top speed of <?= htmlspecialchars($vehicle['top_speed'] ?? 'N/A') ?> KM/H and a
+                    substantial <?= htmlspecialchars($vehicle['fuel_capacity'] ?? 'N/A') ?>-liter fuel capacity, this
+                    <?= htmlspecialchars(strtoupper($vehicle['license_type'])) ?> category vehicle is built for
+                    long-distance cruising and exhilarating performance alike.
+                </p>
+
                 <p>The <?= htmlspecialchars($vehicle['model']) ?> represents a masterclass in automotive engineering,
                     meticulously finished in a striking <?= htmlspecialchars($vehicle['color'] ?? 'custom') ?> exterior.
                     This performance-driven <?= htmlspecialchars($vehicle['fuel_type']) ?> vehicle is equipped with a
@@ -380,6 +400,7 @@ include '../../includes/header.php';
                         <div class="form-group">
                             <label>Drop-off Date</label>
                             <input type="date" name="dropoff_date" id="dropoff-date" min="<?= date('Y-m-d') ?>"
+                               
                                 value="<?= $def_dropoff ?>" required>
                         </div>
 
@@ -399,9 +420,13 @@ include '../../includes/header.php';
                                 <span>Base Rate (<span id="summary-days"><?= $def_days ?></span> days)</span>
                                 <span id="summary-total">NPR
                                     <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
+                                <span id="summary-total">NPR
+                                    <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
                             </div>
                             <div class="summary-line total">
                                 <span>Total Estimated</span>
+                                <span id="summary-grand">NPR
+                                    <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
                                 <span id="summary-grand">NPR
                                     <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
                             </div>
