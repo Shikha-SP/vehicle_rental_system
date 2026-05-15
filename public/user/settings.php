@@ -117,7 +117,7 @@ require_once '../../includes/header.php';
                         <h2><i class="fas fa-key"></i> Change Password</h2>
                         <div class="settings-page-card__sub">Update your account password</div>
 
-                        <form>
+                        <form id="changePasswordForm">
                             <div class="settings-page-form-group">
                                 <label for="current_password">Current Password *</label>
                                 <input type="password" id="current_password" name="current_password"
@@ -150,7 +150,7 @@ require_once '../../includes/header.php';
                         <h2><i class="fas fa-user-edit"></i> Change Name</h2>
                         <div class="settings-page-card__sub">Update your first and last name</div>
 
-                        <form>
+                        <form id="changeNameForm">
                             <div class="settings-page-form-group">
                                 <label for="first_name">First Name *</label>
                                 <input type="text" id="first_name" name="first_name"
@@ -203,7 +203,7 @@ require_once '../../includes/header.php';
                             </div>
 
                             <div class="settings-delete-form-box">
-                                <form>
+                                <form id="deleteAccountForm">
                                     <div class="settings-page-form-group">
                                         <label for="delete_password">Account Password *</label>
                                         <input type="password" id="delete_password" name="delete_password"
@@ -301,7 +301,7 @@ require_once '../../includes/header.php';
             const isEnabled = this.checked;
 
             try {
-                const response = await fetch('../../ajax/update_notification.php', {
+                const response = await fetch('/vehicle_rental_collab_project/ajax/update_notification.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

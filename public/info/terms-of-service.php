@@ -8,7 +8,7 @@ include '../../includes/header.php';
 <!-- Main container for the info page content -->
 <main class="info-page">
     <!-- Button to let the user navigate back to the previous page using browser history -->
-    <button class="info-back-btn" onclick="history.back()">← Back</button>
+    <a href="javascript:history.back()" class="info-back-btn">← Back</a>
     
     <h1>Terms of Service</h1>
     <!-- Main content paragraphs outlining the terms and conditions -->
