@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
     image_path VARCHAR(255),
     status ENUM('pending','approved','rejected','available','rented') DEFAULT 'pending',
     avg_rating DECIMAL(3,2),  
+    avg_rating DECIMAL(3,2),  
     approved_at DATETIME NULL,
     rejected_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -257,6 +258,17 @@ CREATE TABLE IF NOT EXISTS reviews (
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );");
 
+// Create review replies table if not exists
+$conn->query("
+    CREATE TABLE IF NOT EXISTS review_replies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    review_id INT NOT NULL UNIQUE,
+    owner_id INT NOT NULL,
+    reply_text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE CASCADE,
+    FOREIGN KEY (owner_id) REFERENCES users(id)
+);");
 //Create notification preference table
 $conn->query("
     CREATE TABLE IF NOT EXISTS notification_preference (
@@ -267,6 +279,27 @@ $conn->query("
     FOREIGN KEY (user_id) REFERENCES users(id)
     )
 ");
+
+$conn->query("
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    booking_id INT NOT NULL,
+    user_id INT NOT NULL,
+
+    amount DECIMAL(10,2) NOT NULL,
+    payment_method VARCHAR(50) DEFAULT 'card',
+
+    card_last4 VARCHAR(4),         -- last 4 digits only (security)
+    card_type VARCHAR(20),         -- Visa, Mastercard
+
+    transaction_ref VARCHAR(100),  -- fake reference ID
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (booking_id) REFERENCES bookings(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);");
 
 // confirmation
 // echo "Database and tables are ready.";
