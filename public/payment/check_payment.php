@@ -1,20 +1,7 @@
 <?php
 /**
- * check_payment.php
- *
- * Polling endpoint called by qr_initiate.php every 3 seconds.
- *
- * Problem solved here:
- *   When the user scans the QR on their phone and pays, Khalti redirects
- *   the PHONE browser to khalti_callback.php. But since the return_url uses
- *   'localhost', the phone cannot reach it — so the DB booking stays 'pending'
- *   and the laptop never gets redirected.
- *
- * Fix:
- *   This endpoint now actively verifies the payment with Khalti's API using
- *   the pidx stored in the booking row. If Khalti reports 'Completed', we
- *   do the full DB update + transaction insert right here, on the laptop side.
- *   The QR page's JS polling then detects 'paid' and redirects immediately.
+ * check_payment.php — QR payment polling endpoint.
+ * Creates the booking only after Khalti reports payment as Completed (same as eSewa).
  */
 
 session_start();
@@ -33,43 +20,39 @@ if (empty($order_id)) {
     exit;
 }
 
-// Fetch booking from DB
-$stmt = $conn->prepare("SELECT id, payment_status, user_id, vehicle_id, start_date, end_date, total_price, purchase_order_id FROM bookings WHERE purchase_order_id = ? LIMIT 1");
-$stmt->bind_param("s", $order_id);
-$stmt->execute();
-$booking = $stmt->get_result()->fetch_assoc();
-
-// Booking not found yet
-if (!$booking) {
-    echo json_encode(['status' => 'pending']);
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['status' => 'error', 'message' => 'Session expired']);
     exit;
 }
 
-// Already resolved — just return the current status
-if ($booking['payment_status'] === 'paid') {
-    echo json_encode(['status' => 'paid', 'booking_id' => $booking['id']]);
+if ($order_id !== ($_SESSION['khalti_purchase_order_id'] ?? '')) {
+    echo json_encode(['status' => 'error', 'message' => 'Order mismatch']);
     exit;
 }
 
-if ($booking['payment_status'] === 'failed') {
+// Already completed (e.g. callback ran first)
+$existing_stmt = $conn->prepare("SELECT id, payment_status FROM bookings WHERE purchase_order_id = ? LIMIT 1");
+$existing_stmt->bind_param("s", $order_id);
+$existing_stmt->execute();
+$existing_booking = $existing_stmt->get_result()->fetch_assoc();
+$existing_stmt->close();
+
+if ($existing_booking && $existing_booking['payment_status'] === 'paid') {
+    echo json_encode(['status' => 'paid', 'booking_id' => (int) $existing_booking['id']]);
+    exit;
+}
+
+if ($existing_booking && $existing_booking['payment_status'] === 'failed') {
     echo json_encode(['status' => 'failed']);
     exit;
 }
 
-// --- Status is still 'pending': actively verify with Khalti API ---
-// Use the purchase_order_id as the pidx lookup key via Khalti's lookup endpoint.
-// Khalti lookup accepts pidx. We stored purchase_order_id which is our internal ID,
-// not the pidx. We need pidx. Check if we stored it in session.
 $pidx = $_SESSION['khalti_pidx'] ?? '';
-
 if (empty($pidx)) {
-    // pidx not in session (e.g. page refreshed) — we can't verify without it.
-    // Just return pending and wait.
     echo json_encode(['status' => 'pending']);
     exit;
 }
 
-// Call Khalti lookup API
 $curl = curl_init();
 curl_setopt_array($curl, [
     CURLOPT_URL            => $khalti_config['base_url'] . 'epayment/lookup/',
@@ -84,103 +67,123 @@ curl_setopt_array($curl, [
     ],
 ]);
 
-$response     = curl_exec($curl);
-$curl_err     = curl_error($curl);
+$response = curl_exec($curl);
+$curl_err = curl_error($curl);
 curl_close($curl);
 
 if ($curl_err) {
-    // Network error — return pending, will retry next poll
     echo json_encode(['status' => 'pending']);
     exit;
 }
 
 $khalti_data = json_decode($response, true);
 
-// Khalti confirmed the payment
 if (isset($khalti_data['status']) && $khalti_data['status'] === 'Completed') {
+    $user_id = (int) $_SESSION['user_id'];
+    $vehicle_id = (int) ($_SESSION['payment_vehicle_id'] ?? 0);
+    $pickup_date = $_SESSION['payment_pickup'] ?? '';
+    $dropoff_date = $_SESSION['payment_dropoff'] ?? '';
+    $days = (int) ($_SESSION['payment_days'] ?? 0);
+    $totalprice = (float) ($_SESSION['khalti_amount'] ?? 0);
+    $discount_code_saved = (string) ($_SESSION['khalti_discount_code'] ?? '');
+    $discount_amount_saved = (float) ($_SESSION['khalti_discount_amount'] ?? 0);
+    $discount_code_id = isset($_SESSION['khalti_discount_code_id']) ? (int) $_SESSION['khalti_discount_code_id'] : 0;
 
-    $booking_id  = $booking['id'];
-    $user_id     = $booking['user_id'];
-    $vehicle_id  = $booking['vehicle_id'];
-    $pickup_date = $booking['start_date'];
-    $dropoff_date = $booking['end_date'];
-    $totalprice  = $booking['total_price'];
+    if (!$vehicle_id || !$pickup_date || !$dropoff_date) {
+        echo json_encode(['status' => 'error', 'message' => 'Booking session expired']);
+        exit;
+    }
 
     $conn->begin_transaction();
     try {
-        // Update booking to paid
-        $upd = $conn->prepare("UPDATE bookings SET payment_status = 'paid' WHERE id = ?");
-        $upd->bind_param("i", $booking_id);
-        if (!$upd->execute()) {
-            throw new Exception("DB update failed.");
+        if ($existing_booking) {
+            $booking_id = (int) $existing_booking['id'];
+            $upd = $conn->prepare("UPDATE bookings SET payment_status = 'paid', status = 'confirmed' WHERE id = ?");
+            $upd->bind_param("i", $booking_id);
+            if (!$upd->execute()) {
+                throw new Exception("DB update failed.");
+            }
+            $upd->close();
+        } else {
+            $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, discount_code, discount_amount, created_at)
+                           VALUES (?, ?, ?, ?, ?, 'confirmed', 'paid', ?, ?, ?, NOW())";
+            $insert_stmt = $conn->prepare($insert_sql);
+            $insert_stmt->bind_param(
+                "iissdssd",
+                $user_id,
+                $vehicle_id,
+                $pickup_date,
+                $dropoff_date,
+                $totalprice,
+                $order_id,
+                $discount_code_saved,
+                $discount_amount_saved
+            );
+            if (!$insert_stmt->execute()) {
+                throw new Exception("Failed to create booking.");
+            }
+            $booking_id = (int) $insert_stmt->insert_id;
+            $insert_stmt->close();
         }
 
-        // Insert transaction record (avoid duplicate if already inserted)
         $check_txn = $conn->prepare("SELECT id FROM transactions WHERE booking_id = ? LIMIT 1");
         $check_txn->bind_param("i", $booking_id);
         $check_txn->execute();
-        $existing_txn = $check_txn->get_result()->fetch_assoc();
+        $has_txn = $check_txn->get_result()->num_rows > 0;
+        $check_txn->close();
 
-        if (!$existing_txn) {
+        if (!$has_txn) {
             $transaction_ref = $khalti_data['transaction_id'] ?? ('KH-' . strtoupper(bin2hex(random_bytes(8))));
             $txn = $conn->prepare("INSERT INTO transactions (booking_id, user_id, amount, payment_method, card_last4, card_type, transaction_ref, created_at) VALUES (?, ?, ?, 'khalti', 'KHLT', 'Khalti', ?, NOW())");
             $txn->bind_param("iids", $booking_id, $user_id, $totalprice, $transaction_ref);
             if (!$txn->execute()) {
                 throw new Exception("Transaction insert failed.");
             }
+            $txn->close();
 
-            $disc_id = (int) ($_SESSION['khalti_discount_code_id'] ?? 0);
-            $disc_amt = (float) ($_SESSION['khalti_discount_amount'] ?? 0);
-            $disc_code = (string) ($_SESSION['khalti_discount_code'] ?? '');
-            if ($disc_id > 0 && $disc_amt > 0 && $disc_code !== '') {
-                $ub = $conn->prepare("UPDATE bookings SET discount_code = ?, discount_amount = ? WHERE id = ?");
-                $ub->bind_param("sdi", $disc_code, $disc_amt, $booking_id);
-                if (!$ub->execute()) {
-                    throw new Exception("Failed to save discount on booking.");
-                }
+            if ($discount_code_id > 0 && $discount_amount_saved > 0) {
                 $chk_use = $conn->prepare("SELECT id FROM discount_code_uses WHERE user_id = ? AND code_id = ? LIMIT 1");
-                $chk_use->bind_param("ii", $user_id, $disc_id);
+                $chk_use->bind_param("ii", $user_id, $discount_code_id);
                 $chk_use->execute();
                 if ($chk_use->get_result()->num_rows === 0) {
                     $ins_use = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
-                    $ins_use->bind_param("ii", $user_id, $disc_id);
+                    $ins_use->bind_param("ii", $user_id, $discount_code_id);
                     $ins_use->execute();
-                    $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = " . (int) $disc_id);
+                    $ins_use->close();
+                    $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = " . (int) $discount_code_id);
                 }
                 $chk_use->close();
             }
 
-            // Calculate days for email
-            $days = max(1, (new DateTime($dropoff_date))->diff(new DateTime($pickup_date))->days);
-
-            // Fetch vehicle & user for email
             $v_stmt = $conn->prepare("SELECT model, price_per_day FROM vehicles WHERE id = ?");
             $v_stmt->bind_param("i", $vehicle_id);
             $v_stmt->execute();
             $vehicle = $v_stmt->get_result()->fetch_assoc();
+            $v_stmt->close();
 
             $u_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
             $u_stmt->bind_param("i", $user_id);
             $u_stmt->execute();
-            $user_data  = $u_stmt->get_result()->fetch_assoc();
-            $email      = $user_data['email'] ?? '';
-            $first_name = $user_data['first_name'] ?? '';
-            $last_name  = $user_data['last_name'] ?? '';
+            $user_data = $u_stmt->get_result()->fetch_assoc();
+            $u_stmt->close();
 
-            // Send confirmation email
+            $email = $user_data['email'] ?? '';
+            $first_name = $user_data['first_name'] ?? '';
+            $last_name = $user_data['last_name'] ?? '';
+
             try {
                 $invoice_data = [
-                    'booking_id'   => $booking_id,
-                    'first_name'   => $first_name,
-                    'email'        => $email,
-                    'model'        => $vehicle['model'],
-                    'pickup_date'  => $pickup_date,
+                    'booking_id' => $booking_id,
+                    'first_name' => $first_name,
+                    'email' => $email,
+                    'model' => $vehicle['model'],
+                    'pickup_date' => $pickup_date,
                     'dropoff_date' => $dropoff_date,
-                    'days'         => $days,
+                    'days' => max(1, $days),
                     'price_per_day' => $vehicle['price_per_day'],
-                    'total_price'  => $totalprice,
-                    'discount_code' => (string) ($_SESSION['khalti_discount_code'] ?? ''),
-                    'discount_amount' => (float) ($_SESSION['khalti_discount_amount'] ?? 0),
+                    'total_price' => $totalprice,
+                    'discount_code' => $discount_code_saved,
+                    'discount_amount' => $discount_amount_saved,
                 ];
                 $pdf_string = generateInvoicePDF($invoice_data);
 
@@ -210,7 +213,6 @@ if (isset($khalti_data['status']) && $khalti_data['status'] === 'Completed') {
 
         $conn->commit();
 
-        // Clear session payment data
         unset(
             $_SESSION['payment_vehicle_id'],
             $_SESSION['payment_pickup'],
@@ -233,15 +235,17 @@ if (isset($khalti_data['status']) && $khalti_data['status'] === 'Completed') {
         echo json_encode(['status' => 'pending']);
         exit;
     }
+}
 
-} elseif (isset($khalti_data['status']) && in_array($khalti_data['status'], ['Failed', 'Expired', 'User canceled'])) {
-    // Mark as failed
-    $upd = $conn->prepare("UPDATE bookings SET payment_status = 'failed' WHERE id = ?");
-    $upd->bind_param("i", $booking['id']);
-    $upd->execute();
+if (isset($khalti_data['status']) && in_array($khalti_data['status'], ['Failed', 'Expired', 'User canceled'], true)) {
+    if ($existing_booking) {
+        $upd = $conn->prepare("UPDATE bookings SET status = 'cancelled', payment_status = 'failed' WHERE id = ? AND payment_status = 'pending'");
+        $upd->bind_param("i", $existing_booking['id']);
+        $upd->execute();
+        $upd->close();
+    }
     echo json_encode(['status' => 'failed']);
     exit;
 }
 
-// Khalti says it's still in progress (Initiated, Pending, etc.)
 echo json_encode(['status' => 'pending']);

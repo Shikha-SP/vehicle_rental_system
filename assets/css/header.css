@@ -171,7 +171,14 @@ main{flex:1}
   transform: translateY(0);
   pointer-events: auto;
 }
-
+@media (min-width: 769px) {
+  .profile-menu:hover .dropdown {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+}
 .nav-toggle {
   display: none;
   flex-direction: column;

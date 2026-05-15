@@ -107,15 +107,6 @@ $post_data = [
     ]
 ];
 
-// Pre-create the booking as pending
-$insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, created_at)
-               VALUES (?, ?, ?, ?, ?, 'confirmed', 'pending', ?, NOW())";
-$insert_stmt = $conn->prepare($insert_sql);
-$insert_stmt->bind_param("iissds", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $total_price_npr, $purchase_order_id);
-if (!$insert_stmt->execute()) {
-    die("Failed to create pending booking.");
-}
-
 $curl = curl_init();
 curl_setopt_array($curl, array(
     CURLOPT_URL => $khalti_config['base_url'] . 'epayment/initiate/',

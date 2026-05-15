@@ -640,17 +640,105 @@
 /* ============================================================
    LIGHT MODE OVERRIDES
    ============================================================ */
+html[data-theme="light"] {
+    --s-bg:         var(--clr-bg);
+    --s-bg-alt:     var(--clr-bg);
+    --s-border:     var(--clr-border);
+    --s-text:       var(--clr-text);
+    --s-muted:      var(--clr-muted);
+}
+
+html[data-theme="light"] .settings-page-main-content {
+    background: var(--clr-bg);
+}
+
+html[data-theme="light"] .settings-page-main-content::before {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+}
+
+html[data-theme="light"] .settings-page-sidebar {
+    background: rgba(255, 255, 255, 0.92);
+    border-right-color: var(--clr-border);
+}
+
+html[data-theme="light"] .settings-nav-label {
+    color: var(--clr-muted);
+}
+
+html[data-theme="light"] .settings-page-nav-item {
+    color: var(--clr-muted);
+}
+
+html[data-theme="light"] .settings-page-nav-item:hover,
+html[data-theme="light"] .settings-page-nav-item.active {
+    color: var(--clr-text);
+    background: rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme="light"] .settings-page-content-header {
+    background: linear-gradient(135deg, rgba(245, 244, 242, 0.98) 0%, rgba(236, 234, 231, 0.95) 100%),
+                url('../images/hero-car2.jpg');
+    background-size: cover;
+    background-position: center 30%;
+}
+
+html[data-theme="light"] .settings-page-content-header::before {
+    background-image: radial-gradient(rgba(176, 58, 46, 0.06) 1px, transparent 1px);
+}
+
+html[data-theme="light"] .settings-page-content-header h1 {
+    background: linear-gradient(180deg, #18181b 0%, #4B4B4F 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+html[data-theme="light"] .settings-page-content {
+    background: var(--clr-surface);
+    border-color: var(--clr-border);
+}
+
+html[data-theme="light"] .settings-profile-main h3,
+html[data-theme="light"] .settings-profile-info h3,
+html[data-theme="light"] .settings-page-card h2 {
+    color: var(--clr-text);
+}
+
+html[data-theme="light"] .settings-profile-avatar {
+    background: #e5e7eb;
+    color: var(--clr-text);
+    border-color: var(--clr-border);
+}
+
+html[data-theme="light"] .meta-label {
+    color: var(--clr-muted);
+}
+
+html[data-theme="light"] .meta-value,
+html[data-theme="light"] .settings-profile-date,
+html[data-theme="light"] .settings-page-card h3,
+html[data-theme="light"] .danger-help,
+html[data-theme="light"] .confirm-instruction,
+html[data-theme="light"] .delete-impact-list li {
+    color: var(--clr-muted);
+}
+
+html[data-theme="light"] .settings-page-form-group label {
+    color: var(--clr-muted);
+}
+
 html[data-theme="light"] .settings-page-form-group input {
     background: var(--clr-surface);
     color: var(--clr-text);
+    border-color: var(--clr-border-hv);
 }
 
 html[data-theme="light"] .settings-page-form-group input:focus {
     background: var(--clr-surface);
     color: var(--clr-text);
+    box-shadow: 0 0 0 4px rgba(176, 58, 46, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
-/* Fix for browser autofill overriding background/text colors */
 html[data-theme="light"] .settings-page-form-group input:-webkit-autofill,
 html[data-theme="light"] .settings-page-form-group input:-webkit-autofill:hover,
 html[data-theme="light"] .settings-page-form-group input:-webkit-autofill:focus {
@@ -662,9 +750,37 @@ html[data-theme="light"] .settings-page-form-group input::placeholder {
     color: var(--clr-muted);
 }
 
+html[data-theme="light"] .settings-page-btn-secondary {
+    border-color: var(--clr-border-hv);
+    color: var(--clr-muted);
+}
+
+html[data-theme="light"] .settings-page-btn-secondary:hover {
+    border-color: var(--clr-border-hv);
+    color: var(--clr-text);
+    background: rgba(0, 0, 0, 0.04);
+}
+
 html[data-theme="light"] .settings-page-code {
     background: #e9ecef;
-    color: var(--clr-accent);
+    color: var(--s-accent);
+}
+
+html[data-theme="light"] .danger-zone,
+html[data-theme="light"] .settings-delete-warning-box {
+    background: rgba(255, 77, 77, 0.04);
+    border-color: rgba(255, 77, 77, 0.15);
+}
+
+html[data-theme="light"] .settings-page-sidebar.open,
+html[data-theme="light"] .settings-page-sidebar {
+    background: #ffffff;
+}
+
+@media (max-width: 768px) {
+    html[data-theme="light"] .settings-page-sidebar {
+        background: #ffffff;
+    }
 }
 
 /* for notification toggle */

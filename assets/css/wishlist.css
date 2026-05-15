@@ -139,11 +139,11 @@
     font-family: var(--font-head);
     font-size: 2rem;
     margin-bottom: 1rem;
-    color: #fff;
+    color: var(--clr-text, var(--text, #f5f4f2));
 }
 
 .no-vehicles p {
-    color: #ccc; /* LIGHTER GREY */
+    color: var(--clr-muted, var(--text-muted, #8a8a8e));
     margin-bottom: 2rem;
 }
 
@@ -166,4 +166,34 @@
     background: var(--accent-hv);
     transform: translateY(-2px);
     box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+/* ── Light mode ───────────────────────────────────────────── */
+html[data-theme="light"] .no-vehicles {
+    background: var(--clr-surface, #ffffff);
+    border-color: var(--clr-border, rgba(0, 0, 0, 0.09));
+}
+
+html[data-theme="light"] .no-vehicles h3 {
+    color: var(--clr-text, #18181b);
+}
+
+html[data-theme="light"] .no-vehicles p {
+    color: var(--clr-muted, #4b4b4f);
+}
+
+html[data-theme="light"] .wishlist-remove-btn,
+html[data-theme="light"] .card-wishlist-btn {
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--clr-text, #18181b);
+}
+
+html[data-theme="light"] .btn-wishlist-sidebar {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+html[data-theme="light"] .wishlist-text,
+html[data-theme="light"] .wishlist-icon-box {
+    color: var(--clr-text, #18181b);
 }

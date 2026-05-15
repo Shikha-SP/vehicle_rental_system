@@ -423,6 +423,50 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 28px;
 }
+html[data-theme="light"] {
+    --bg:           #F5F4F2;
+    --bg-card:      #FFFFFF;
+    --bg-input:     #FFFFFF;
+    --border:       rgba(0, 0, 0, 0.09);
+    --border-focus: #B03A2E;
+    --accent:       #B03A2E;
+    --accent-dim:   rgba(176, 58, 46, 0.12);
+    --accent-glow:  rgba(176, 58, 46, 0.18);
+    --text:         #18181b;
+    --text-muted:   #4B4B4F;
+    --text-label:   #4B4B4F;
+    --shadow:       0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 10px 32px rgba(0, 0, 0, 0.12);
+}
+
+html[data-theme="light"] body {
+    background: var(--bg);
+    color: var(--text);
+}
+
+html[data-theme="light"] .vehicles-search-section {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="light"] .filter-group input[type="date"] {
+    color-scheme: light;
+}
+
+html[data-theme="light"] .no-vehicles {
+    background: var(--bg-card);
+    border-color: var(--border);
+}
+
+html[data-theme="light"] .no-vehicles h3 {
+    color: var(--text);
+}
+
+html[data-theme="light"] .no-vehicles p {
+    color: var(--text-muted);
+}
+
 html[data-theme="light"] .spec svg {
     border-color: rgba(0,0,0,0.12);
 }
@@ -500,8 +544,14 @@ html[data-theme="light"] .spec svg {
     text-align: center; padding: 80px 20px;
     background: var(--bg-card); border-radius: var(--radius); border: 1px solid var(--border);
 }
-.no-vehicles h3 { font-family: var(--font-head); font-size: 24px; font-weight: 700; margin-bottom: 12px; }
-.no-vehicles p  { color: var(--text-muted); margin-bottom: 24px; }
+.no-vehicles h3 {
+    font-family: var(--font-head);
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--clr-text, var(--text, #f5f4f2));
+}
+.no-vehicles p  { color: var(--clr-muted, var(--text-muted, #8a8a8e)); margin-bottom: 24px; }
 .reset-link { display: inline-block; color: var(--accent); text-decoration: none; font-weight: 500; transition: opacity var(--t); }
 .reset-link:hover { opacity: 0.7; }
 

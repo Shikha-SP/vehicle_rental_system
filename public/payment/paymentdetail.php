@@ -505,23 +505,40 @@ if ($uid) {
             </button>
         </form>
 
+        <?php
+        $payment_notice = '';
+        if (isset($_GET['payment'])) {
+            if ($_GET['payment'] === 'cancelled') {
+                $payment_notice = 'Payment was cancelled. No booking was created.';
+            } elseif ($_GET['payment'] === 'failed') {
+                $payment_notice = 'Payment was not completed. Please try again.';
+            }
+        }
+        ?>
+        <?php if ($payment_notice !== ''): ?>
+            <div class="field-error"
+                style="margin-bottom: 15px; padding: 10px; background: rgba(224, 48, 48, 0.1); border-left: 3px solid #e03030;">
+                <?= e($payment_notice) ?>
+            </div>
+        <?php endif; ?>
+
         <div class="payment-divider">
             <span>OR PAY WITH</span>
         </div>
 
         <div class="payment-methods-grid">
-            <a href="khalti_initiate.php" id="khalti-button" class="payment-method-btn">
+            <a href="khalti_initiate.php" id="khalti-button" class="payment-method-btn no-progress">
                 <img src="../../assets/images/khaltilogo.png" alt="Khalti" class="khalti-logo">
                 <span>PAY NPR <?= number_format($totalprice, 0) ?></span>
             </a>
 
-            <a href="esewa_initiate.php" id="esewa-button" class="payment-method-btn">
+            <a href="esewa_initiate.php" id="esewa-button" class="payment-method-btn no-progress">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/f/ff/Esewa_logo.webp" alt="eSewa"
                     class="esewa-logo">
                 <span>PAY NPR <?= number_format($totalprice, 0) ?></span>
             </a>
 
-            <a href="qr_initiate.php" id="qr-button" class="payment-method-btn">
+            <a href="qr_initiate.php" id="qr-button" class="payment-method-btn no-progress">
                 <i class="fa-solid fa-qrcode qr-icon"></i>
                 <span>SCAN QR &amp; PAY NPR <?= number_format($totalprice, 0) ?></span>
             </a>
@@ -767,6 +784,7 @@ if ($uid) {
                             if (qrSpan) qrSpan.textContent = 'SCAN QR & PAY NPR ' + fmt0(data.new_total);
                             qrBtn.href = 'qr_initiate.php?' + dcParam;
                         }
+
                     } else {
                         discountMsg.textContent = data.message;
                         discountMsg.style.color = '#e74c3c';
@@ -798,6 +816,7 @@ if ($uid) {
                             if (qrSpan) qrSpan.textContent = 'SCAN QR & PAY NPR ' + fmt0b(baseTotal);
                             qrBtn.href = 'qr_initiate.php';
                         }
+
                     }
                 })
                 .catch(error => {

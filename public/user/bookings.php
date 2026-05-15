@@ -285,7 +285,8 @@ include '../../includes/header.php';
 
     .empty-state { text-align: center; padding: 8rem 2rem; background: rgba(255,255,255,0.02); border-radius: 30px; border: 1px dashed rgba(255,255,255,0.1); }
     .empty-icon { font-size: 5rem; margin-bottom: 2rem; opacity: 0.2; }
-    .empty-state h2 { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 2.5rem; margin-bottom: 1rem; color: #fff; }
+    .empty-state h2 { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 2.5rem; margin-bottom: 1rem; color: var(--clr-text, #f5f4f2); }
+    .empty-state p { color: var(--clr-muted, #8a8a8e); margin-bottom: 1.5rem; }
 
     
     .btn-cancel { 
@@ -483,6 +484,31 @@ include '../../includes/header.php';
     html[data-theme="light"] .btn-cancel[style*="background: transparent"]:hover {
         background: #f0f0f0 !important;
         color: #111 !important;
+    }
+
+    /* Light Mode - Empty state */
+    html[data-theme="light"] .empty-state {
+        background: #ffffff;
+        border-color: rgba(0, 0, 0, 0.12);
+    }
+    html[data-theme="light"] .empty-state h2 {
+        color: var(--clr-text, #18181b);
+    }
+    html[data-theme="light"] .empty-state p {
+        color: var(--clr-muted, #4b4b4f);
+    }
+    html[data-theme="light"] .empty-icon {
+        opacity: 0.35;
+    }
+    html[data-theme="light"] .policy-box {
+        background: #ffffff;
+        border-color: rgba(0, 0, 0, 0.08);
+    }
+    html[data-theme="light"] .policy-content h4 {
+        color: var(--clr-text, #18181b);
+    }
+    html[data-theme="light"] .policy-content p {
+        color: var(--clr-muted, #4b4b4f);
     }
 </style>
 <link rel="stylesheet" href="../../assets/css/style.css">

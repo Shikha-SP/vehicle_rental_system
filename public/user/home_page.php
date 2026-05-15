@@ -44,6 +44,7 @@ $banner_sql = "
     JOIN vehicles v ON v.id = b.vehicle_id
     WHERE b.user_id = ?
       AND b.status  = 'confirmed'
+      AND b.payment_status = 'paid'
       AND CONCAT(b.start_date, ' ', IFNULL(b.pickup_time, '09:00:00'))
             BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 24 HOUR)
     ORDER BY pickup_datetime ASC
@@ -88,6 +89,7 @@ $gallery_result = $conn->query($gallery_sql);
 $brands_sql = "
 SELECT DISTINCT license_type 
 FROM vehicles 
+WHERE status IN ('approved', 'available')
 ORDER BY license_type
 ";
 
@@ -154,15 +156,21 @@ include '../../includes/header.php';
                 <p class="hero-label">
                     WELCOME BACK, <?php echo e(strtoupper($username)); ?>
                 </p>
-                <h1 class="hero-heading">
+                <h1 class="hero-heading hero-heading--glitch">
                     <span class="hero-heading__line hero-heading__line--1">
-                        <span class="hero-heading__line-inner">ENGINEERED FOR</span>
+                        <span class="hero-heading__line-inner">
+                            <span class="hero-heading__glitch">ENGINEERED FOR</span>
+                        </span>
                     </span>
                     <span class="hero-heading__line hero-heading__line--2">
-                        <span class="hero-heading__line-inner"><span class="text-red">PERFORMANCE.</span></span>
+                        <span class="hero-heading__line-inner">
+                            <span class="hero-heading__glitch"><span class="text-red">PERFORMANCE.</span></span>
+                        </span>
                     </span>
                     <span class="hero-heading__line hero-heading__line--3">
-                        <span class="hero-heading__line-inner">DRIVEN BY YOU.</span>
+                        <span class="hero-heading__line-inner">
+                            <span class="hero-heading__glitch">DRIVEN BY YOU.</span>
+                        </span>
                     </span>
                 </h1>
 
