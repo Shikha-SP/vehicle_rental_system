@@ -645,11 +645,16 @@ h4 {
     }
 }
 
-/* ============================================================
-   LIGHT MODE OVERRIDES
-   Note: body background/color handled by header.css html[data-theme=light] :root.
-   Only keeping structural/component overrides not covered by variables.
-   ============================================================ */
+/* ── Light Mode ── */
+html[data-theme="light"] {
+    --bg-dark: #F5F4F2;
+    --text-main: #18181b;
+    --text-muted: #4B4B4F;
+    --card-bg: #FFFFFF;
+    --card-hover: #F8F7F5;
+    --nav-text: #4B4B4F;
+}
+
 html[data-theme="light"] body {
     background-color: var(--bg-dark);
     color: var(--text-main);
@@ -662,6 +667,7 @@ html[data-theme="light"] .hero {
 html[data-theme="light"] .hero-desc {
     color: var(--text-muted);
 }
+
 
 html[data-theme="light"] .section-heading {
     color: var(--text-main);
