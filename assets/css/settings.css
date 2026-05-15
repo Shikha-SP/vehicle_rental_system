@@ -635,3 +635,51 @@
     .settings-page-content-area { padding: 40px 20px 100px; }
     .settings-page-btn-secondary { margin-left: 0; width: 100%; }
 }
+
+/* for notification toggle */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+/* Hide default checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Background */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: #3a3f47;
+    border-radius: 34px;
+    transition: 0.3s;
+}
+
+/* Circle */
+.slider::before {
+    content: "";
+    position: absolute;
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+/* ON state */
+input:checked + .slider {
+    background-color: #D53637;
+}
+
+/* Move circle */
+input:checked + .slider::before {
+    transform: translateX(26px);
+}
