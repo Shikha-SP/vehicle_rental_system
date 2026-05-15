@@ -128,7 +128,7 @@ require_once '../../includes/header.php';
                                 <label for="new_password">New Password *</label>
                                 <input type="password" id="new_password" name="new_password"
                                     placeholder="Enter new password">
-                                <small>Must be at least 8 characters with uppercase, lowercase, and number</small>
+                                <small>Must be at least 8 characters with uppercase, lowercase, number, and special character</small>
                             </div>
 
                             <div class="settings-page-form-group">
