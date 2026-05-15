@@ -100,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             if (strlen($password) < 8) {
                 $errors['password'] = "Password must be at least 8 characters.";
-            } else if (!preg_match('/[A-Z]/', $password) || !preg_match('/[0-9]/', $password)) {
-                $errors['password'] = "Password must contain uppercase and numbers.";
+            } else if (!preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[0-9]/', $password) || !preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
+                $errors['password'] = "Password must contain uppercase, lowercase, numbers, and special characters.";
             }
         }
         
