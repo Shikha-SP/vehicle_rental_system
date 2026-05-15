@@ -56,9 +56,6 @@ $booking = $stmt->get_result()->fetch_assoc();
     </head>
 
     <body>
-        <!-- header -->
-        <?php require '../../includes/paymentheader.php'; ?>
-
         <!-- MAIN CONTAINER -->
         <div class="container">
 
