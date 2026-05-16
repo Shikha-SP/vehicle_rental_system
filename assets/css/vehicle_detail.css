@@ -215,7 +215,8 @@ html[data-theme="light"] .swatch {
     letter-spacing: 0.08em;
 }
 
-.booking-form input {
+.booking-form input,
+.booking-form select {
     width: 100%;
     background: var(--clr-bg);
     border: 1px solid var(--clr-border);
@@ -223,10 +224,29 @@ html[data-theme="light"] .swatch {
     color: var(--clr-text);
     border-radius: 6px;
     outline: none;
+    transition: border-color 0.2s, background-color 0.2s;
 }
 
-.booking-form input:focus {
+.booking-form select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23888888%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px top 50%;
+    background-size: 12px auto;
+    padding-right: 40px;
+}
+
+.booking-form input:hover,
+.booking-form select:hover {
+    border-color: #444;
+}
+
+.booking-form input:focus,
+.booking-form select:focus {
     border-color: var(--clr-accent);
+    background-color: #2a2a2a;
 }
 
 .price-summary {
@@ -570,6 +590,35 @@ html[data-theme="light"] .booking-card {
     border-color: var(--clr-border);
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
+
+/* Price section */
+html[data-theme="light"] .rate .amount {
+    color: #111 !important;
+}
+
+html[data-theme="light"] .rate .currency,
+html[data-theme="light"] .rate .period {
+    color: #555 !important;
+}
+
+/* Form labels */
+html[data-theme="light"] .booking-form label {
+    color: #555 !important;
+}
+
+/* Date and Time inputs */
+html[data-theme="light"] .booking-form input,
+html[data-theme="light"] .booking-form select {
+    background-color: rgba(255, 255, 255, 0.7) !important;
+    color: #111 !important;
+    border: 1px solid #ccc !important;
+}
+
+html[data-theme="light"] .booking-form select {
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23555555%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E") !important;
+}
+
+/* Summary box */
 html[data-theme="light"] .price-summary {
     border: 1px solid var(--clr-border);
 }

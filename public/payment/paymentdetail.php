@@ -808,24 +808,24 @@ if ($uid) {
 
                         const khaltiBtn = document.getElementById('khalti-button');
                         if (khaltiBtn) {
-                            khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + fmt0(data.new_total);
+                            const span = khaltiBtn.querySelector('span');
+                            if (span) span.innerText = 'PAY NPR ' + fmt0(data.new_total);
                             khaltiBtn.href = 'khalti_initiate.php?' + dcParam;
                         }
 
                         const esewaBtn = document.getElementById('esewa-button');
                         if (esewaBtn) {
-                            const esewaSpan = esewaBtn.querySelector('span');
-                            if (esewaSpan) esewaSpan.textContent = 'PAY NPR ' + fmt0(data.new_total);
+                            const span = esewaBtn.querySelector('span');
+                            if (span) span.innerText = 'PAY NPR ' + fmt0(data.new_total);
                             esewaBtn.href = 'esewa_initiate.php?' + dcParam;
                         }
 
                         const qrBtn = document.getElementById('qr-button');
                         if (qrBtn) {
-                            const qrSpan = qrBtn.querySelector('span');
-                            if (qrSpan) qrSpan.textContent = 'SCAN QR & PAY NPR ' + fmt0(data.new_total);
+                            const span = qrBtn.querySelector('span');
+                            if (span) span.innerText = 'SCAN QR & PAY NPR ' + fmt0(data.new_total);
                             qrBtn.href = 'qr_initiate.php?' + dcParam;
                         }
-
                     } else {
                         discountMsg.textContent = data.message;
                         discountMsg.style.color = '#C0392B';
@@ -840,24 +840,24 @@ if ($uid) {
 
                         const khaltiBtn = document.getElementById('khalti-button');
                         if (khaltiBtn) {
-                            khaltiBtn.innerHTML = '<img src="https://khalti.com/static/img/logo1.png" alt="Khalti" class="khalti-logo"> PAY NPR ' + fmt0b(baseTotal);
+                            const span = khaltiBtn.querySelector('span');
+                            if (span) span.innerText = 'PAY NPR ' + fmt0b(baseTotal);
                             khaltiBtn.href = 'khalti_initiate.php';
                         }
 
                         const esewaBtn = document.getElementById('esewa-button');
                         if (esewaBtn) {
-                            const esewaSpan = esewaBtn.querySelector('span');
-                            if (esewaSpan) esewaSpan.textContent = 'PAY NPR ' + fmt0b(baseTotal);
+                            const span = esewaBtn.querySelector('span');
+                            if (span) span.innerText = 'PAY NPR ' + fmt0b(baseTotal);
                             esewaBtn.href = 'esewa_initiate.php';
                         }
 
                         const qrBtn = document.getElementById('qr-button');
                         if (qrBtn) {
-                            const qrSpan = qrBtn.querySelector('span');
-                            if (qrSpan) qrSpan.textContent = 'SCAN QR & PAY NPR ' + fmt0b(baseTotal);
+                            const span = qrBtn.querySelector('span');
+                            if (span) span.innerText = 'SCAN QR & PAY NPR ' + fmt0b(baseTotal);
                             qrBtn.href = 'qr_initiate.php';
                         }
-
                     }
                 })
                 .catch(error => {

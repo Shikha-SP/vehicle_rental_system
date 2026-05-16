@@ -158,6 +158,73 @@ if (isset($response_data['status']) && $response_data['status'] === 'Completed')
             $insert_stmt->close();
         }
 
+        // Record discount usage & increment used_count
+        if ($discount_code_id > 0 && $discount_amount_saved > 0) {
+            $chk_use = $conn->prepare("SELECT id FROM discount_code_uses WHERE user_id = ? AND code_id = ? LIMIT 1");
+            $chk_use->bind_param("ii", $user_id, $discount_code_id);
+            $chk_use->execute();
+            if ($chk_use->get_result()->num_rows === 0) {
+                $ins_use = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
+                $ins_use->bind_param("ii", $user_id, $discount_code_id);
+                $ins_use->execute();
+                $ins_use->close();
+                $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = " . (int) $discount_code_id);
+
+                // ── GOLD RESET CYCLE ──────────────────────────────────────────
+                $gold_check = $conn->query("
+                    SELECT id FROM discount_codes 
+                    WHERE id = $discount_code_id 
+                      AND owner_user_id = $user_id 
+                      AND discount_percent = 20 
+                    LIMIT 1
+                ");
+                if ($gold_check && $gold_check->num_rows > 0) {
+                    $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
+                }
+            }
+            $chk_use->close();
+        }
+
+        // Milestone logic — increment AFTER possible Gold reset
+        $conn->query("UPDATE users SET completed_rentals = completed_rentals + 1 WHERE id = $user_id");
+        $res = $conn->query("SELECT completed_rentals, medal FROM users WHERE id = $user_id");
+        if ($res && $res->num_rows > 0) {
+            $u_data = $res->fetch_assoc();
+            $rentals = (int) $u_data['completed_rentals'];
+            $current_medal = $u_data['medal'];
+
+            $new_medal = $current_medal;
+            $milestone_code = '';
+            $milestone_percent = 0;
+
+            if ($rentals >= 3 && $current_medal === 'NONE') {
+                $new_medal = 'BRONZE';
+                $milestone_code = 'BRONZE5';
+                $milestone_percent = 5;
+            } elseif ($rentals >= 7 && $current_medal === 'BRONZE') {
+                $new_medal = 'SILVER';
+                $milestone_code = 'SILVER10';
+                $milestone_percent = 10;
+            } elseif ($rentals >= 15 && $current_medal === 'SILVER') {
+                $new_medal = 'GOLD';
+                $milestone_code = 'GOLD20';
+                $milestone_percent = 20;
+            }
+
+            if ($new_medal !== $current_medal) {
+                $conn->query("UPDATE users SET medal = '$new_medal' WHERE id = $user_id");
+                if ($milestone_code !== '') {
+                    $unique_suffix = substr(md5(uniqid($user_id, true)), 0, 4);
+                    $personal_code = $milestone_code . "-U" . $user_id . "-" . $unique_suffix;
+                    $conn->query("
+                        INSERT INTO discount_codes (code, type, discount_percent, discount_flat, max_uses, owner_user_id) 
+                        VALUES ('$personal_code', 'percent', $milestone_percent, 0, 1, $user_id)
+                    ");
+                }
+            }
+        }
+
+        // Insert into transactions table
         $check_txn = $conn->prepare("SELECT id FROM transactions WHERE booking_id = ? LIMIT 1");
         $check_txn->bind_param("i", $booking_id);
         $check_txn->execute();
@@ -174,20 +241,6 @@ if (isset($response_data['status']) && $response_data['status'] === 'Completed')
                 throw new Exception("Failed to record transaction.");
             }
             $txn_stmt->close();
-        }
-
-        if ($discount_code_id > 0 && $discount_amount_saved > 0) {
-            $chk_use = $conn->prepare("SELECT id FROM discount_code_uses WHERE user_id = ? AND code_id = ? LIMIT 1");
-            $chk_use->bind_param("ii", $user_id, $discount_code_id);
-            $chk_use->execute();
-            if ($chk_use->get_result()->num_rows === 0) {
-                $ins_use = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
-                $ins_use->bind_param("ii", $user_id, $discount_code_id);
-                $ins_use->execute();
-                $ins_use->close();
-                $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = " . (int) $discount_code_id);
-            }
-            $chk_use->close();
         }
 
         $v_stmt = $conn->prepare("SELECT model, price_per_day FROM vehicles WHERE id = ?");

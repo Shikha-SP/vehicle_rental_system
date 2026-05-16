@@ -18,15 +18,14 @@ if (isset($_SESSION['user_id'])) {
         exit;
     }
 }
+$extraStyles = '
+<link rel="stylesheet" href="../assets/css/index.css">
+<link rel="stylesheet" href="../assets/css/scroll-reveal.css">
+';
 include('../config/db.php');
 include('../includes/header.php');
 require_once('../includes/functions.php');
 ?>
-<!-- ======================================================
-     External Stylesheets
-====================================================== -->
-<link rel="stylesheet" href="../assets/css/index.css">
-<link rel="stylesheet" href="../assets/css/scroll-reveal.css">
 
 <main class="dashboard-content">
     <!-- Hero Section -->
