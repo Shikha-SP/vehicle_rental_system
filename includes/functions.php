@@ -231,4 +231,26 @@ function isNotificationEnabled($conn, $user_id)
 
     return $result && $result['enabled'] == 1;
 }
+/**
+ * Validates if an email is genuine and properly formatted
+ */
+function is_email_genuine($email) {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        return false;
+    }
+    $disposable_domains = ['mailinator.com', '10minutemail.com', 'guerrillamail.com'];
+    $domain = substr(strrchr($email, "@"), 1);
+    return !in_array($domain, $disposable_domains);
+}
+
+/**
+ * Generates a numeric One-Time Password (OTP)
+ */
+function generateOTP($length = 6) {
+    $otp = "";
+    for ($i = 0; $i < $length; $i++) {
+        $otp .= random_int(0, 9);
+    }
+    return $otp;
+}
 ?>
