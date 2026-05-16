@@ -120,9 +120,8 @@
 }
 
 .dashboard-content .hero-section .hero-car-img {
-    transform: translateX(100%);
-    animation: showroom-hero-car-slide-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    will-change: transform;
+    transform: none;
+    animation: none;
 }
 
 .dashboard-content .hero-section .hero-heading {

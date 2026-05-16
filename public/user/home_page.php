@@ -148,7 +148,7 @@ include '../../includes/header.php';
         <div class="hero-gradient"></div>
 
         <div class="hero-car-img">
-            <img src="../../assets/images/HomePageDiaplayCar.png" alt="Featured Vehicle">
+            <img src="../../assets/images/HomePageDisplay.jpg" alt="Featured Vehicle">
         </div>
 
         <div class="hero-overlay">
