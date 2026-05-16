@@ -144,7 +144,7 @@ document.getElementById('submitReview')
                 if (data.success) {
                     document.getElementById('reviewModal').classList.remove('active');
                     showToast(data.updated ? '⭐ Review updated!' : '⭐ Review posted!');
-                    
+
                     const trigger = document.getElementById('openReviewModal');
                     if (trigger) trigger.textContent = 'Edit your review';
 
@@ -169,3 +169,55 @@ document.getElementById('submitReview')
                 alert('An error occurred while submitting your review.');
             });
     });
+
+// Reply toggle
+document.querySelectorAll('.btn-toggle-reply').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const reviewId = btn.dataset.reviewId;
+        const box = document.getElementById('reply-input-' + reviewId);
+        box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    });
+});
+
+// Reply submit
+document.querySelectorAll('.btn-submit-reply').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const reviewId = btn.dataset.reviewId;
+        const text = document.getElementById('reply-text-' + reviewId).value.trim();
+        const msgEl = document.getElementById('reply-msg-' + reviewId);
+
+        if (!text) {
+            msgEl.textContent = 'Reply cannot be empty.';
+            msgEl.style.color = 'red';
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Posting…';
+
+        const fd = new FormData();
+        fd.append('review_id', reviewId);
+        fd.append('reply_text', text);
+
+        fetch('../api/reply_review.php', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    msgEl.textContent = '✅ Reply posted!';
+                    msgEl.style.color = 'green';
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    msgEl.textContent = '❌ ' + data.message;
+                    msgEl.style.color = 'red';
+                    btn.disabled = false;
+                    btn.textContent = 'Post Reply';
+                }
+            })
+            .catch(() => {
+                msgEl.textContent = '❌ Network error.';
+                msgEl.style.color = 'red';
+                btn.disabled = false;
+                btn.textContent = 'Post Reply';
+            });
+    });
+});

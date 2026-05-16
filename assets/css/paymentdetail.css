@@ -8,6 +8,12 @@ body {
   font-size: 15px;
   margin-top: 20px;
 }
+.subtitle
+{
+  color: #F3B7AE;
+  font-size: 15px;
+  margin-top: 20px;
+}
 .section-title {
   color: var(--clr-text);
 }
@@ -72,6 +78,7 @@ body {
   justify-content: center;
   gap: 12px;
   margin-top: 20px;
+  margin-top: 20px;
 }
 
 #pay-button:hover {
@@ -81,6 +88,7 @@ body {
 
 
 #summary-section {
+  margin-top: 20px;
   margin-top: 20px;
   background-color: var(--clr-surface);
 }

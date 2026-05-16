@@ -31,12 +31,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mysqli_stmt_store_result($stmt);
 
         if (mysqli_stmt_num_rows($stmt) > 0) {
+            mysqli_stmt_bind_result($stmt, $user_id);
+            mysqli_stmt_fetch($stmt);
             mysqli_stmt_close($stmt);
-            $update = mysqli_prepare($conn, "UPDATE users SET is_verified = 1, verification_token = NULL, token_expires_at = NULL WHERE email = ?");
-            mysqli_stmt_bind_param($update, "s", $email);
+
+            // Fetch additional user details for the session
+            $user_stmt = mysqli_prepare($conn, "SELECT first_name, is_admin FROM users WHERE id = ?");
+            mysqli_stmt_bind_param($user_stmt, "i", $user_id);
+            mysqli_stmt_execute($user_stmt);
+            $user_res = mysqli_stmt_get_result($user_stmt);
+            $user = mysqli_fetch_assoc($user_res);
+
+            $update = mysqli_prepare($conn, "UPDATE users SET is_verified = 1, verification_token = NULL, token_expires_at = NULL WHERE id = ?");
+            mysqli_stmt_bind_param($update, "i", $user_id);
             if (mysqli_stmt_execute($update)) {
-                $success = true;
+                // Auto-login logic
+                session_regenerate_id(true);
+                $_SESSION['user_id']   = $user_id;
+                $_SESSION['username']  = $user['first_name'];
+                $_SESSION['is_admin']  = (bool) $user['is_admin'];
+                $_SESSION['csrf_token'] = generateCsrfToken();
+
                 unset($_SESSION['verify_email']);
+                
+                // Redirect based on role
+                if ($user['is_admin']) {
+                    redirect('../admin/dashboard.php');
+                } else {
+                    redirect('../user/home_page.php');
+                }
             } else {
                 $errors[] = "Something went wrong. Please try again.";
             }
@@ -53,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify Email — TD Rentals</title>
     <link rel="stylesheet" href="../../assets/css/signup.css">
+    <link rel="stylesheet" href="../../assets/css/loading.css?v=<?= time() ?>">
     <style>
         .otp-input-container {
             display: flex;
@@ -99,6 +123,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
+
+<!-- Loading Overlay UI -->
+<div id="td-progress-bar"></div>
+<div id="td-overlay">
+  <div class="loader-logo">TD <span>RENTALS</span></div>
+  <div class="loader-bar-track"><div class="loader-bar-fill"></div></div>
+  <div id="td-overlay-msg">Loading…</div>
+</div>
 
 <div class="signup-page">
     <nav class="signup-nav">
@@ -160,7 +192,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </button>
 
                     <div class="resend-link">
-                        Didn't receive the code? <a href="resend_otp.php">Resend Code</a>
+                        Didn't receive the code? 
+                        <form action="resend_otp.php" method="POST" style="display:inline;" data-no-loading="false">
+                            <button type="submit" style="background:none; border:none; color:#3498db; font-weight:bold; cursor:pointer; padding:0; font-family:inherit; font-size:inherit;">Resend Code</button>
+                        </form>
                     </div>
                 </form>
             <?php endif; ?>
@@ -222,5 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }, 5000);
     });
 </script>
+
+<script src="../../assets/js/loading.js?v=<?= time() ?>"></script>
 </body>
 </html>

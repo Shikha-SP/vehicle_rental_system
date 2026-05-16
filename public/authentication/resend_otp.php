@@ -17,10 +17,8 @@ $result = mysqli_stmt_get_result($stmt);
 
 if ($user = mysqli_fetch_assoc($result)) {
     $otp = generateOTP(6);
-    $expires = date('Y-m-d H:i:s', strtotime('+30 minutes'));
-
-    $update = mysqli_prepare($conn, "UPDATE users SET verification_token = ?, token_expires_at = ? WHERE email = ?");
-    mysqli_stmt_bind_param($update, "sss", $otp, $expires, $email);
+    $update = mysqli_prepare($conn, "UPDATE users SET verification_token = ?, token_expires_at = DATE_ADD(NOW(), INTERVAL 30 MINUTE) WHERE email = ?");
+    mysqli_stmt_bind_param($update, "ss", $otp, $email);
     
     if (mysqli_stmt_execute($update)) {
         try {

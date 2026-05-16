@@ -48,9 +48,9 @@ if (strlen($new_password) < 8) {
     exit;
 }
 
-// Check for Uppercase, Lowercase, and Number
-if (!preg_match('/[A-Z]/', $new_password) || !preg_match('/[a-z]/', $new_password) || !preg_match('/[0-9]/', $new_password)) {
-    echo json_encode(['success' => false, 'message' => 'Password must contain uppercase, lowercase, and a number']);
+// Check for Uppercase, Lowercase, Number, and Special Character
+if (!preg_match('/[A-Z]/', $new_password) || !preg_match('/[a-z]/', $new_password) || !preg_match('/[0-9]/', $new_password) || !preg_match('/[!@#$%^&*(),.?":{}|<>]/', $new_password)) {
+    echo json_encode(['success' => false, 'message' => 'Password must contain uppercase, lowercase, a number, and a special character']);
     exit;
 }
 

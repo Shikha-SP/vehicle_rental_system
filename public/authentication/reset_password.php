@@ -66,8 +66,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid_token) {
     if (!preg_match('/[A-Z]/', $password)) {
         $errors[] = "Password must contain at least one uppercase letter.";
     }
+    if (!preg_match('/[a-z]/', $password)) {
+        $errors[] = "Password must contain at least one lowercase letter.";
+    }
     if (!preg_match('/[0-9]/', $password)) {
         $errors[] = "Password must contain at least one number.";
+    }
+    if (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
+        $errors[] = "Password must contain at least one special character.";
     }
     if ($password !== $confirm_password) {
         $errors[] = "Passwords do not match.";
@@ -167,7 +173,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid_token) {
                             <div class="password-requirements">
                                 • At least 8 characters<br>
                                 • At least 1 uppercase letter<br>
-                                • At least 1 number
+                                • At least 1 lowercase letter<br>
+                                • At least 1 number<br>
+                                • At least 1 special character
                             </div>
                         </div>
                         
