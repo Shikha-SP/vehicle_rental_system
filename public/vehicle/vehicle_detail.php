@@ -453,7 +453,7 @@ include '../../includes/header.php';
             <p class="modal-rating-label" id="modalRatingLabel">
                 <?= $user_rating_value ? ['', 'Terrible', 'Poor', 'Average', 'Good', 'Excellent'][$user_rating_value] : 'Select a rating' ?>
             </p>
-
+            <!-- Review text box -->
             <textarea id="reviewText" placeholder="Describe your experience with this vehicle..."
                 rows="5"><?= htmlspecialchars($user_review_text) ?></textarea>
 

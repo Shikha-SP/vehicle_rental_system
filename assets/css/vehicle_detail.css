@@ -381,7 +381,7 @@
 }
 
 .review-modal {
-    background-color: #222222;
+    background-color: #181818 !important;
     border-radius: 12px;
     border-color: #333333;
     padding: 2rem;
@@ -390,6 +390,7 @@
     position: relative;
     transform: translateY(20px);
     transition: transform 0.25s ease;
+    color: #FFFF !important;
 }
 
 .review-modal-overlay.active .review-modal {
@@ -404,7 +405,7 @@
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: #666;
+    color: #FFFF !important;
 }
 
 .modal-header {
@@ -432,14 +433,15 @@
 
 .modal-rating-label {
     font-size: 0.9rem;
-    color: #666;
+    color: #FFFF !important;
     margin-bottom: 1rem;
 }
 
 #reviewText {
     width: 100%;
-    border: 1px solid #333333;
-    /* background-color: #222222; */
+    border: 1px solid #2a2828;
+    background-color: #222222;
+    color: #888888;
     border-radius: 8px;
     padding: 0.8rem;
     font-size: 0.95rem;
@@ -509,7 +511,7 @@
 
 .review-text {
     font-size: 0.9rem;
-    color: #444;
+    color: #FFFF !important;
     line-height: 1.5;
 }
 
@@ -683,6 +685,7 @@ html[data-theme="light"] .secure-note {
     align-items: center;
     gap: 1rem;
     margin-bottom: 1.2rem;
+    color: #F5F4F2;
 }
 .modal-vehicle-img {
     width: 60px;
@@ -694,7 +697,7 @@ html[data-theme="light"] .secure-note {
     display: flex;
     gap: 0.4rem;
     font-size: 2rem;
-    color: #f4c518; /* IMDb/Google yellow */
+    color: #F1A140; /* IMDb/Google yellow */
     margin-bottom: 0.3rem;
     cursor: pointer;
 }
@@ -705,7 +708,7 @@ html[data-theme="light"] .secure-note {
 }
 #reviewText {
     width: 100%;
-    border: 1px solid #ddd;
+    border: 1px solid #212020;
     border-radius: 8px;
     padding: 0.8rem;
     font-size: 0.95rem;
@@ -759,7 +762,7 @@ html[data-theme="light"] .secure-note {
     font-size: 0.85rem;
 }
 .review-date {
-    color: #999;
+    color: #FFFF !important;
     font-size: 0.78rem;
 }
 .review-stars {
@@ -773,7 +776,7 @@ html[data-theme="light"] .secure-note {
     line-height: 1.5;
 }
 .no-reviews {
-    color: #999;
+    color: #FFFF !important;
     font-size: 0.9rem;
     text-align: center;
     padding: 1rem 0;
