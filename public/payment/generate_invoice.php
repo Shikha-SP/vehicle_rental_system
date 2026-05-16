@@ -1,230 +1,330 @@
 <?php
 require_once __DIR__ . '/../../vendor/tecnickcom/tcpdf/tcpdf.php';
 
-function generateInvoicePDF($data) {
-    $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8');
+/**
+ * TD Rentals — Dark-themed Invoice Generator
+ *
+ * Matches the design in the screenshot:
+ *   - Dark (#1A1A1A) background
+ *   - Crimson (#E63946) accents
+ *   - Clean card layout with booking summary & itemised table
+ *
+ * @param  array  $data  Keys: booking_id, first_name, email, model,
+ *                       pickup_date, dropoff_date, days,
+ *                       price_per_day, basic_fee, total_price,
+ *                       discount_code (opt), discount_amount (opt)
+ * @return string  Raw PDF bytes (suitable for streaming or Storage::put)
+ */
+function generateInvoicePDF(array $data): string
+{
+    // ── Palette ──────────────────────────────────────────────────────────────
+    $BG        = [26,  26,  26];   // #1A1A1A  page background
+    $CARD      = [36,  36,  36];   // #242424  card fill
+    $CARD_BDR  = [60,  60,  60];   // #3C3C3C  card border
+    $RED       = [230, 57,  70];   // #E63946  accent
+    $WHITE     = [255, 255, 255];
+    $MUTED     = [180, 180, 180];  // labels / secondary text
+    $DIVIDER   = [55,  55,  55];   // #373737  hairlines
 
-    $pdf->SetCreator('TD Rentals');
-    $pdf->SetAuthor('TD Rentals');
-    $pdf->SetTitle('Invoice');
+    // ── Derived invoice values ───────────────────────────────────────────────
+    $invoiceNo   = '#INV-' . str_pad($data['booking_id'], 5, '0', STR_PAD_LEFT);
+    $invoiceDate = date('Y-m-d');
+
+    $dailyTotal  = $data['price_per_day'] * $data['days'];
+    $basicFee    = $data['basic_fee'] ?? 500;
+    $subtotal    = $dailyTotal + $basicFee;
+    $discount    = $data['discount_amount'] ?? 0;
+    $tax         = 0;
+    $total       = $data['total_price'];
+
+    // ── TCPDF setup ──────────────────────────────────────────────────────────
+    $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
     $pdf->setPrintHeader(false);
     $pdf->setPrintFooter(false);
     $pdf->SetMargins(0, 0, 0);
-    $pdf->SetAutoPageBreak(true, 10);
+    $pdf->SetAutoPageBreak(false, 0);
     $pdf->AddPage();
 
-    // Force dark background
-    $pdf->SetFillColor(13, 13, 13);
-    $pdf->Rect(0, 0, 210, 297, 'F');
+    $W = $pdf->getPageWidth();   // 210
+    $H = $pdf->getPageHeight();  // 297
 
-    $invoice_no   = "INV-" . str_pad($data['booking_id'], 5, "0", STR_PAD_LEFT);
-    $invoice_date = date('Y-m-d');
-    $daily_total  = $data['price_per_day'] * $data['days'];
-    $booking_fee  = 500;
-    $subtotal     = $daily_total + $booking_fee;
-    $discount     = isset($data['discount_amount']) ? $data['discount_amount'] : 0;
-    $tax          = 0;
-    $total        = $subtotal - $discount + $tax;
+    // ── Helper closures ──────────────────────────────────────────────────────
 
-    $discount_row = "";
+    /** Fill the entire page with the dark background */
+    $drawPageBg = function () use ($pdf, $BG, $W, $H) {
+        $pdf->SetFillColor(...$BG);
+        $pdf->Rect(0, 0, $W, $H, 'F');
+    };
+
+    /** Rounded filled rectangle */
+    $roundRect = function (
+        float $x, float $y, float $w, float $h,
+        array $fill, array $border = [], float $r = 3, float $lw = 0.3
+    ) use ($pdf) {
+        $pdf->SetFillColor(...$fill);
+        if ($border) {
+            $pdf->SetDrawColor(...$border);
+            $pdf->SetLineWidth($lw);
+            $pdf->RoundedRect($x, $y, $w, $h, $r, '1111', 'DF');
+        } else {
+            $pdf->SetDrawColor(...$fill);
+            $pdf->RoundedRect($x, $y, $w, $h, $r, '1111', 'F');
+        }
+    };
+
+    /** Hairline divider */
+    $divider = function (float $x, float $y, float $w) use ($pdf, $DIVIDER) {
+        $pdf->SetDrawColor(...$DIVIDER);
+        $pdf->SetLineWidth(0.2);
+        $pdf->Line($x, $y, $x + $w, $y);
+    };
+
+    /** Single-line text cell (no border) */
+    $text = function (
+        float $x, float $y, float $w, float $h,
+        string $txt, int $size, array $color,
+        string $align = 'L', string $style = '', float $lh = 1.15
+    ) use ($pdf) {
+        $pdf->SetXY($x, $y);
+        $pdf->SetFont('helvetica', $style, $size);
+        $pdf->SetTextColor(...$color);
+        $pdf->MultiCell($w, $h, $txt, 0, $align, false, 1,
+                         '', '', true, 0, false, true, $h * $lh, 'M');
+    };
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // RENDER
+    // ═════════════════════════════════════════════════════════════════════════
+    $drawPageBg();
+
+    // ── Left margin / content width ──────────────────────────────────────────
+    $mx  = 14;          // left margin
+    $cw  = $W - $mx*2;  // content width  (182)
+    $cy  = 18;          // current y cursor
+
+    // ── TITLE ROW ────────────────────────────────────────────────────────────
+    // "Invoice" in red
+    $pdf->SetXY($mx, $cy);
+    $pdf->SetFont('helvetica', 'B', 22);
+    $pdf->SetTextColor(...$RED);
+    $pdf->Cell(60, 10, 'Invoice', 0, 0, 'L');
+
+    // Invoice # and date (right-aligned)
+    $pdf->SetFont('helvetica', '', 8);
+    $pdf->SetTextColor(...$MUTED);
+    $metaStr = "$invoiceNo  •  $invoiceDate";
+    $pdf->SetXY($mx, $cy + 12);
+    $pdf->Cell($cw, 5, $metaStr, 0, 0, 'L');
+
+    // Red top accent line
+    $pdf->SetDrawColor(...$RED);
+    $pdf->SetLineWidth(0.6);
+    $pdf->Line($mx, $cy + 19, $mx + $cw, $cy + 19);
+
+    $cy += 24;
+
+    // ── MAIN CARD ────────────────────────────────────────────────────────────
+    $cardH = 218;   // total card height (will be trimmed to content)
+    $roundRect($mx, $cy, $cw, $cardH, $CARD, $CARD_BDR, 4);
+
+    $px  = $mx + 8;   // padding-x inside card
+    $pcw = $cw - 16;  // padded content width
+    $iy  = $cy + 8;   // inner y
+
+    // ── BILL TO / FROM ───────────────────────────────────────────────────────
+    $text($px,       $iy, 60, 4, 'BILL TO', 7, $MUTED, 'L', '');
+    $text($px + 95,  $iy, 60, 4, 'FROM',    7, $MUTED, 'R', '');
+
+    $iy += 7;
+    $text($px,       $iy, 70, 6, $data['first_name'], 11, $WHITE,  'L', 'B');
+    $text($px + 60,  $iy, $cw - 16 - 60, 6, 'TD RENTALS', 11, $RED, 'R', 'B');
+
+    $iy += 7;
+    $text($px,       $iy, 90, 5, $data['email'],            8, $MUTED, 'L', '');
+    $text($px + 60,  $iy, $cw - 16 - 60, 5, 'Executive Logistics Div.', 8, $MUTED, 'R', '');
+
+    $iy += 10;
+    $divider($px, $iy, $pcw);
+    $iy += 4;
+
+    // ── BOOKING SUMMARY INNER BOX ─────────────────────────────────────────────
+    $text($px, $iy, $pcw, 4, 'BOOKING SUMMARY', 7, $MUTED, 'L', '');
+    $iy += 6;
+
+    // Inner dashed card
+    $pdf->SetFillColor(42, 42, 42);
+    $pdf->SetDrawColor(...$CARD_BDR);
+    $pdf->SetLineWidth(0.3);
+    $pdf->RoundedRect($px, $iy, $pcw, 26, 2, '1111', 'DF');
+
+    // Vehicle name & dates inside summary card
+    $bx = $px + 5;
+    $by = $iy + 4;
+    $text($bx, $by, 60, 5, $data['model'], 10, $WHITE, 'L', 'B');
+
+    // PICKUP
+    $text($bx,      $by + 7, 30, 4, 'PICKUP', 6, $MUTED, 'L', '');
+    $text($bx,      $by + 11, 30, 5, $data['pickup_date'], 8, $WHITE, 'L', '');
+
+    // DROPOFF
+    $text($bx + 38, $by + 7, 35, 4, 'DROPOFF', 6, $MUTED, 'L', '');
+    $text($bx + 38, $by + 11, 35, 5, $data['dropoff_date'], 8, $WHITE, 'L', '');
+
+    // DURATION (right side)
+    $durX = $px + $pcw - 40;
+    $text($durX, $by + 4, 35, 4, 'DURATION', 6, $MUTED, 'R', '');
+    $text($durX, $by + 9, 35, 7, $data['days'] . ' Days', 14, $WHITE, 'R', 'B');
+
+    $iy += 30;
+
+    // ── LINE ITEMS TABLE ──────────────────────────────────────────────────────
+    // Header row
+    $pdf->SetFont('helvetica', '', 7);
+    $pdf->SetTextColor(...$MUTED);
+    $pdf->SetXY($px, $iy);
+
+    $col1 = 85;  // Description column
+    $col2 = 40;  // Rate/Unit
+    $col3 = $pcw - $col1 - $col2;  // Total
+
+    $pdf->Cell($col1, 5, 'DESCRIPTION', 0, 0, 'L');
+    $pdf->Cell($col2, 5, 'RATE/UNIT',   0, 0, 'R');
+    $pdf->Cell($col3, 5, 'TOTAL',       0, 0, 'R');
+
+    $iy += 6;
+    $divider($px, $iy, $pcw);
+    $iy += 3;
+
+    // Row helper
+    $itemRow = function (
+        float &$y, string $label, string $sub,
+        string $rate, string $total
+    ) use ($pdf, $px, $col1, $col2, $col3, $WHITE, $MUTED, $DIVIDER, $pcw, $divider) {
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->SetTextColor(...$WHITE);
+        $pdf->SetXY($px, $y);
+        $pdf->Cell($col1, 5, $label, 0, 0, 'L');
+
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->SetXY($px + $col1, $y);
+        $pdf->Cell($col2, 5, $rate, 0, 0, 'R');
+        $pdf->SetXY($px + $col1 + $col2, $y);
+        $pdf->Cell($col3, 5, $total, 0, 0, 'R');
+
+        $y += 6;
+        if ($sub) {
+            $pdf->SetFont('helvetica', '', 7.5);
+            $pdf->SetTextColor(...$MUTED);
+            $pdf->SetXY($px, $y);
+            $pdf->Cell($col1, 4, $sub, 0, 0, 'L');
+            $y += 5;
+        }
+        $divider($px, $y, $pcw);
+        $y += 3;
+    };
+
+    $fmt = fn($n) => 'NPR ' . number_format($n, 2);
+
+    $itemRow(
+        $iy,
+        'Daily Vehicle Rental Rate',
+        $data['model'] . ' - ' . $data['days'] . ' Days',
+        $fmt($data['price_per_day']),
+        $fmt($dailyTotal)
+    );
+
+    $itemRow(
+        $iy,
+        'Basic Booking Fee',
+        'Administrative processing',
+        $fmt($basicFee),
+        $fmt($basicFee)
+    );
+
+    // Optional discount row
     if ($discount > 0) {
-        $discount_row = "
-        <tr>
-            <td style='padding:10px 0; border-bottom:1px solid #2a2a2a; color:#ffffff; font-size:11px;'>
-                Discount (" . htmlspecialchars($data['discount_code']) . ")<br>
-                <span style='color:#888888; font-size:10px;'>Promotional discount applied</span>
-            </td>
-            <td style='padding:10px 0; border-bottom:1px solid #2a2a2a; text-align:right; color:#2ecc71; font-size:11px;'>-</td>
-            <td style='padding:10px 0; border-bottom:1px solid #2a2a2a; text-align:right; color:#2ecc71; font-size:11px;'>- NPR " . number_format($discount, 2) . "</td>
-        </tr>";
+        $pdf->SetFont('helvetica', 'B', 9);
+        $pdf->SetTextColor(46, 204, 113);   // green
+        $pdf->SetXY($px, $iy);
+        $code = $data['discount_code'] ?? 'DISCOUNT';
+        $pdf->Cell($col1, 5, "Discount ($code)", 0, 0, 'L');
+        $pdf->SetFont('helvetica', '', 9);
+        $pdf->SetXY($px + $col1, $iy);
+        $pdf->Cell($col2, 5, '', 0, 0, 'R');
+        $pdf->SetXY($px + $col1 + $col2, $iy);
+        $pdf->Cell($col3, 5, '- ' . $fmt($discount), 0, 0, 'R');
+        $iy += 6;
+        $divider($px, $iy, $pcw);
+        $iy += 3;
     }
 
-    $html = '
-    <style>
-        * { font-family: helvetica, sans-serif; }
-    </style>
+    // ── SUBTOTAL / TAX ────────────────────────────────────────────────────────
+    $summaryRow = function (
+        float &$y, string $label, string $value,
+        array $labelColor, array $valueColor, int $size = 8
+    ) use ($pdf, $px, $pcw) {
+        $pdf->SetFont('helvetica', '', $size);
+        $pdf->SetTextColor(...$labelColor);
+        $pdf->SetXY($px, $y);
+        $pdf->Cell($pcw - 40, 5, $label, 0, 0, 'R');
+        $pdf->SetFont('helvetica', '', $size);
+        $pdf->SetTextColor(...$valueColor);
+        $pdf->SetXY($px + $pcw - 40, $y);
+        $pdf->Cell(40, 5, $value, 0, 0, 'R');
+        $y += 6;
+    };
 
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0d0d0d; margin:0; padding:0;">
-    <tr><td style="padding:24px 32px 16px;">
+    $summaryRow($iy, 'SUBTOTAL', $fmt($subtotal), $MUTED, $WHITE);
+    $summaryRow($iy, 'TAX (0%)', $fmt($tax), $MUTED, $WHITE);
 
-        <!-- HEADER -->
-        <table width="100%" cellpadding="0" cellspacing="0">
-        <tr>
-            <td>
-                <span style="font-size:26px; font-weight:bold; color:#e53935;">Invoice</span><br>
-                <span style="font-size:11px; color:#888888;">#' . $invoice_no . ' &bull; ' . $invoice_date . '</span>
-            </td>
-        </tr>
-        </table>
+    $divider($px, $iy, $pcw);
+    $iy += 4;
 
-        <!-- Red divider -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px; margin-bottom:20px;">
-        <tr><td style="height:2px; background-color:#e53935;"></td></tr>
-        </table>
+    // TOTAL — big red
+    $pdf->SetFont('helvetica', '', 8);
+    $pdf->SetTextColor(...$MUTED);
+    $pdf->SetXY($px, $iy);
+    $pdf->Cell($pcw - 60, 7, 'TOTAL', 0, 0, 'R');
 
-        <!-- MAIN CARD -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#1a1a1a;">
-        <tr><td style="padding:24px;">
+    $pdf->SetFont('helvetica', 'B', 16);
+    $pdf->SetTextColor(...$RED);
+    $pdf->SetXY($px + $pcw - 60, $iy - 1);
+    $pdf->Cell(60, 9, $fmt($total), 0, 0, 'R');
+    $iy += 12;
 
-            <!-- BILL TO / FROM -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-            <tr>
-                <td width="50%" style="vertical-align:top;">
-                    <span style="font-size:9px; color:#888888; font-weight:bold; letter-spacing:1px;">BILL TO</span><br><br>
-                    <span style="font-size:15px; font-weight:bold; color:#ffffff;">' . htmlspecialchars($data['first_name']) . '</span><br>
-                    <span style="font-size:11px; color:#888888;">' . htmlspecialchars($data['email']) . '</span>
-                </td>
-                <td width="50%" style="vertical-align:top; text-align:right;">
-                    <span style="font-size:9px; color:#888888; font-weight:bold; letter-spacing:1px;">FROM</span><br><br>
-                    <span style="font-size:15px; font-weight:bold; color:#e53935;">TD RENTALS</span><br>
-                    <span style="font-size:11px; color:#888888;">Executive Logistics Div.</span>
-                </td>
-            </tr>
-            </table>
+    $divider($px, $iy, $pcw);
+    $iy += 6;
 
-            <!-- BOOKING SUMMARY BOX -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#222222; margin-bottom:20px;">
-            <tr><td style="padding:16px;">
-                <span style="font-size:9px; color:#888888; font-weight:bold; letter-spacing:1px;">BOOKING SUMMARY</span><br><br>
-                <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td width="60%" style="vertical-align:middle;">
-                        <span style="font-size:14px; font-weight:bold; color:#ffffff;">' . htmlspecialchars($data['model']) . '</span><br><br>
-                        <table cellpadding="0" cellspacing="0">
-                        <tr>
-                            <td style="padding-right:24px;">
-                                <span style="font-size:9px; color:#888888; font-weight:bold; letter-spacing:1px;">PICKUP</span><br>
-                                <span style="font-size:12px; color:#ffffff;">' . $data['pickup_date'] . '</span>
-                            </td>
-                            <td>
-                                <span style="font-size:9px; color:#888888; font-weight:bold; letter-spacing:1px;">DROPOFF</span><br>
-                                <span style="font-size:12px; color:#ffffff;">' . $data['dropoff_date'] . '</span>
-                            </td>
-                        </tr>
-                        </table>
-                    </td>
-                    <td width="40%" style="text-align:right; vertical-align:middle;">
-                        <span style="font-size:9px; color:#888888; font-weight:bold; letter-spacing:1px;">DURATION</span><br>
-                        <span style="font-size:18px; font-weight:bold; color:#ffffff;">' . $data['days'] . ' Days</span>
-                    </td>
-                </tr>
-                </table>
-            </td></tr>
-            </table>
+    // ── THANK YOU FOOTER (inside card) ────────────────────────────────────────
+    $text($px, $iy, $pcw, 5, '"Thank you for choosing TD Rentals"', 9, $WHITE, 'C', 'I');
+    $iy += 7;
+    $text($px, $iy, $pcw, 4, 'Executive Automotive Services  •  Precision Driven', 7, $MUTED, 'C', '');
+    $iy += 8;
 
-            <!-- LINE ITEMS -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
-            <tr>
-                <td style="padding-bottom:8px; border-bottom:1px solid #2a2a2a; font-size:9px; font-weight:bold; color:#888888; letter-spacing:1px;">DESCRIPTION</td>
-                <td style="padding-bottom:8px; border-bottom:1px solid #2a2a2a; font-size:9px; font-weight:bold; color:#888888; letter-spacing:1px; text-align:right;">RATE/UNIT</td>
-                <td style="padding-bottom:8px; border-bottom:1px solid #2a2a2a; font-size:9px; font-weight:bold; color:#888888; letter-spacing:1px; text-align:right;">TOTAL</td>
-            </tr>
-            <tr>
-                <td style="padding:12px 0; border-bottom:1px solid #2a2a2a; color:#ffffff; font-size:11px;">
-                    Daily Vehicle Rental Rate<br>
-                    <span style="color:#888888; font-size:10px;">' . htmlspecialchars($data['model']) . ' &bull; ' . $data['days'] . ' Days</span>
-                </td>
-                <td style="padding:12px 0; border-bottom:1px solid #2a2a2a; text-align:right; color:#ffffff; font-size:11px;">NPR ' . number_format($data['price_per_day'], 2) . '</td>
-                <td style="padding:12px 0; border-bottom:1px solid #2a2a2a; text-align:right; color:#ffffff; font-size:11px;">NPR ' . number_format($daily_total, 2) . '</td>
-            </tr>
-            <tr>
-                <td style="padding:12px 0; border-bottom:1px solid #2a2a2a; color:#ffffff; font-size:11px;">
-                    Basic Booking Fee<br>
-                    <span style="color:#888888; font-size:10px;">Administrative processing</span>
-                </td>
-                <td style="padding:12px 0; border-bottom:1px solid #2a2a2a; text-align:right; color:#ffffff; font-size:11px;">NPR 500.00</td>
-                <td style="padding:12px 0; border-bottom:1px solid #2a2a2a; text-align:right; color:#ffffff; font-size:11px;">NPR 500.00</td>
-            </tr>
-            ' . $discount_row . '
-            </table>
+    // ── INVOICE NOTES (below card) ────────────────────────────────────────────
+    $notesY = $cy + $cardH + 6;
 
-            <!-- SUBTOTAL / TAX -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
-            <tr>
-                <td width="60%"></td>
-                <td width="20%" style="padding:4px 0; font-size:10px; color:#888888; letter-spacing:1px;">SUBTOTAL</td>
-                <td width="20%" style="padding:4px 0; text-align:right; font-size:11px; color:#ffffff;">NPR ' . number_format($subtotal, 2) . '</td>
-            </tr>
-            <tr>
-                <td width="60%"></td>
-                <td width="20%" style="padding:4px 0; font-size:10px; color:#888888; letter-spacing:1px;">TAX (0%)</td>
-                <td width="20%" style="padding:4px 0; text-align:right; font-size:11px; color:#ffffff;">NPR 0.00</td>
-            </tr>
-            </table>
+    $text($mx, $notesY, $cw, 5, 'INVOICE NOTES', 8, $WHITE, 'C', 'B');
+    $notesY += 8;
 
-            <!-- DIVIDER -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:12px;">
-            <tr><td style="height:1px; background-color:#2a2a2a;"></td></tr>
-            </table>
+    $notesBody =
+        "Please ensure payment is processed within 48 hours of invoice generation " .
+        "to maintain booking priority. Rates are inclusive of basic insurance " .
+        "coverage for the duration specified.";
 
-            <!-- GRAND TOTAL -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
-            <tr>
-                <td width="60%"></td>
-                <td width="15%" style="font-size:11px; color:#888888; vertical-align:bottom; padding-bottom:4px;">TOTAL</td>
-                <td width="25%" style="text-align:right;">
-                    <span style="font-size:24px; font-weight:bold; color:#e53935;">NPR ' . number_format($total, 2) . '</span>
-                </td>
-            </tr>
-            </table>
+    $pdf->SetXY($mx + 10, $notesY);
+    $pdf->SetFont('helvetica', '', 8.5);
+    $pdf->SetTextColor(...$MUTED);
+    $pdf->MultiCell($cw - 20, 5, $notesBody, 0, 'C', false, 1);
 
-            <!-- DIVIDER -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
-            <tr><td style="height:1px; background-color:#2a2a2a;"></td></tr>
-            </table>
+    // ── BOTTOM BRAND LINE ─────────────────────────────────────────────────────
+    $footY = $H - 18;
+    $divider($mx, $footY, $cw);
+    $text($mx, $footY + 3, $cw, 5, 'TD RENTALS', 9, $RED, 'C', 'B');
+    $text($mx, $footY + 9, $cw, 4,
+          '© ' . date('Y') . ' TD RENTALS. EXECUTIVE LOGISTICS DIVISION.',
+          7, $MUTED, 'C', '');
 
-            <!-- THANK YOU -->
-            <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-                <td style="text-align:center; padding:8px 0;">
-                    <span style="font-size:13px; font-style:italic; color:#cccccc;">&quot;Thank you for choosing TD Rentals&quot;</span><br>
-                    <span style="font-size:10px; color:#666666;">Executive Automotive Services &bull; Precision Driven</span>
-                </td>
-            </tr>
-            </table>
-
-        </td></tr>
-        </table>
-
-        <!-- INVOICE NOTES -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px; margin-bottom:20px;">
-        <tr>
-            <td style="text-align:center; padding-bottom:10px;">
-                <span style="font-size:9px; font-weight:bold; color:#888888; letter-spacing:2px;">INVOICE NOTES</span>
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align:center; font-size:11px; color:#888888; line-height:1.6;">
-                Please ensure payment is processed within 48 hours of invoice generation<br>
-                to maintain booking priority. Rates are inclusive of basic insurance<br>
-                coverage for the duration specified.
-            </td>
-        </tr>
-        </table>
-
-        <!-- FOOTER DIVIDER -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
-        <tr><td style="height:1px; background-color:#2a2a2a;"></td></tr>
-        </table>
-
-        <!-- FOOTER -->
-        <table width="100%" cellpadding="0" cellspacing="0">
-        <tr>
-            <td style="text-align:center; padding-bottom:6px;">
-                <span style="font-size:13px; font-weight:bold; color:#e53935;">TD RENTALS</span>
-            </td>
-        </tr>
-        <tr>
-            <td style="text-align:center;">
-                <span style="font-size:9px; color:#555555;">&copy; 2026 TD RENTALS. EXECUTIVE LOGISTICS DIVISION.</span>
-            </td>
-        </tr>
-        </table>
-
-    </td></tr>
-    </table>';
-
-    $pdf->writeHTML($html, true, false, true, false, '');
-
+    // ── OUTPUT ────────────────────────────────────────────────────────────────
     return $pdf->Output("invoice_{$data['booking_id']}.pdf", 'S');
 }
