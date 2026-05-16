@@ -188,12 +188,12 @@ a {
 .btn-primary {
     background: var(--accent-red);
     color: #fff;
-    box-shadow: 0 4px 15px rgba(230, 32, 32, 0.2);
+    box-shadow: 0 4px 15px rgba(192, 57, 43, 0.2);
 }
 
 .btn-primary:hover {
     background: var(--accent-hover);
-    box-shadow: 0 6px 20px rgba(230, 32, 32, 0.4);
+    box-shadow: 0 6px 20px rgba(192, 57, 43, 0.4);
     transform: translateY(-2px);
 }
 

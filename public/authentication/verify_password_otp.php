@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .otp-input:focus {
             border-color: #C0392B;
             outline: none;
-            box-shadow: 0 0 10px rgba(231, 76, 60, 0.2);
+            box-shadow: 0 0 10px rgba(192, 57, 43, 0.2);
         }
         .login-card__sub {
             text-align: center;

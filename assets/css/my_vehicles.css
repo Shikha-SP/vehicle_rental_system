@@ -41,9 +41,9 @@
 }
 
 .alert-error {
-    background: rgba(220, 38, 38, 0.1);
-    color: #f87171;
-    border: 1px solid rgba(220, 38, 38, 0.2);
+    background: rgba(192, 57, 43, 0.1);
+    color: #C0392B;
+    border: 1px solid rgba(192, 57, 43, 0.2);
 }
 
 /* Empty State */
@@ -99,7 +99,7 @@
 
 .vehicle-card:hover {
     transform: translateY(-6px);
-    border-color: rgba(224, 48, 48, 0.3);
+    border-color: rgba(192, 57, 43, 0.3);
     box-shadow: 0 22px 40px rgba(0, 0, 0, 0.35);
 }
 
@@ -157,9 +157,9 @@
 }
 
 .status-rejected {
-    background: rgba(220, 38, 38, 0.2);
-    color: #f87171;
-    border-color: rgba(220, 38, 38, 0.3);
+    background: rgba(192, 57, 43, 0.2);
+    color: #C0392B;
+    border-color: rgba(192, 57, 43, 0.3);
 }
 
 /* Content */
@@ -286,16 +286,16 @@
 }
 
 .btn-remove {
-    background: rgba(220, 38, 38, 0.1);
-    border: 1px solid rgba(220, 38, 38, 0.4);
-    color: #f87171;
+    background: rgba(192, 57, 43, 0.1);
+    border: 1px solid rgba(192, 57, 43, 0.4);
+    color: #C0392B;
 }
 
 .btn-remove:hover {
     background: #C0392B;
     color: #fff;
     transform: translateY(-1px);
-    box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
+    box-shadow: 0 0 20px rgba(192, 57, 43, 0.4);
 }
 
 .my-vehicles .btn-primary {
@@ -318,7 +318,7 @@
 
 .my-vehicles .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(224, 48, 48, 0.4);
+    box-shadow: 0 6px 20px rgba(192, 57, 43, 0.4);
 }
 html[data-theme="light"] .card-content h3 {
     color: #111111;

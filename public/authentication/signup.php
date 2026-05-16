@@ -856,7 +856,7 @@ if (step1Form && document.getElementById('password')) {
                 banner.id = 'signup-error-banner';
                 banner.className = 'error-message';
                 banner.style.padding = '10px';
-                banner.style.background = 'rgba(244, 67, 54, 0.1)';
+                banner.style.background = 'rgba(192, 57, 43, 0.1)';
                 banner.style.borderRadius = '6px';
                 banner.style.marginBottom = '15px';
                 banner.style.fontSize = '14px';
@@ -876,7 +876,7 @@ if (step1Form && document.getElementById('password')) {
                 banner.id = 'signup-error-banner';
                 banner.className = 'error-message';
                 banner.style.padding = '10px';
-                banner.style.background = 'rgba(244, 67, 54, 0.1)';
+                banner.style.background = 'rgba(192, 57, 43, 0.1)';
                 banner.style.borderRadius = '6px';
                 banner.style.marginBottom = '15px';
                 banner.style.fontSize = '14px';

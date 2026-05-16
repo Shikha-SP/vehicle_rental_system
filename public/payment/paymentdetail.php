@@ -441,7 +441,7 @@ if ($uid) {
 
             <?php if (!empty($errors['discount'])): ?>
                 <div class="field-error"
-                    style="margin-bottom: 15px; padding: 10px; background: rgba(224, 48, 48, 0.1); border-left: 3px solid #C0392B;">
+                    style="margin-bottom: 15px; padding: 10px; background: rgba(192, 57, 43, 0.1); border-left: 3px solid #C0392B;">
                     <?= e($errors['discount']) ?>
                 </div>
             <?php endif; ?>
@@ -644,9 +644,9 @@ if ($uid) {
                             <?php foreach ($available_codes as $ac): ?>
                                 <span class="available-code-badge"
                                     onclick="document.getElementById('discount-input').value='<?= htmlspecialchars($ac['code']) ?>'"
-                                    style="background: rgba(224,48,48,0.1); border: 1px solid rgba(224,48,48,0.3); color: var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600;"
-                                    onmouseover="this.style.background='rgba(224,48,48,0.2)'"
-                                    onmouseout="this.style.background='rgba(224,48,48,0.1)'">
+                                    style="background: rgba(192, 57, 43, 0.1); border: 1px solid rgba(192, 57, 43, 0.3); color: var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600;"
+                                    onmouseover="this.style.background='rgba(192, 57, 43, 0.2)'"
+                                    onmouseout="this.style.background='rgba(192, 57, 43, 0.1)'">
                                     <?= htmlspecialchars($ac['code']) ?> (-<?= floatval($ac['discount_percent']) ?>%)
                                 </span>
                             <?php endforeach; ?>

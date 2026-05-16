@@ -13,7 +13,7 @@
     --border: #333333;
     --border-focus: #C0392B;
     --accent: #C0392B;
-    --accent-glow: rgba(224, 48, 48, 0.25);
+    --accent-glow: rgba(192, 57, 43, 0.25);
     --text: #f0f0f0;
     --text-muted: #888888;
     --text-label: #aaaaaa;
@@ -425,7 +425,7 @@ a:hover {
 
 .signup-form__input.is-invalid {
     border-color: #C0392B !important;
-    background: rgba(255, 80, 80, 0.05) !important;
+    background: rgba(192, 57, 43, 0.05) !important;
 }
 
 .toast-container {

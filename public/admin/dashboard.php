@@ -374,9 +374,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 backgroundColor: (context) => {
                     const ctx = context.chart.ctx;
                     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-                    gradient.addColorStop(0, 'rgba(224, 53, 53, 0.4)');
-                    gradient.addColorStop(0.5, 'rgba(224, 53, 53, 0.1)');
-                    gradient.addColorStop(1, 'rgba(224, 53, 53, 0)');
+                    gradient.addColorStop(0, 'rgba(192, 57, 43, 0.4)');
+                    gradient.addColorStop(0.5, 'rgba(192, 57, 43, 0.1)');
+                    gradient.addColorStop(1, 'rgba(192, 57, 43, 0)');
                     return gradient;
                 },
                 fill: true,

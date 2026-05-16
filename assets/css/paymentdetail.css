@@ -321,8 +321,8 @@ body {
 
 /* Highlight the input that has an error */
 .input-field.input-error {
-    box-shadow: 0 0 0 1.5px rgba(224, 48, 48, 0.6);
-    background-color: rgba(224, 48, 48, 0.07);
+    box-shadow: 0 0 0 1.5px rgba(192, 57, 43, 0.6);
+    background-color: rgba(192, 57, 43, 0.07);
 }
 
 /* ── EXPIRY DATE DROPDOWNS ── */

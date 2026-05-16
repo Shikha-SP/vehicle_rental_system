@@ -307,9 +307,9 @@ html[data-theme="light"] .swatch {
 }
 
 .alert-danger {
-    background: rgba(220, 38, 38, 0.1);
-    color: #f87171;
-    border: 1px solid rgba(220, 38, 38, 0.25);
+    background: rgba(192, 57, 43, 0.1);
+    color: #C0392B;
+    border: 1px solid rgba(192, 57, 43, 0.25);
 }
 html[data-theme="light"] .rating-box .fa-star {
     color: #777;

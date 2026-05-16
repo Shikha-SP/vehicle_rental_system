@@ -118,7 +118,7 @@
     transition: 0.2s;
 }
 .conv-item:hover { background: rgba(255,255,255,0.02); }
-.conv-item.active { background: rgba(224,48,48,0.1); border-left: 4px solid #C0392B; }
+.conv-item.active { background: rgba(192, 57, 43, 0.1); border-left: 4px solid #C0392B; }
 .conv-info h4 { margin: 0; font-size: 1rem; }
 .conv-info p { margin: 5px 0 0; font-size: 0.8rem; color: #666; }
 .unread-badge {

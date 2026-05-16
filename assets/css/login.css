@@ -339,7 +339,7 @@ a:hover {
 .login-form__submit:hover {
     background: #C0392B;
     transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(192,57,43,0.3);
+    box-shadow: 0 8px 28px rgba(192, 57, 43, 0.3);
 }
 .login-form__submit:active { transform: translateY(0); box-shadow: none; }
 
@@ -399,7 +399,7 @@ a:hover {
 
 .login-form__input.is-invalid {
     border-color: #C0392B !important;
-    background: rgba(255, 80, 80, 0.05) !important;
+    background: rgba(192, 57, 43, 0.05) !important;
 }
 
 .toast-container {
@@ -563,7 +563,7 @@ html[data-theme="light"] body {
     --text:         #18181b;
     --text-muted:   #4B4B4F;
     --text-label:   #65656A;
-    --accent-dim:   rgba(192,57,43,0.1);
+    --accent-dim:   rgba(192, 57, 43, 0.1);
     background: var(--bg);
     color: var(--text);
 }
@@ -582,8 +582,8 @@ html[data-theme="light"] .login-page::after {
         135deg,
         transparent 0%,
         transparent 48%,
-        rgba(224, 48, 48, 0.04) 48%,
-        rgba(224, 48, 48, 0.04) 52%,
+        rgba(192, 57, 43, 0.04) 48%,
+        rgba(192, 57, 43, 0.04) 52%,
         transparent 52%
     );
 }

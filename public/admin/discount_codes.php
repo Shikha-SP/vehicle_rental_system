@@ -187,8 +187,8 @@ h1 span{
 }
 
 .msg.error{
-    background: rgba(224, 53, 53, 0.10);
-    border: 1px solid rgba(224, 53, 53, 0.30);
+    background: rgba(192, 57, 43, 0.10);
+    border: 1px solid rgba(192, 57, 43, 0.30);
     color: var(--danger);
 }
 
@@ -288,7 +288,7 @@ input:focus,
 select:focus{
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(224, 53, 53, 0.12);
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
 }
 
 /* =========================================================
@@ -431,11 +431,11 @@ select{
 .btn-del{
     background: transparent;
     color: var(--danger);
-    border: 1px solid rgba(224, 53, 53, 0.30);
+    border: 1px solid rgba(192, 57, 43, 0.30);
 }
 
 .btn-del:hover{
-    background: rgba(224, 53, 53, 0.08);
+    background: rgba(192, 57, 43, 0.08);
 }
 
 /* =========================================================
