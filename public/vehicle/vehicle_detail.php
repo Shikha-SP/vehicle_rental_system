@@ -2,11 +2,11 @@
 /**
  * public/vehicle/vehicle_detail.php  —  Detailed vehicle view + Booking
  */
+
 session_start();
 require_once '../../config/db.php';
 require_once '../../includes/functions.php';
 
-$id = (int) ($_GET['id'] ?? 0);
 $id = (int) ($_GET['id'] ?? 0);
 if (!$id) {
     header('Location: vehicles.php');
@@ -38,7 +38,6 @@ $isOwner = ($user_id && $user_id == $vehicle['user_id']);
 
 // Check whether the current user already has an active confirmed booking for this vehicle
 $userBooking = false;
-$booking_id = null;
 if ($user_id) {
     $booking_check_sql = "SELECT id FROM bookings WHERE user_id = ? AND vehicle_id = ? AND status = 'confirmed' AND end_date >= CURDATE() LIMIT 1";
     $booking_check_stmt = $conn->prepare($booking_check_sql);
@@ -111,6 +110,8 @@ $reviews_stmt = $conn->prepare($reviews_sql);
 $reviews_stmt->bind_param("i", $id);
 $reviews_stmt->execute();
 $all_reviews = $reviews_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+// Total number of reviews (with non-empty review text)
+$total_reviews = count($all_reviews);
 
 // Fetch average rating
 $avg_sql = "SELECT AVG(rating) as avg_rating FROM reviews WHERE vehicle_id = ?";
@@ -141,11 +142,8 @@ include '../../includes/header.php';
         <div class="hero-bg">
             <img src="../../<?= htmlspecialchars($vehicle['image_path'] ?? 'assets/images/placeholder.png') ?>"
                 alt="<?= htmlspecialchars($vehicle['model']) ?>">
-            <img src="../../<?= htmlspecialchars($vehicle['image_path'] ?? 'assets/images/placeholder.png') ?>"
-                alt="<?= htmlspecialchars($vehicle['model']) ?>">
             <div class="hero-overlay"></div>
         </div>
-
 
         <div class="container hero-content">
             <div class="hero-text">
@@ -173,13 +171,9 @@ include '../../includes/header.php';
                     <span class="spec-label">TOP SPEED</span>
                     <span class="spec-value"><?= htmlspecialchars($vehicle['top_speed'] ?? '—') ?>
                         <small>KM/H</small></span>
-                    <span class="spec-value"><?= htmlspecialchars($vehicle['top_speed'] ?? '—') ?>
-                        <small>KM/H</small></span>
                 </div>
                 <div class="spec-card">
                     <span class="spec-label">CAPACITY</span>
-                    <span class="spec-value"><?= htmlspecialchars($vehicle['fuel_capacity'] ?? '—') ?>
-                        <small>LITERS</small></span>
                     <span class="spec-value"><?= htmlspecialchars($vehicle['fuel_capacity'] ?? '—') ?>
                         <small>LITERS</small></span>
                 </div>
@@ -187,17 +181,6 @@ include '../../includes/header.php';
 
             <div class="vehicle-description">
                 <h2>Performance Excellence</h2>
-                <p>The <?= htmlspecialchars($vehicle['model']) ?> represents a masterclass in automotive engineering,
-                    meticulously finished in a striking <?= htmlspecialchars($vehicle['color'] ?? 'custom') ?> exterior.
-                    This performance-driven <?= htmlspecialchars($vehicle['fuel_type']) ?> vehicle is equipped with a
-                    precise <?= htmlspecialchars($vehicle['transmission']) ?> transmission, ensuring every mile is
-                    delivered with absolute control.</p>
-                <p>Boasting a top speed of <?= htmlspecialchars($vehicle['top_speed'] ?? 'N/A') ?> KM/H and a
-                    substantial <?= htmlspecialchars($vehicle['fuel_capacity'] ?? 'N/A') ?>-liter fuel capacity, this
-                    <?= htmlspecialchars(strtoupper($vehicle['license_type'])) ?> category vehicle is built for
-                    long-distance cruising and exhilarating performance alike.
-                </p>
-
                 <p>The <?= htmlspecialchars($vehicle['model']) ?> represents a masterclass in automotive engineering,
                     meticulously finished in a striking <?= htmlspecialchars($vehicle['color'] ?? 'custom') ?> exterior.
                     This performance-driven <?= htmlspecialchars($vehicle['fuel_type']) ?> vehicle is equipped with a
@@ -236,7 +219,10 @@ include '../../includes/header.php';
 
                 <!-- display reviews -->
                 <div class="avg-rating-box">
-                    <h3>Community Reviews</h3>
+                    <h3>Community Reviews <span class="total-reviews">
+                        (<?= $total_reviews ?> <?= $total_reviews == 1 ? 'review' : 'reviews' ?>)
+                        </span>
+                    </h3>
                     <?php
                     $avg = round($vehicle['avg_rating'] ?? 0);
                     for ($i = 1; $i <= 5; $i++): ?>
@@ -251,21 +237,25 @@ include '../../includes/header.php';
                         <?php if (empty($all_reviews)): ?>
                             <p class="no-reviews">No reviews yet. Be the first to review!</p>
                         <?php else: ?>
-                                <?php foreach ($all_reviews as $review): ?>
+                            <?php foreach ($all_reviews as $review): ?>
                                 <div class="review-card">
                                     <div class="review-card-header">
                                         <div class="reviewer-avatar">
-                                                    <?= strtoupper(substr($review['reviewer_name'], 0, 1)) ?>
+                                            <?= strtoupper(substr($review['reviewer_name'], 0, 1)) ?>
                                         </div>
                                         <div class="reviewer-meta">
-                                            <strong><?= htmlspecialchars($review['reviewer_name']) ?></strong>
-                                            <span class="review-date"><?= date('M d, Y', strtotime($review['review_created'])) ?></span>
+                                            <strong>
+                                                <?= htmlspecialchars($review['reviewer_name']) ?>
+                                            </strong>
+                                            <span class="review-date">
+                                                <?= date('M d, Y', strtotime($review['review_created'])) ?>
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="review-stars">
-                                                <?php for ($i = 1; $i <= 5; $i++): ?>
+                                        <?php for ($i = 1; $i <= 5; $i++): ?>
                                             <i class="fa-<?= $i <= $review['rating'] ? 'solid' : 'regular' ?> fa-star"></i>
-                                                <?php endfor; ?>
+                                        <?php endfor; ?>
                                     </div>
                                     <p class="review-text"><?= htmlspecialchars($review['review']) ?></p>
                         
@@ -306,10 +296,10 @@ include '../../includes/header.php';
                                         </div>
                                             <?php endif; ?>
                                 </div>
-                                <?php endforeach; ?>
+                            <?php endforeach; ?>
                         <?php endif; ?>
-                        </div>
                     </div>
+                </div>
             </div>
         </div>
 
@@ -347,26 +337,44 @@ include '../../includes/header.php';
 
                     <!-- Hidden panel, shown on click -->
                     <div class="extension-box" id="extension-box" style="display:none;">
+                        <div>
+                            <strong id="Extend-title">Extend your trip</strong>
+                            <p id="Extend-description" style="font-size: 0.9rem;">Choose a new drop-off date to extend your booking.</p>
+                        </div>
+
                         <p class="ext-current">Current drop-off: <strong
                                 id="ext-current-display"><?= date('M d, Y', strtotime($current_end)) ?></strong></p>
                         <div class="form-group">
-                            <label style="color: #555555;">New Drop-off Date</label>
+                            <label style="color: #C4C6D6;">New Drop-off Date</label>
                             <input type="date" id="extend-date" min="<?= $min_extend ?>" value="<?= $min_extend ?>">
                         </div>
                         <div class="ext-price-preview" id="ext-price-preview" style="display:none;">
-                            <span>Extra days: <strong id="ext-days">0</strong></span>
-                            <span>Additional cost: <strong id="ext-cost">NPR 0</strong></span>
+                            <span>Extra Duration: <strong id="ext-days">0 Days</strong></span>
+                            <span>ADDITIONAL COST: <strong id="ext-cost">NPR 0</strong></span>
                         </div>
-                        <button class="btn-book btn-extend" id="btn-extend" data-booking-id="<?= $active_booking_id ?>"
-                            data-current-end="<?= $current_end ?>" data-rate="<?= (float) $vehicle['price_per_day'] ?>">
-                            Confirm Extension
-                        </button>
+                        <form method="POST" action="../payment/paymentdetail.php" id="extend-form">
+                            <input type="hidden" name="source" value="extend_booking">
+                            <input type="hidden" name="action" value="extend_booking">
+                            <input type="hidden" name="booking_id" value="<?= $active_booking_id ?>">
+                            <input type="hidden" name="vehicle_id" value="<?= $id ?>">
+                            <input type="hidden" name="current_end" value="<?= $current_end ?>">
+                            <input type="hidden" name="price_per_day" value="<?= (float) $vehicle['price_per_day'] ?>">
+                            <input type="hidden" name="model" value="<?= htmlspecialchars($vehicle['model']) ?>">
+                            <input type="hidden" name="new_end_date" id="extend-form-date" value="">
+                            <input type="hidden" name="extra_days" id="extend-form-days" value="">
+                            <input type="hidden" name="extra_cost" id="extend-form-cost" value="">
+                            <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
+                            <button type="submit" class="btn-book btn-extend" id="btn-extend">
+                                Confirm Extension
+                            </button>
+                        </form>
                         <p id="ext-msg" class="ext-msg"></p>
                     </div>
 
                     <p class="secure-note">View your booking history for full trip details.</p>
                 <?php else: ?>
                     <form method="POST" action="../payment/paymentdetail.php" class="booking-form">
+                        <input type="hidden" name="source" value="book_now">
                         <input type="hidden" name="action" value="init_payment">
                         <input type="hidden" name="vehicle_id" value="<?= $id ?>">
                         <input type="hidden" name="days" id="booking-days" value="<?= $def_days ?>">
@@ -400,7 +408,6 @@ include '../../includes/header.php';
                         <div class="form-group">
                             <label>Drop-off Date</label>
                             <input type="date" name="dropoff_date" id="dropoff-date" min="<?= date('Y-m-d') ?>"
-                               
                                 value="<?= $def_dropoff ?>" required>
                         </div>
 
@@ -420,13 +427,9 @@ include '../../includes/header.php';
                                 <span>Base Rate (<span id="summary-days"><?= $def_days ?></span> days)</span>
                                 <span id="summary-total">NPR
                                     <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
-                                <span id="summary-total">NPR
-                                    <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
                             </div>
                             <div class="summary-line total">
                                 <span>Total Estimated</span>
-                                <span id="summary-grand">NPR
-                                    <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
                                 <span id="summary-grand">NPR
                                     <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
                             </div>
@@ -471,7 +474,7 @@ include '../../includes/header.php';
 <!-- Review modal -->
 <?php if ($userBooking || $canReview): ?>
     <div class="review-modal-overlay" id="reviewModal" data-rating="<?= $user_rating_value ?>"
-        data-review="<?= htmlspecialchars($user_review_text) ?>">
+        data-review="<?= htmlspecialchars($user_review_text, ENT_QUOTES) ?>">
         <div class="review-modal">
             <button class="modal-close" id="closeModal">&times;</button>
 
@@ -499,7 +502,7 @@ include '../../includes/header.php';
             <p class="modal-rating-label" id="modalRatingLabel">
                 <?= $user_rating_value ? ['', 'Terrible', 'Poor', 'Average', 'Good', 'Excellent'][$user_rating_value] : 'Select a rating' ?>
             </p>
-
+            <!-- Review text box -->
             <textarea id="reviewText" placeholder="Describe your experience with this vehicle..."
                 rows="5"><?= htmlspecialchars($user_review_text) ?></textarea>
 
@@ -666,8 +669,8 @@ include '../../includes/header.php';
         }
 
         if (extendDate && btnExtend) {
-            const dailyRateExt = parseFloat(btnExtend.dataset.rate);
-            const currentEnd = new Date(btnExtend.dataset.currentEnd);
+            const dailyRateExt = <?= (float) $vehicle['price_per_day'] ?>;
+            const currentEnd = new Date('<?= $current_end ?>');
             const pricePreview = document.getElementById('ext-price-preview');
             const extDaysEl = document.getElementById('ext-days');
             const extCostEl = document.getElementById('ext-cost');
@@ -677,63 +680,28 @@ include '../../includes/header.php';
                 const newEnd = new Date(extendDate.value);
                 if (newEnd > currentEnd) {
                     const diffDays = Math.ceil((newEnd - currentEnd) / (1000 * 60 * 60 * 24));
-                    extDaysEl.textContent = diffDays;
-                    extCostEl.textContent = 'NPR ' + (diffDays * dailyRateExt).toLocaleString();
+                    const cost = diffDays * dailyRateExt;
+
+                    extDaysEl.textContent = diffDays + (diffDays === 1 ? ' Day' : ' Days');
+                    extCostEl.textContent = 'NPR ' + cost.toLocaleString();
                     pricePreview.style.display = 'flex';
+
+                    // Sync to hidden form fields
+                    document.getElementById('extend-form-date').value = extendDate.value;
+                    document.getElementById('extend-form-days').value = diffDays;
+                    document.getElementById('extend-form-cost').value = cost;
                 } else {
                     pricePreview.style.display = 'none';
+                    document.getElementById('extend-form-date').value = '';
                 }
             });
-
-            btnExtend.addEventListener('click', () => {
-                const newEnd = extendDate.value;
-                const bookingId = btnExtend.dataset.bookingId;
-
-                if (!newEnd || new Date(newEnd) <= currentEnd) {
+            // validate before submit
+            document.getElementById('extend-form').addEventListener('submit', (e) => {
+                if (!document.getElementById('extend-form-date').value) {
+                    e.preventDefault();
                     extMsg.textContent = 'Please pick a date after your current drop-off.';
-                    extMsg.className = 'ext-msg error';
-                    return;
+                    extMsg.style.color = 'red';
                 }
-
-                btnExtend.disabled = true;
-                btnExtend.textContent = 'Processing…';
-
-                const fd = new FormData();
-                fd.append('booking_id', bookingId);
-                fd.append('new_end_date', newEnd);
-                fd.append('csrf_token', '<?= generateCsrfToken() ?>');
-
-                fetch('../api/extend_booking.php', { method: 'POST', body: fd })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.success) {
-                            
-                            extMsg.textContent = '✅ Booking extended to ' + data.new_end_date;
-                            showToast('Booking Extended!');
-                            extMsg.className = 'ext-msg success';
-                            // Update the displayed current drop-off
-                            document.querySelector('.ext-current strong').textContent = data.new_end_date;
-                            pricePreview.style.display = 'none';
-                            // Update min date for next extension
-                            const next = new Date(data.raw_end_date);
-                            next.setDate(next.getDate() + 1);
-                            extendDate.min = next.toISOString().split('T')[0];
-                            extendDate.value = next.toISOString().split('T')[0];
-                            btnExtend.dataset.currentEnd = data.raw_end_date;
-
-                            setTimeout(() => {
-                                extensionBox.style.display = 'none';
-                                toggleBtn.textContent = 'Extend Booking';
-                            }, 2000);
-                        } else {
-                            extMsg.textContent = '❌ ' + data.message;
-                            extMsg.className = 'ext-msg error';
-                        }
-                    })
-                    .catch(() => {
-                        extMsg.textContent = '❌ Network error. Please try again.';
-                        extMsg.className = 'ext-msg error';
-                    });
             });
         }
     });

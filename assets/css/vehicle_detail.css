@@ -425,7 +425,7 @@ html[data-theme="light"] select#return-time option {
 .review-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.5);
+    background-color: #222222;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -441,14 +441,16 @@ html[data-theme="light"] select#return-time option {
 }
 
 .review-modal {
-    background: #fff;
+    background-color: #181818 !important;
     border-radius: 12px;
+    border-color: #333333;
     padding: 2rem;
     width: 90%;
     max-width: 480px;
     position: relative;
     transform: translateY(20px);
     transition: transform 0.25s ease;
+    color: #FFFF !important;
 }
 
 .review-modal-overlay.active .review-modal {
@@ -463,7 +465,7 @@ html[data-theme="light"] select#return-time option {
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
-    color: #666;
+    color: #FFFF !important;
 }
 
 .modal-header {
@@ -491,13 +493,15 @@ html[data-theme="light"] select#return-time option {
 
 .modal-rating-label {
     font-size: 0.9rem;
-    color: #666;
+    color: #FFFF !important;
     margin-bottom: 1rem;
 }
 
 #reviewText {
     width: 100%;
-    border: 1px solid #ddd;
+    border: 1px solid #2a2828;
+    background-color: #222222;
+    color: #888888;
     border-radius: 8px;
     padding: 0.8rem;
     font-size: 0.95rem;
@@ -567,7 +571,7 @@ html[data-theme="light"] select#return-time option {
 
 .review-text {
     font-size: 0.9rem;
-    color: #444;
+    color: #CCCCCC !important;
     line-height: 1.5;
 }
 
@@ -706,6 +710,7 @@ html[data-theme="light"] .summary-line.total {
     align-items: center;
     gap: 1rem;
     margin-bottom: 1.2rem;
+    color: #F5F4F2;
 }
 .modal-vehicle-img {
     width: 60px;
@@ -717,7 +722,7 @@ html[data-theme="light"] .summary-line.total {
     display: flex;
     gap: 0.4rem;
     font-size: 2rem;
-    color: #f4c518; /* IMDb/Google yellow */
+    color: #F1A140; /* IMDb/Google yellow */
     margin-bottom: 0.3rem;
     cursor: pointer;
 }
@@ -728,7 +733,7 @@ html[data-theme="light"] .summary-line.total {
 }
 #reviewText {
     width: 100%;
-    border: 1px solid #ddd;
+    border: 1px solid #212020;
     border-radius: 8px;
     padding: 0.8rem;
     font-size: 0.95rem;
@@ -782,7 +787,7 @@ html[data-theme="light"] .summary-line.total {
     font-size: 0.85rem;
 }
 .review-date {
-    color: #999;
+    color: #FFFF !important;
     font-size: 0.78rem;
 }
 .review-stars {
@@ -796,7 +801,7 @@ html[data-theme="light"] .summary-line.total {
     line-height: 1.5;
 }
 .no-reviews {
-    color: #999;
+    color: #FFFF !important;
     font-size: 0.9rem;
     text-align: center;
     padding: 1rem 0;
@@ -829,6 +834,7 @@ html[data-theme="light"] .summary-line.total {
 .btn-toggle-reply {
     margin-top: 8px;
     border-radius: 6px;
+    border: none;
     padding: 4px 12px;
     cursor: pointer;
     font-size: 0.85rem;
@@ -886,6 +892,8 @@ html[data-theme="light"] .summary-line.total {
     border: 1px solid #3069e4;
     /* background: #2962ff; */
     border-radius: 10px;
+    overflow: hidden;
+    margin-top: 12px;
 }
 
 .extension-box h4 {
@@ -897,25 +905,57 @@ html[data-theme="light"] .summary-line.total {
 }
 
 .ext-current {
-    font-size: 0.85rem;
-    color: #555;
-    margin-bottom: 0.8rem;
-}
-
-.ext-price-preview {
+    background: #242424;
+    border: 0.5px solid #1e2d44;
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: #C4C6D6;
+    font-size: 14px;
+    margin-bottom: 16px;
     display: flex;
     justify-content: space-between;
-    font-size: 0.85rem;
-    margin: 0.6rem 0;
-    padding: 0.5rem 0.8rem;
-    background: #fff3cd;
-    border-radius: 6px;
-    color: #7a5800;
+    align-items: center;
+}
+
+.ext-current::before {
+    font-size: 11px;
+    color: #8a9bb5;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+#ext-current-display {
+    color: #DCE2FB;
+}
+.ext-price-preview {
+    background: #2a1f00;
+    border: 0.5px solid #5a4500;
+    border-radius: 12px;
+    padding: 16px;
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    color: #c8a96e;
+    font-size: 14px;
+}
+
+.ext-price-preview strong {
+    color: #f0b429;
+    font-size: 14px;
 }
 
 .btn-extend {
     background: #2563eb;
+    color: #F5F4F2;
     margin-top: 0.6rem;
+    width: 100%;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
 }
 
 .btn-extend:hover {
@@ -937,15 +977,39 @@ html[data-theme="light"] .summary-line.total {
     background: #3069e4;
     /* border: 2px #3069e4; */
     border-radius: 8px;
-    color: #ffffff;
+    border: none;
+    color: #F5F4F2;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
     padding: 16px;
     font-size: 13px;
     font-weight: 700;
     box-shadow: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .btn-extend-toggle:hover {
     background: #2666f0;
+}
+#Extend-title
+{
+    color: #F5F4F2;
+}
+#Extend-description
+{
+    color: #CCCCCC;
+}
+/* css for new drop off date */
+#extend-date {
+    width: 100%;
+    background: #242424;
+    border: 0.5px solid #1e2d44;
+    border-radius: 12px;
+    padding: 16px;
+    color: #e5e8f5;
+    font-size: 16px;
+    box-sizing: border-box;
 }

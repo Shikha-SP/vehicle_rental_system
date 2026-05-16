@@ -17,6 +17,11 @@ if (session_status() === PHP_SESSION_NONE) {
   <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/loading.css?v=<?= time() ?>">
   <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
   <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/footer.css">
+  <?php if (!empty($page_css) && is_array($page_css)): ?>
+    <?php foreach ($page_css as $css): ?>
+      <link rel="stylesheet" href="<?= htmlspecialchars($css) ?>?v=<?= time() ?>">
+    <?php endforeach; ?>
+  <?php endif; ?>
   <!-- From HEAD: Chatbot & Icons -->
   <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/chatbot.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

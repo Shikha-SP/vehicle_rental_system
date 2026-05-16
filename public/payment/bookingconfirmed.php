@@ -4,7 +4,6 @@ require_once '../../config/db.php';
 require_once '../../includes/functions.php';
 
 $booking_id = (int) ($_GET['id'] ?? 0);
-$booking_id = (int) ($_GET['id'] ?? 0);
 
 $sql = "
     SELECT b.*, v.model, v.image_path
@@ -14,15 +13,16 @@ $sql = "
 ";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $booking_id);
-$stmt->bind_param("i", $booking_id);
 $stmt->execute();
 $booking = $stmt->get_result()->fetch_assoc();
 
 ?>
 
+<?php
+$page_css = ['/vehicle_rental_collab_project/assets/css/bookingconfirmed.css'];
+?>
 
 <?php require_once '../../includes/header.php'; ?>
-<link rel="stylesheet" href="../../assets/css/bookingconfirmed.css">
 <script src="https://kit.fontawesome.com/ac1574deb1.js" crossorigin="anonymous"></script>
 <style>
     /* make footer take 100% width */
@@ -32,35 +32,11 @@ $booking = $stmt->get_result()->fetch_assoc();
     }
 </style>
 
-
 <!-- MAIN CONTAINER -->
 <div class="container">
-    <!DOCTYPE html>
-    <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://kit.fontawesome.com/ac1574deb1.js" crossorigin="anonymous"></script>
-        <link rel="stylesheet" href="../../assets/css/bookingconfirmed.css">
-        <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
-        <link rel="stylesheet" href="../../assets/css/footer.css">
-        <title>TD Rentals</title>
-        <style>
-            /* make footer take 100% width */
-            .site-footer {
-                width: 100%;
-                box-sizing: border-box;
-            }
-        </style>
-    </head>
-
-    <body>
-        <!-- MAIN CONTAINER -->
-        <div class="container">
-
-            <!-- HERO SECTION -->
-            <section class="hero">
+    <!-- HERO SECTION -->
+    <section class="hero">
 
                 <div class="hero-left">
                     <p class="tagline">RESERVATION CONFIRMED</p>

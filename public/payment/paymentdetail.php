@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once '../../config/db.php';
 require_once '../../config/mailer.php';
 require_once '../../includes/functions.php';
@@ -7,7 +10,7 @@ require_once 'generate_invoice.php';
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
-    header('Location: bookingconfirmed.php');
+    header('Location: ../vehicle/vehicles.php');
     exit;
 }
 
@@ -18,14 +21,45 @@ $expiry_month = $expiry_year = '';
 
 // Get vehicle/booking data from POST or SESSION
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Store booking params in session so they survive re-display
-    if (isset($_POST['vehicle_id'])) {
-        $_SESSION['payment_vehicle_id'] = (int) $_POST['vehicle_id'];
-        $_SESSION['payment_pickup'] = $_POST['pickup_date'] ?? '';
-        $_SESSION['payment_dropoff'] = $_POST['dropoff_date'] ?? '';
-        $_SESSION['payment_days'] = (int) ($_POST['days'] ?? 0);
-        $_SESSION['payment_pickup_time'] = $_POST['pickup_time'] ?? '09:00:00';
-        $_SESSION['payment_return_time'] = $_POST['return_time'] ?? '18:00:00';
+    // Handle extension requests first (they come via POST with action=extend_booking)
+    if (isset($_POST['action']) && $_POST['action'] === 'extend_booking') {
+        $booking_id = (int) ($_POST['booking_id'] ?? 0);
+        $vehicle_id_p = (int) ($_POST['vehicle_id'] ?? 0);
+        $model = $_POST['model'] ?? '';
+        $new_end_date = $_POST['new_end_date'] ?? '';
+        $extra_days = (int) ($_POST['extra_days'] ?? 0);
+        $extra_cost = (float) ($_POST['extra_cost'] ?? 0.0);
+        $current_end = $_POST['current_end'] ?? '';
+
+        // Keep an extend payload in session for rendering summary and for final submission
+        $_SESSION['extend_payload'] = compact(
+            'booking_id',
+            'vehicle_id_p',
+            'model',
+            'new_end_date',
+            'extra_days',
+            'extra_cost',
+            'current_end'
+        );
+
+        // Also set standard payment session keys so the rest of the page can reuse them
+        $_SESSION['payment_vehicle_id'] = $vehicle_id_p;
+        $_SESSION['payment_pickup'] = $current_end;
+        $_SESSION['payment_dropoff'] = $new_end_date;
+        $_SESSION['payment_days'] = $extra_days;
+        $_SESSION['payment_source'] = 'extend_booking';
+        $source = 'extend_booking';
+    } else {
+        // Store booking params in session so they survive re-display
+        if (isset($_POST['vehicle_id'])) {
+            $_SESSION['payment_vehicle_id'] = (int) $_POST['vehicle_id'];
+            $_SESSION['payment_pickup'] = $_POST['pickup_date'] ?? '';
+            $_SESSION['payment_dropoff'] = $_POST['dropoff_date'] ?? '';
+            $_SESSION['payment_days'] = (int) ($_POST['days'] ?? 0);
+            $_SESSION['payment_pickup_time'] = $_POST['pickup_time'] ?? '09:00:00';
+            $_SESSION['payment_return_time'] = $_POST['return_time'] ?? '18:00:00';
+            $_SESSION['payment_source'] = 'book_now';
+        }
     }
 }
 
@@ -35,6 +69,7 @@ $dropoff_date = $_SESSION['payment_dropoff'] ?? '';
 $days = $_SESSION['payment_days'] ?? 0;
 $pickup_time = $_SESSION['payment_pickup_time'] ?? '09:00:00';
 $return_time = $_SESSION['payment_return_time'] ?? '18:00:00';
+$source = $_SESSION['payment_source'] ?? 'book_now';
 
 if (!$vehicle_id) {
     header('Location: invoice.php');
@@ -51,10 +86,83 @@ $stmt->bind_param("i", $vehicle_id);
 $stmt->execute();
 $vehicle = $stmt->get_result()->fetch_assoc();
 
+if (!$vehicle) {
+    header('Location: invoice.php');
+    exit;
+}
+
 $basicprice = 500;
 $price_per_day = (float) $vehicle['price_per_day'];
 $totalprice = ($price_per_day * $days) + $basicprice;
 
+// If this request is for an extension, prefer the extension payload's extra cost for the summary
+if (($source === 'extend_booking') || (isset($_SESSION['payment_source']) && $_SESSION['payment_source'] === 'extend_booking')) {
+    $extend = $_SESSION['extend_payload'] ?? null;
+    $extra_cost = (float) ($extend['extra_cost'] ?? 0.0);
+    $extra_days = (int) ($extend['extra_days'] ?? 0);
+    // Show only the additional price for extensions
+    $totalprice = $extra_cost;
+    $days = $extra_days;
+}
+
+// function to get user data
+function getUserData($conn, $user_id)
+{
+    $sql = "SELECT email, first_name, last_name FROM users WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    return $result;
+}
+// function to record transaction
+function recordTransaction(
+    $conn,
+    $booking_id,
+    $user_id,
+    $amount,
+    $card_last4,
+    $card_type,
+    $transaction_ref
+) {
+    $sql = "
+        INSERT INTO transactions (
+            booking_id,
+            user_id,
+            amount,
+            payment_method,
+            card_last4,
+            card_type,
+            transaction_ref,
+            created_at
+        )
+        VALUES (?, ?, ?, 'card', ?, ?, ?, NOW())
+    ";
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log('recordTransaction prepare failed: ' . $conn->error);
+        return false;
+    }
+    $stmt->bind_param(
+        "iidsss",
+        $booking_id,
+        $user_id,
+        $amount,
+        $card_last4,
+        $card_type,
+        $transaction_ref
+    );
+
+    if (!$stmt->execute()) {
+        error_log('recordTransaction execute failed: ' . $stmt->error);
+        error_log("Values — booking_id: $booking_id, user_id: $user_id, amount: $amount, card_last4: $card_last4, card_type: $card_type, ref: $transaction_ref");
+        return false;
+    }
+
+    return true;
+}
 
 // Only validate when submitting payment fields
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
@@ -169,206 +277,264 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
         }
 
         if (empty($errors)) {
-            $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, pickup_time, return_time, total_price, status,payment_status, discount_code, discount_amount, created_at)
-                           VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed','paid', ?, ?, NOW())";
-            $insert_stmt = $conn->prepare($insert_sql);
-            $insert_stmt->bind_param("iissssdsd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $pickup_time, $return_time, $totalprice, $discount_code, $discount_amount);
-
-            if ($insert_stmt->execute()) {
-                $booking_id = $insert_stmt->insert_id;
-
-                // Insert into transactions table
+            if ($source === 'extend_booking') {
+                $conn->begin_transaction();
                 $card_last4 = substr($cardnumber_clean, -4);
                 $transaction_ref = 'TXN-' . strtoupper(bin2hex(random_bytes(8)));
-                $txn_sql = "INSERT INTO transactions (booking_id, user_id, amount, payment_method, card_last4, card_type, transaction_ref, created_at)
-                        VALUES (?, ?, ?, 'card', ?, ?, ?, NOW())";
-                $txn_stmt = $conn->prepare($txn_sql);
-                $txn_stmt->bind_param("iidsss", $booking_id, $user_id, $totalprice, $card_last4, $card_type, $transaction_ref);
-                $txn_stmt->execute();
+                $charged_amount = $totalprice;
 
-                // Record discount usage & increment used_count
-                if ($discount_code_id) {
-                    $stmt = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
-                    $stmt->bind_param("ii", $user_id, $discount_code_id);
-                    $stmt->execute();
-                    $stmt->close();
-                    // Increment the global used_count
-                    $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = $discount_code_id");
+                // UPDATE existing booking's end date
+                $update_sql = "UPDATE bookings 
+                        SET end_date = ?, total_price = total_price + ?, payment_status = 'paid', discount_amount = discount_amount + ?, discount_code = COALESCE(NULLIF(?, ''), discount_code)
+                        WHERE id = ? AND user_id = ?";
+                $update_stmt = $conn->prepare($update_sql);
+                $update_stmt->bind_param("sddsii", $dropoff_date, $charged_amount, $discount_amount, $discount_code, $booking_id, $user_id);
+                if ($update_stmt->execute() && $update_stmt->affected_rows > 0) {
+                    $update_stmt->close();
 
-                    // ── GOLD RESET CYCLE ──────────────────────────────────────────
-                    // If the code used was the user's personal GOLD code (20% off),
-                    // reset their medal back to BRONZE so they climb the cycle again:
-                    //   BRONZE → SILVER → GOLD → [use Gold code] → BRONZE → ...
-                    $gold_check = $conn->query("
-                    SELECT id FROM discount_codes
-                    WHERE id = $discount_code_id
-                      AND owner_user_id = $user_id
-                      AND discount_percent = 20
-                    LIMIT 1
-                ");
-                    if ($gold_check && $gold_check->num_rows > 0) {
-                        // Reset to Bronze level (completed_rentals = 3 keeps them at Bronze threshold)
-                        $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
-                    }
-                    // ─────────────────────────────────────────────────────────────
-                }
+                    // Insert into transaction table
+                    $txn_success = recordTransaction(
+                        $conn,
+                        $booking_id,
+                        $user_id,
+                        $charged_amount,
+                        $card_last4,
+                        $card_type,
+                        $transaction_ref
+                    );
 
-                // Milestone logic — increment AFTER possible Gold reset
-                $conn->query("UPDATE users SET completed_rentals = completed_rentals + 1 WHERE id = $user_id");
-                $res = $conn->query("SELECT completed_rentals, medal FROM users WHERE id = $user_id");
-                if ($res && $res->num_rows > 0) {
-                    $u_data = $res->fetch_assoc();
-                    $rentals = (int) $u_data['completed_rentals'];
-                    $current_medal = $u_data['medal'];
+                    if ($txn_success) {
+                        $conn->commit();
 
-                    $new_medal = $current_medal;
-                    $milestone_code = '';
-                    $milestone_percent = 0;
+                        // Send extension confirmation email
+                        $user_data = getUserData($conn, $user_id);
+                        $email = $user_data['email'] ?? '';
+                        $first_name = $user_data['first_name'] ?? '';
+                        $last_name = $user_data['last_name'] ?? '';
 
-                    // Updated thresholds: Bronze=3, Silver=7, Gold=15
-                    if ($rentals >= 3 && $current_medal === 'NONE') {
-                        $new_medal = 'BRONZE';
-                        $milestone_code = 'BRONZE5';
-                        $milestone_percent = 5;
-                    } elseif ($rentals >= 7 && $current_medal === 'BRONZE') {
-                        $new_medal = 'SILVER';
-                        $milestone_code = 'SILVER10';
-                        $milestone_percent = 10;
-                    } elseif ($rentals >= 15 && $current_medal === 'SILVER') {
-                        $new_medal = 'GOLD';
-                        $milestone_code = 'GOLD20';
-                        $milestone_percent = 20;
-                    }
+                        // Check for discount usage
+                        if ($discount_code_id) {
+                            $stmt = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
+                            $stmt->bind_param("ii", $user_id, $discount_code_id);
+                            $stmt->execute();
+                            $stmt->close();
+                            // Increment the global used_count
+                            $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = $discount_code_id");
 
-                    if ($new_medal !== $current_medal) {
-                        $conn->query("UPDATE users SET medal = '$new_medal' WHERE id = $user_id");
-
-                        if ($milestone_code !== '') {
-                            // Create a UNIQUE personal code for this user (max_uses = 1)
-                            $unique_suffix = substr(md5(uniqid($user_id, true)), 0, 4);
-                            $personal_code = $milestone_code . "-U" . $user_id . "-" . $unique_suffix;
-
-                            $conn->query("
-                            INSERT INTO discount_codes (code, type, discount_percent, discount_flat, max_uses, owner_user_id) 
-                            VALUES ('$personal_code', 'percent', $milestone_percent, 0, 1, $user_id)
-                        ");
+                            // ── GOLD RESET CYCLE ──────────────────────────────────────────
+                            // If the code used was the user's personal GOLD code (20% off),
+                            // reset their medal back to BRONZE so they climb the cycle again:
+                            //   BRONZE → SILVER → GOLD → [use Gold code] → BRONZE → ...
+                            $gold_check = $conn->query("
+                        SELECT id FROM discount_codes
+                        WHERE id = $discount_code_id
+                          AND owner_user_id = $user_id
+                          AND discount_percent = 20
+                        LIMIT 1
+                    ");
+                            if ($gold_check && $gold_check->num_rows > 0) {
+                                // Reset to Bronze level (completed_rentals = 3 keeps them at Bronze threshold)
+                                $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
+                            }
+                            // ─────────────────────────────────────────────────────────────
                         }
+                        try {
+                            if (isNotificationEnabled($conn, $user_id)) {
+                                // Define email content
+                                $html = require '../../includes/booking_extension.php';
+                                $altBody = "Hi $first_name, your booking for {$vehicle['model']} has been extended to $dropoff_date.";
+
+                                sendEmail($email, $first_name, 'Booking Extended - TD Rentals', $html, $altBody);
+                            }
+                        } catch (Throwable $e) {
+                            // Non-fatal — booking already updated, just log it
+                            error_log('Extension email failed: ' . $e->getMessage());
+                        }
+
+                        header("Location: bookingconfirmed.php?id=" . $booking_id . "&extended=1");
+                        exit;
+                    } else {
+                        $conn->rollback();
+                        $errors['database'] = "Payment transaction could not be recorded. Please try again.";
                     }
+                } else {
+                    $conn->rollback();
+                    $errors['database'] = "Failed to extend booking. Please try again.";
                 }
-
-                // Fetch user data for the confirmation email
-                $user_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
-                $user_stmt->bind_param("i", $user_id);
-                $user_stmt->execute();
-                $user_data = $user_stmt->get_result()->fetch_assoc();
-                $email = $user_data['email'] ?? '';
-                $first_name = $user_data['first_name'] ?? '';
-                $last_name = $user_data['last_name'] ?? '';
-
-                try {
-                    $invoice_data = [
-                        'booking_id' => $booking_id,
-                        'first_name' => $first_name,
-                        'email' => $email,
-                        'model' => $vehicle['model'],
-                        'pickup_date' => $pickup_date,
-                        'dropoff_date' => $dropoff_date,
-                        'days' => $days,
-                        'price_per_day' => $vehicle['price_per_day'],
-                        'total_price' => $totalprice,
-                        'discount_code' => $discount_code,
-                        'discount_amount' => $discount_amount,
-                    ];
-
-                    $pdf_string = generateInvoicePDF($invoice_data);
-
-                    $savings_msg = '';
-                    if ($discount_amount > 0) {
-                        $savings_msg = "<p style='color: #2ecc71;'><strong>You saved NPR " . number_format($discount_amount, 2) . " with code " . htmlspecialchars($discount_code) . "!</strong></p>";
-                    }
-
-                    // send mail
-                    $mail = createMailer();
-                    $mail->addAddress($email, $first_name . ' ' . $last_name);
-                    $mail->Subject = 'Booking Confirmation';
-                    $mail->isHTML(true);
-                    $mail->Body = "
-                    <html>
-                    <body style=\"font-family: Montserrat, Arial, sans-serif; max-width: 600px; margin: auto; background-color: #1A1A1A; color: #FFF; text-align: center;\">
-                        <h1 style=\"color: #C0392B\">TD Rentals</h1>
-                        <div>
-                            <h1 style=\"font-size: 22px\">Hi {$first_name},</h1>
-                            <p style=\"font-size: 14px\">Your booking for <strong>{$vehicle['model']}</strong> is confirmed.</p>
-                            <h2 style=\"font-size: 19px\">{$vehicle['model']}</h2>
-                            <hr>
-                            <p style=\"font-size: 16px\">Booking Date</p>
-                            <h1 style=\"font-size: 25px\">{$pickup_date} - {$dropoff_date}</h1>
-                            <hr>
-                            <p>Please find your invoice attached.</p>
-                            <p>Thank you for choosing TD Rentals 🚀</p>
-                            <p>Call us: +9779706704349</p>
-                        </div>
-                    </body>
-                    </html>
-                    ";
-                    $mail->AltBody = "Hi $first_name, your booking for {$vehicle['model']} is confirmed. Dates: $pickup_date - $dropoff_date.";
-                    // Attach PDF from string (no temp file needed)
-                    $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
-
-                    if (isNotificationEnabled($conn, $user_id)) {
-                        $mail->send();
-                    }
-                    // send payment confirmation mail with invoice
-                    $mail2 = createMailer();
-                    $mail2->addAddress($email, $first_name . ' ' . $last_name);
-                    $mail2->Subject = 'Payment Confirmed!';
-                    $mail2->isHTML(true);
-                    $mail2->Body = "
-                        <html>
-                            <body style=\"font-family: Montserrat, Arial, sans-serif; max-width: 600px; margin: auto; text-align: center; background-color: #1A1A1A; color: #FFF;\">
-                                <h1 style=\"color: #C0392B\">TD Rentals</h1>
-                                <div>
-                                    <h2 style=\"font-size: 22px;\">Your Payment has been confirmed. </h2>
-                                    <hr>
-                                    <p style=\"font-size: 14px;\">Booking ID: <strong>{$booking_id}</strong></p>
-                                    <p style=\"font-size: 14px;\">Vehicle: <strong>{$vehicle['model']}</strong></p>
-                                    <hr>
-                                    <p style=\"font-size: 16px;\">Booking Date</p>
-                                    <h2 style=\"font-size: 25px;\">{$pickup_date} - {$dropoff_date}</h2>
-                                    <hr>
-                                    <p style=\"font-size: 16px;\">Total Paid: <strong>NPR {$totalprice}</strong></p>
-                                    <hr>
-                                    <p>Please find your invoice attached.</p>
-                                    <p>Thank you for choosing TD Rentals 🚀</p>
-                                    <br>
-                                    <p>Best Regards,</p>
-                                    <p><strong>TD Rentals Team</strong></p>
-                                </div>
-                            </body>
-                            </html>    
-                    ";
-                    $mail2->AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
-                    // Attach PDF from string (no temp file needed)
-                    $mail2->addStringAttachment($pdf_string, "TD_Rentals_Invoice.pdf", 'base64', 'application/pdf');
-                    if (isNotificationEnabled($conn, $user_id)) {
-                        $mail2->send();
-                    }
-                } catch (Throwable $e) {
-                    // Temporarily dump the error to the screen so we can read it
-                    die("<h3>Email/System Error:</h3><p>" . $e->getMessage() . "</p><p>File: " . $e->getFile() . " on line " . $e->getLine() . "</p>");
-                }
-                // Clear session payment data
-                unset(
-                    $_SESSION['payment_vehicle_id'],
-                    $_SESSION['payment_pickup'],
-                    $_SESSION['payment_dropoff'],
-                    $_SESSION['payment_days']
-                );
-                header("Location: bookingconfirmed.php?id=" . $booking_id);
-                exit;
             } else {
+                $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, pickup_time, return_time, total_price, status, payment_status, discount_code, discount_amount, created_at)
+                           VALUES (?, ?, ?, ?, ?, ?, ?, 'confirmed', 'paid', ?, ?, NOW())";
+                $insert_stmt = $conn->prepare($insert_sql);
+                $insert_stmt->bind_param("iissssdsd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $pickup_time, $return_time, $totalprice, $discount_code, $discount_amount);
+
+                $conn->begin_transaction();
+                if ($insert_stmt->execute()) {
+                    $booking_id = $insert_stmt->insert_id;
+
+                    // Insert into transactions table
+                    $card_last4 = substr($cardnumber_clean, -4);
+                    $transaction_ref = 'TXN-' . strtoupper(bin2hex(random_bytes(8)));
+                    $txn_success = recordTransaction(
+                        $conn,
+                        $booking_id,
+                        $user_id,
+                        $totalprice,
+                        $card_last4,
+                        $card_type,
+                        $transaction_ref
+                    );
+
+                    if ($txn_success) {
+                        $conn->commit();
+
+                        // Record discount usage & increment used_count
+                        if ($discount_code_id) {
+                            $stmt = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
+                            $stmt->bind_param("ii", $user_id, $discount_code_id);
+                            $stmt->execute();
+                            $stmt->close();
+                            // Increment the global used_count
+                            $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = $discount_code_id");
+
+                            // ── GOLD RESET CYCLE ──────────────────────────────────────────
+                            // If the code used was the user's personal GOLD code (20% off),
+                            // reset their medal back to BRONZE so they climb the cycle again:
+                            //   BRONZE → SILVER → GOLD → [use Gold code] → BRONZE → ...
+                            $gold_check = $conn->query("
+                                SELECT id FROM discount_codes
+                                WHERE id = $discount_code_id
+                                  AND owner_user_id = $user_id
+                                  AND discount_percent = 20
+                                LIMIT 1
+                            ");
+                            if ($gold_check && $gold_check->num_rows > 0) {
+                                // Reset to Bronze level (completed_rentals = 3 keeps them at Bronze threshold)
+                                $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
+                            }
+                            // ─────────────────────────────────────────────────────────────
+                        }
+
+                        // Milestone logic — increment AFTER possible Gold reset
+                        $conn->query("UPDATE users SET completed_rentals = completed_rentals + 1 WHERE id = $user_id");
+                        $res = $conn->query("SELECT completed_rentals, medal FROM users WHERE id = $user_id");
+                        if ($res && $res->num_rows > 0) {
+                            $u_data = $res->fetch_assoc();
+                            $rentals = (int) $u_data['completed_rentals'];
+                            $current_medal = $u_data['medal'];
+
+                            $new_medal = $current_medal;
+                            $milestone_code = '';
+                            $milestone_percent = 0;
+
+                            // Updated thresholds: Bronze=3, Silver=7, Gold=15
+                            if ($rentals >= 3 && $current_medal === 'NONE') {
+                                $new_medal = 'BRONZE';
+                                $milestone_code = 'BRONZE5';
+                                $milestone_percent = 5;
+                            } elseif ($rentals >= 7 && $current_medal === 'BRONZE') {
+                                $new_medal = 'SILVER';
+                                $milestone_code = 'SILVER10';
+                                $milestone_percent = 10;
+                            } elseif ($rentals >= 15 && $current_medal === 'SILVER') {
+                                $new_medal = 'GOLD';
+                                $milestone_code = 'GOLD20';
+                                $milestone_percent = 20;
+                            }
+
+                            if ($new_medal !== $current_medal) {
+                                $conn->query("UPDATE users SET medal = '$new_medal' WHERE id = $user_id");
+
+                                if ($milestone_code !== '') {
+                                    // Create a UNIQUE personal code for this user (max_uses = 1)
+                                    $unique_suffix = substr(md5(uniqid($user_id, true)), 0, 4);
+                                    $personal_code = $milestone_code . "-U" . $user_id . "-" . $unique_suffix;
+
+                                    $conn->query("
+                                        INSERT INTO discount_codes (code, type, discount_percent, discount_flat, max_uses, owner_user_id) 
+                                        VALUES ('$personal_code', 'percent', $milestone_percent, 0, 1, $user_id)
+                                    ");
+                                }
+                            }
+                        }
+
+                        // Fetch user data for the confirmation email
+                        $user_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
+                        $user_stmt->bind_param("i", $user_id);
+                        $user_stmt->execute();
+                        $user_data = $user_stmt->get_result()->fetch_assoc();
+                        $email = $user_data['email'] ?? '';
+                        $first_name = $user_data['first_name'] ?? '';
+                        $last_name = $user_data['last_name'] ?? '';
+
+                        try {
+                        $invoice_data = [
+                            'booking_id' => $booking_id,
+                            'first_name' => $first_name,
+                            'email' => $email,
+                            'model' => $vehicle['model'],
+                            'pickup_date' => $pickup_date,
+                            'dropoff_date' => $dropoff_date,
+                            'days' => $days,
+                            'price_per_day' => $vehicle['price_per_day'],
+                            'total_price' => $totalprice,
+                            'discount_code' => $discount_code,
+                            'discount_amount' => $discount_amount,
+                        ];
+
+                        $pdf_string = generateInvoicePDF($invoice_data);
+
+                        $savings_msg = '';
+                        if ($discount_amount > 0) {
+                            $savings_msg = "<p style='color: #2ecc71;'><strong>You saved NPR " . number_format($discount_amount, 2) . " with code " . htmlspecialchars($discount_code) . "!</strong></p>";
+                        }
+
+                        // send mail
+                        if (isNotificationEnabled($conn, $user_id)) {
+                            $html = require '../../includes/booking_confirmation.php';
+                            $altBody = "Hi $first_name, your booking for {$vehicle['model']} is confirmed. Dates: $pickup_date - $dropoff_date.";
+                            sendEmail($email, $first_name, 'Booking Confirmation', $html, $altBody, [
+                                'data' => $pdf_string,
+                                'filename' => "invoice_{$booking_id}.pdf",
+                                'mime' => 'application/pdf'
+                            ]);
+                        }
+                        // send payment confirmation mail with invoice
+
+                        if (isNotificationEnabled($conn, $user_id)) {
+                            $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
+                            $html = require '../../includes/payment_confirmation.php';
+                            sendEmail(
+                                $email,
+                                $first_name,
+                                'Payment Confirmed!',
+                                $html,
+                                $AltBody
+                            );
+                        }
+                    } catch (Throwable $e) {
+                        // Temporarily dump the error to the screen so we can read it
+                        die("<h3>Email/System Error:</h3><p>" . $e->getMessage() . "</p><p>File: " . $e->getFile() . " on line " . $e->getLine() . "</p>");
+                    }
+                    // Clear session payment data
+                    unset(
+                        $_SESSION['payment_vehicle_id'],
+                        $_SESSION['payment_pickup'],
+                        $_SESSION['payment_dropoff'],
+                        $_SESSION['payment_days'],
+                        $_SESSION['extend_payload'], 
+                        $_SESSION['payment_source']
+                    );
+                    header("Location: bookingconfirmed.php?id=" . $booking_id);
+                    exit;
+                } else {
+                    $conn->rollback();
+                    $errors['database'] = "Payment transaction could not be recorded. Please try again.";
+                }
+            } else {
+                $conn->rollback();
                 $errors['database'] = "Failed to create booking. Please try again.";
             }
+        }
         }
     }
 }
@@ -438,6 +604,16 @@ if ($uid) {
             <input type="hidden" name="days" value="<?= $days ?>">
             <input type="hidden" name="applied_discount_code" id="applied_discount_code"
                 value="<?= htmlspecialchars($_POST['applied_discount_code'] ?? '') ?>">
+
+            <?php if (($source === 'extend_booking') || (isset($_SESSION['payment_source']) && $_SESSION['payment_source'] === 'extend_booking')):
+                $extend = $_SESSION['extend_payload'] ?? null; ?>
+                <input type="hidden" name="action" value="extend_booking">
+                <input type="hidden" name="booking_id" value="<?= htmlspecialchars($extend['booking_id'] ?? 0) ?>">
+                <input type="hidden" name="extra_days" value="<?= htmlspecialchars($extend['extra_days'] ?? 0) ?>">
+                <input type="hidden" name="extra_cost" value="<?= htmlspecialchars($extend['extra_cost'] ?? 0.0) ?>">
+                <input type="hidden" name="current_end" value="<?= htmlspecialchars($extend['current_end'] ?? '') ?>">
+                <input type="hidden" name="new_end_date" value="<?= htmlspecialchars($extend['new_end_date'] ?? '') ?>">
+            <?php endif; ?>
 
             <?php if (!empty($errors['discount'])): ?>
                 <div class="field-error"
@@ -624,24 +800,35 @@ if ($uid) {
             </div>
 
             <!-- Price Breakdown -->
-            <p class="price-breakdown-label">Price Breakdown</p>
+            <?php if ($source === 'extend_booking' || (isset($_SESSION['payment_source']) && $_SESSION['payment_source'] === 'extend_booking')):
+                // Render extension summary using session payload (if present)
+                $extend = $_SESSION['extend_payload'] ?? null;
+                $booking_id = $extend['booking_id'] ?? 0;
+                $extra_cost = $extend['extra_cost'] ?? 0.0;
+                $extra_days = $extend['extra_days'] ?? 0;
+                ?>
+                <h2>Additional Price: NPR <span id="extension-additional-price"><?= number_format($totalprice, 0) ?></span></h2>
+                <input type="hidden" name="source" value="extend_booking">
+            <?php else: ?>
 
-            <div class="price-row">
-                <span class="price-row-name">Daily Rate (NPR <?= htmlspecialchars($vehicle['price_per_day']) ?> *
-                    <?= $days ?>)</span>
-                <span class="price-row-amount">NPR <?= number_format($vehicle['price_per_day'] * $days, 2) ?></span>
-            </div>
-            <div class="price-row">
-                <span class="price-row-name">Insurance & Protection</span>
-                <span class="price-row-amount">NPR 350.00</span>
-            </div>
-            <div class="price-row">
-                <span class="price-row-name">Premium Handling Fee</span>
-                <span class="price-row-amount">NPR 150.00</span>
-            </div>
+                <p class="price-breakdown-label">Price Breakdown</p>
 
-            <hr class="price-divider" />
+                <div class="price-row">
+                    <span class="price-row-name">Daily Rate (NPR <?= htmlspecialchars($vehicle['price_per_day']) ?> *
+                        <?= $days ?>)</span>
+                    <span class="price-row-amount">NPR <?= number_format($vehicle['price_per_day'] * $days, 2) ?></span>
+                </div>
+                <div class="price-row">
+                    <span class="price-row-name">Insurance & Protection</span>
+                    <span class="price-row-amount">NPR 350.00</span>
+                </div>
+                <div class="price-row">
+                    <span class="price-row-name">Premium Handling Fee</span>
+                    <span class="price-row-amount">NPR 150.00</span>
+                </div>
 
+                <hr class="price-divider" />
+            <?php endif; ?>
             <!-- Discount Input Section -->
             <div class="discount-section" style="margin-bottom: 20px;">
                 <p class="price-breakdown-label">Discount Code</p>
@@ -759,6 +946,7 @@ if ($uid) {
     const discountRow = document.getElementById('discount-row');
     const discountName = document.getElementById('discount-name');
     const discountAmountDisplay = document.getElementById('discount-amount');
+    const extensionPriceDisplay = document.getElementById('extension-additional-price');
     const appliedDiscountInput = document.getElementById('applied_discount_code');
     const payButton = document.getElementById('pay-button');
 
@@ -794,6 +982,9 @@ if ($uid) {
                         // Update UI Total
                         finalTotalDisplay.innerHTML = 'NPR ' + data.new_total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                         payButton.innerHTML = 'CONFIRM & PAY NPR ' + data.new_total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                        if (extensionPriceDisplay) {
+                            extensionPriceDisplay.textContent = data.new_total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                        }
 
                         // Show discount row
                         discountRow.style.display = 'flex';
