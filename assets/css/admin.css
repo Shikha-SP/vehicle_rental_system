@@ -19,7 +19,7 @@ html[data-theme="dark"] {
     --fg: #F5F4F2;
     --fg2: #A8A8AE;
     --fg3: #65656A;
-    --red: #A93226;
+    --red: #C0392B;
     --red-glow: rgba(169, 50, 38, 0.28);
     --blue: #3b82f6;
     --blue-glow: rgba(59, 130, 246, 0.4);
@@ -45,7 +45,7 @@ html[data-theme="light"] {
     --fg: #18181b;
     --fg2: #4B4B4F;
     --fg3: #65656A;
-    --red: #A93226;
+    --red: #C0392B;
     --red-glow: rgba(169, 50, 38, 0.18);
     --blue: #3b82f6;
     --blue-glow: rgba(59, 130, 246, 0.4);
@@ -124,7 +124,7 @@ html[data-theme="light"] #timeoutModal .modal-content {
 }
 
 html[data-theme="light"] #timeoutModal h3 {
-    color: #A93226 !important;
+    color: #C0392B !important;
 }
 
 html[data-theme="light"] #timeoutModal p {
@@ -148,7 +148,7 @@ html[data-theme="light"] #timeoutModal button:first-of-type {
 }
 
 html[data-theme="light"] #timeoutModal button:last-of-type {
-    background: #A93226 !important;
+    background: #C0392B !important;
 }
 
 /* ============================================================
@@ -433,7 +433,7 @@ html[data-theme="light"] #timeoutModal button:last-of-type {
 }
 
 .btn-red:hover {
-    background: #8B2921
+    background: #C0392B
 }
 
 .btn-ghost {

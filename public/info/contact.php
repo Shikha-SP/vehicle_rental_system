@@ -93,7 +93,7 @@ include '../../includes/header.php';
         font-size: 1.1rem;
     }
     .btn-submit:hover {
-        background: #b02020;
+        background: #C0392B;
         transform: translateY(-2px);
     }
 </style>

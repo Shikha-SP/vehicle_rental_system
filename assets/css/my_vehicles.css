@@ -10,9 +10,9 @@
     --bg: #0e0e0e;
     --bg-card: rgba(20, 20, 20, 0.7);
     --border: rgba(255, 255, 255, 0.08);
-    --accent: #e03030;
+    --accent: #C0392B;
     --text: #f0f0f0;
-    --red: #e03030;
+    --red: #C0392B;
     --radius: 20px;
 }
 
@@ -292,7 +292,7 @@
 }
 
 .btn-remove:hover {
-    background: #dc2626;
+    background: #C0392B;
     color: #fff;
     transform: translateY(-1px);
     box-shadow: 0 0 20px rgba(220, 38, 38, 0.4);
@@ -302,7 +302,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #c82020 0%, #f04040 100%);
+    background: linear-gradient(135deg, #C0392B 0%, #C0392B 100%);
     color: #fff;
     font-family: 'Inter', sans-serif;
     font-weight: 700;

@@ -27,32 +27,32 @@ const cssColors = {
     "#f0ffff":"Azure","#f5f5dc":"Beige","#ffe4c4":"Bisque","#000000":"Black","#ffebcd":"BlanchedAlmond",
     "#0000ff":"Blue","#8a2be2":"BlueViolet","#a52a2a":"Brown","#deb887":"BurlyWood","#5f9ea0":"CadetBlue",
     "#7fff00":"Chartreuse","#d2691e":"Chocolate","#ff7f50":"Coral","#6495ed":"CornflowerBlue",
-    "#fff8dc":"Cornsilk","#dc143c":"Crimson","#008b8b":"DarkCyan","#b8860b":"DarkGoldenRod",
+    "#fff8dc":"Cornsilk","#C0392B":"Crimson","#008b8b":"DarkCyan","#b8860b":"DarkGoldenRod",
     "#a9a9a9":"DarkGray","#006400":"DarkGreen","#bdb76b":"DarkKhaki","#8b008b":"DarkMagenta",
-    "#556b2f":"DarkOliveGreen","#ff8c00":"DarkOrange","#9932cc":"DarkOrchid","#8b0000":"DarkRed",
+    "#556b2f":"DarkOliveGreen","#ff8c00":"DarkOrange","#9932cc":"DarkOrchid","#C0392B":"DarkRed",
     "#e9967a":"DarkSalmon","#8fbc8f":"DarkSeaGreen","#483d8b":"DarkSlateBlue","#2f4f4f":"DarkSlateGray",
     "#00ced1":"DarkTurquoise","#9400d3":"DarkViolet","#ff1493":"DeepPink","#00bfff":"DeepSkyBlue",
-    "#696969":"DimGray","#1e90ff":"DodgerBlue","#b22222":"FireBrick","#228b22":"ForestGreen",
+    "#696969":"DimGray","#1e90ff":"DodgerBlue","#C0392B":"FireBrick","#228b22":"ForestGreen",
     "#ff00ff":"Fuchsia","#dcdcdc":"Gainsboro","#ffd700":"Gold","#daa520":"GoldenRod",
     "#808080":"Gray","#008000":"Green","#adff2f":"GreenYellow","#ff69b4":"HotPink",
     "#cd5c5c":"IndianRed","#4b0082":"Indigo","#f0e68c":"Khaki","#e6e6fa":"Lavender",
     "#7cfc00":"LawnGreen","#add8e6":"LightBlue","#f08080":"LightCoral","#90ee90":"LightGreen",
     "#ffb6c1":"LightPink","#ffa07a":"LightSalmon","#20b2aa":"LightSeaGreen","#87cefa":"LightSkyBlue",
     "#778899":"LightSlateGray","#b0c4de":"LightSteelBlue","#00ff00":"Lime","#32cd32":"LimeGreen",
-    "#800000":"Maroon","#66cdaa":"MediumAquaMarine","#0000cd":"MediumBlue","#ba55d3":"MediumOrchid",
+    "#C0392B":"Maroon","#66cdaa":"MediumAquaMarine","#0000cd":"MediumBlue","#ba55d3":"MediumOrchid",
     "#9370db":"MediumPurple","#3cb371":"MediumSeaGreen","#7b68ee":"MediumSlateBlue",
     "#00fa9a":"MediumSpringGreen","#48d1cc":"MediumTurquoise","#c71585":"MediumVioletRed",
     "#191970":"MidnightBlue","#000080":"Navy","#808000":"Olive","#6b8e23":"OliveDrab",
     "#ffa500":"Orange","#ff4500":"OrangeRed","#da70d6":"Orchid","#98fb98":"PaleGreen",
     "#afeeee":"PaleTurquoise","#db7093":"PaleVioletRed","#ffc0cb":"Pink","#dda0dd":"Plum",
-    "#b0e0e6":"PowderBlue","#800080":"Purple","#ff0000":"Red","#bc8f8f":"RosyBrown",
+    "#b0e0e6":"PowderBlue","#800080":"Purple","#C0392B":"Red","#bc8f8f":"RosyBrown",
     "#4169e1":"RoyalBlue","#8b4513":"SaddleBrown","#fa8072":"Salmon","#f4a460":"SandyBrown",
     "#2e8b57":"SeaGreen","#a0522d":"Sienna","#c0c0c0":"Silver","#87ceeb":"SkyBlue",
     "#6a5acd":"SlateBlue","#708090":"SlateGray","#00ff7f":"SpringGreen","#4682b4":"SteelBlue",
     "#d2b48c":"Tan","#008080":"Teal","#d8bfd8":"Thistle","#ff6347":"Tomato",
     "#40e0d0":"Turquoise","#ee82ee":"Violet","#f5deb3":"Wheat","#ffffff":"White",
     "#f5f5f5":"WhiteSmoke","#ffff00":"Yellow","#9acd32":"YellowGreen",
-    "#e03030":"Racing Red","#c82020":"Deep Red"
+    "#C0392B":"Racing Red","#C0392B":"Deep Red"
 };
 
 function getNearestColor(hex) {
@@ -107,9 +107,9 @@ updateColorUI(colorPicker.value);
 // ===== COLOR PRESETS =====
 const carPresets = [
     // Reds & Pinks
-    { hex: "#e03030", name: "Racing Red" },
-    { hex: "#c82020", name: "Deep Red" },
-    { hex: "#8b0000", name: "Dark Red" },
+    { hex: "#C0392B", name: "Racing Red" },
+    { hex: "#C0392B", name: "Deep Red" },
+    { hex: "#C0392B", name: "Dark Red" },
     { hex: "#ff6347", name: "Tomato" },
     // Whites & Silvers
     { hex: "#ffffff", name: "White" },

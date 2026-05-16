@@ -1,5 +1,5 @@
 :root {
-    --primary-red: #e8192c;
+    --primary-red: #C0392B;
     --dark-bg: #050505;
     --card-bg: rgba(20, 20, 20, 0.95);
 }
@@ -123,7 +123,7 @@ body, html {
 }
 
 .btn-yes:hover {
-    background: #c11424; /* Darker red, no glow */
+    background: #C0392B; /* Darker red, no glow */
 }
 
 /* Minimal Gray - Ghost Style */

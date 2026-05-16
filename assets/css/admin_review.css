@@ -10,8 +10,8 @@
     --bg-card:      #161616;
     --bg-input:     #1e1e1e;
     --border:       #2c2c2c;
-    --border-focus: #e03030;
-    --accent:       #e03030;
+    --border-focus: #C0392B;
+    --accent:       #C0392B;
     --accent-dim:   rgba(224, 48, 48, 0.18);
     --accent-glow:  rgba(224, 48, 48, 0.30);
     --approve:      #1a7a3a;
@@ -174,7 +174,7 @@
 .btn.approve { background: linear-gradient(135deg, #166d30 0%, #22a64a 100%); color: #fff; }
 .btn.approve:hover { box-shadow: 0 4px 12px var(--approve-glow); }
 
-.btn.reject { background: linear-gradient(135deg, #c82020 0%, #f04040 100%); color: #fff; }
+.btn.reject { background: linear-gradient(135deg, #C0392B 0%, #C0392B 100%); color: #fff; }
 .btn.reject:hover { box-shadow: 0 4px 12px var(--accent-glow); }
 
 /* ── Alerts ───────────────────────────────────────────────── */

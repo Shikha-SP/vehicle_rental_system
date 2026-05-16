@@ -9,7 +9,7 @@
     --bg-input:     #1a1a1a;
     --text:         #f0f0f0;
     --text-muted:   #aaaaaa;
-    --accent:       #e03030;
+    --accent:       #C0392B;
     --accent-dim:   rgba(224,48,48,0.18);
     --border:       #2c2c2c;
 }
@@ -111,7 +111,7 @@ body.light-mode {
     transition: all 0.25s ease;
 }
 .contact-form button:hover {
-    background: #c82020;
+    background: #C0392B;
     transform: translateY(-2px);
     box-shadow: 0 6px 16px var(--accent-dim);
 }

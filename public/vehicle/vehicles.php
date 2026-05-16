@@ -191,12 +191,12 @@ if (isset($_SESSION['user_id'])) {
                                 <div class="custom-picker-row">
                                     <label class="custom-picker-swatch-wrap" for="nativePicker" title="Open colour picker">
                                         <span class="custom-picker-swatch" id="customSwatch"
-                                              style="background: <?= !empty($color) ? htmlspecialchars($color) : '#e03030' ?>"></span>
+                                              style="background: <?= !empty($color) ? htmlspecialchars($color) : '#C0392B' ?>"></span>
                                         <input type="color" id="nativePicker"
-                                               value="<?= !empty($color) ? htmlspecialchars($color) : '#e03030' ?>">
+                                               value="<?= !empty($color) ? htmlspecialchars($color) : '#C0392B' ?>">
                                     </label>
                                     <span class="custom-picker-hex" id="customHex">
-                                        <?= !empty($color) ? htmlspecialchars($color) : '#e03030' ?>
+                                        <?= !empty($color) ? htmlspecialchars($color) : '#C0392B' ?>
                                     </span>
                                     <button type="button" class="custom-apply-btn" id="customApply">Apply</button>
                                 </div>
@@ -320,9 +320,9 @@ if (isset($_SESSION['user_id'])) {
 <script>
 (function () {
     const presets = [
-        { hex: "#e03030", name: "Racing Red"     },
-        { hex: "#c82020", name: "Deep Red"       },
-        { hex: "#8b0000", name: "Dark Red"       },
+        { hex: "#C0392B", name: "Racing Red"     },
+        { hex: "#C0392B", name: "Deep Red"       },
+        { hex: "#C0392B", name: "Dark Red"       },
         { hex: "#ff6347", name: "Tomato"         },
         { hex: "#ffffff", name: "White"          },
         { hex: "#f0f0f0", name: "Pearl White"    },

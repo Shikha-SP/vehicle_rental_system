@@ -441,7 +441,7 @@ if ($uid) {
 
             <?php if (!empty($errors['discount'])): ?>
                 <div class="field-error"
-                    style="margin-bottom: 15px; padding: 10px; background: rgba(224, 48, 48, 0.1); border-left: 3px solid #e03030;">
+                    style="margin-bottom: 15px; padding: 10px; background: rgba(224, 48, 48, 0.1); border-left: 3px solid #C0392B;">
                     <?= e($errors['discount']) ?>
                 </div>
             <?php endif; ?>
@@ -750,7 +750,7 @@ if ($uid) {
             const code = discountInput.value.trim();
             if (!code) {
                 discountMsg.textContent = 'Please enter a code.';
-                discountMsg.style.color = '#e74c3c';
+                discountMsg.style.color = '#C0392B';
                 return;
             }
 
@@ -810,7 +810,7 @@ if ($uid) {
                         }
                     } else {
                         discountMsg.textContent = data.message;
-                        discountMsg.style.color = '#e74c3c';
+                        discountMsg.style.color = '#C0392B';
 
                         // Reset to base total
                         finalTotalDisplay.innerHTML = 'NPR ' + baseTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -845,7 +845,7 @@ if ($uid) {
                     applyBtn.textContent = 'APPLY';
                     applyBtn.disabled = false;
                     discountMsg.textContent = 'Error verifying code. Try again.';
-                    discountMsg.style.color = '#e74c3c';
+                    discountMsg.style.color = '#C0392B';
                 });
         });
     }

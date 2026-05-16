@@ -10,7 +10,7 @@
 :root {
   /* Brand */
   --primary:          #C0392B;
-  --primary-hover:    #A93226;
+  --primary-hover:    #C0392B;
   --primary-dim:      rgba(192, 57, 43, 0.14);
   --primary-glow:     rgba(192, 57, 43, 0.22);
   --primary-fg:       #FFFFFF;
@@ -96,8 +96,8 @@ html[data-theme="light"] {
   --fg-subtle:        #9A9A9E;
   --border:           rgba(0, 0, 0, 0.09);
   --border-strong:    rgba(0, 0, 0, 0.15);
-  --primary:          #B03A2E;
-  --primary-hover:    #962D23;
+  --primary:          #C0392B;
+  --primary-hover:    #C0392B;
   --primary-dim:      rgba(176, 58, 46, 0.12);
   --primary-glow:     rgba(176, 58, 46, 0.18);
   --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.07);

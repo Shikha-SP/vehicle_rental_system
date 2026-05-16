@@ -493,7 +493,7 @@ html[data-theme="light"] .spec svg {
     padding: 12px 20px; cursor: pointer; text-decoration: none;
     transition: background var(--t), transform var(--t), box-shadow var(--t);
 }
-.btn-view:hover { background: #A93226; transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
+.btn-view:hover { background: #C0392B; transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
 
 /* ── No vehicles ──────────────────────────────────────────── */
 .no-vehicles {

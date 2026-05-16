@@ -321,11 +321,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         .signup-form__input.error {
-            border-color: #f44336;
+            border-color: #C0392B;
         }
         
         .error-message {
-            color: #f44336;
+            color: #C0392B;
             font-size: 11px;
             margin-top: 4px;
             display: block;
@@ -705,7 +705,7 @@ function checkPasswordStrength(password) {
     strengthBar.style.width = width + '%';
     
     if (strength <= 2) {
-        strengthBar.style.backgroundColor = '#f44336';
+        strengthBar.style.backgroundColor = '#C0392B';
     } else if (strength <= 3) {
         strengthBar.style.backgroundColor = '#ff9800';
     } else if (strength <= 4) {
@@ -765,7 +765,7 @@ if (licenseInput) {
                 licenseFormatCheck.innerHTML = '✓ License number format valid';
                 this.classList.remove('error');
             } else {
-                licenseFormatCheck.style.color = '#f44336';
+                licenseFormatCheck.style.color = '#C0392B';
                 licenseFormatCheck.innerHTML = '✗ License number must be 5-20 characters (letters, numbers, hyphens)';
                 this.classList.add('error');
             }

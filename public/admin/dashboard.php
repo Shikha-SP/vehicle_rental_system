@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
             datasets: [{
                 label: 'Revenue',
                 data: <?= json_encode(array_values($revenueTrend)) ?>,
-                borderColor: '#e03535',
+                borderColor: '#C0392B',
                 borderWidth: 4,
                 backgroundColor: (context) => {
                     const ctx = context.chart.ctx;
@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pointHitRadius: 20,
                 pointHoverRadius: 6,
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: '#e03535',
+                pointHoverBorderColor: '#C0392B',
                 pointHoverBorderWidth: 3
             }]
         },

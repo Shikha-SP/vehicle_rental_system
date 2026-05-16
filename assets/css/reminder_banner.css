@@ -75,9 +75,9 @@
 }
 
 .reminder-banner--urgent {
-    background: #e03030;
+    background: #C0392B;
     color: #fff;
-    border-bottom: 2px solid #a00;
+    border-bottom: 2px solid #C0392B;
     animation: pulse-bg 1.5s ease-in-out infinite alternate;
 }
 .reminder-banner--urgent .reminder-banner__link {
@@ -86,12 +86,12 @@
 }
 .reminder-banner--urgent .reminder-banner__link:hover {
     background: #fff;
-    color: #e03030;
+    color: #C0392B;
 }
 
 @keyframes pulse-bg {
-    from { background: #e03030; }
-    to   { background: #c00; }
+    from { background: #C0392B; }
+    to   { background: #C0392B; }
 }
 
 @media (max-width: 600px) {

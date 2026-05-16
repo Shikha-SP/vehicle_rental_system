@@ -115,7 +115,7 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
         }
         .form-group textarea:focus {
             outline: none;
-            border-bottom-color: var(--red, #e03030);
+            border-bottom-color: var(--red, #C0392B);
         }
     </style>
 </head>

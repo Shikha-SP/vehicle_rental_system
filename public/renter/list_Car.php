@@ -20,7 +20,7 @@ $license_type  = $_POST['license_type']  ?? '';
 $transmission  = $_POST['transmission']  ?? '';
 $fuel_type     = $_POST['fuel_type']     ?? '';
 $price         = $_POST['price']         ?? 2500;
-$color         = $_POST['color']         ?? '#e03030';
+$color         = $_POST['color']         ?? '#C0392B';
 ?>
 <?php require_once '../../includes/header.php'; ?>
 <link rel="stylesheet" href="../../assets/css/style.css">

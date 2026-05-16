@@ -327,7 +327,7 @@
     gap: 12px;
     width: 100%;
     padding: 16px 24px;
-    background: linear-gradient(135deg, var(--accent) 0%, #E74C3C 100%);
+    background: linear-gradient(135deg, var(--accent) 0%, #C0392B 100%);
     border: none;
     border-radius: var(--radius);
     color: #fff;

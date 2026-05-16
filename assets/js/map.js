@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
 
             // Button styles
-            btn.style.backgroundColor = '#e60000';
+            btn.style.backgroundColor = '#C0392B';
             btn.style.color = '#ffffff';
             btn.style.border = 'none';
             btn.style.padding = '10px 15px';

@@ -297,7 +297,7 @@ include '../../includes/header.php';
         font-size: 0.7rem; font-weight: 800; 
         cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .btn-cancel:hover { background: #dc2626; color: #fff; transform: scale(1.05); box-shadow: 0 0 20px rgba(220,38,38,0.4); }
+    .btn-cancel:hover { background: #C0392B; color: #fff; transform: scale(1.05); box-shadow: 0 0 20px rgba(220,38,38,0.4); }
 
     .alert { padding: 1.2rem; border-radius: 12px; margin-bottom: 3rem; font-size: 0.95rem; display: flex; align-items: center; gap: 1rem; }
     .alert-success { background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
@@ -425,7 +425,7 @@ include '../../includes/header.php';
     .progress-section { margin-top: 4px; }
     .progress-header  { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; margin-bottom: 8px; }
     .progress-track   { background: #222; border-radius: 100px; height: 6px; overflow: hidden; margin-bottom: 8px; }
-    .progress-fill    { height: 100%; background: linear-gradient(90deg, #e03030, #ff6b6b); border-radius: 100px; transition: width 0.5s ease; }
+    .progress-fill    { height: 100%; background: linear-gradient(90deg, #C0392B, #C0392B); border-radius: 100px; transition: width 0.5s ease; }
     .progress-ticks   { display: flex; justify-content: space-between; font-size: 0.65rem; color: #555; }
 
     /* Light Mode - Medal Panel */
@@ -531,17 +531,17 @@ include '../../includes/header.php';
         <!-- Stats Row -->
         <div class="medal-stats">
             <div class="stat-box">
-                <div class="stat-val" style="color: #e03030"><?= $user_rentals ?></div>
+                <div class="stat-val" style="color: #C0392B"><?= $user_rentals ?></div>
                 <div class="stat-label">RENTALS DONE</div>
             </div>
             <div class="stat-box">
-                <div class="stat-val" style="color: <?= $user_medal !== 'NONE' ? ($medal_tiers[$user_medal]['color'] ?? '#e03030') : 'var(--clr-muted, #888)' ?>">
+                <div class="stat-val" style="color: <?= $user_medal !== 'NONE' ? ($medal_tiers[$user_medal]['color'] ?? '#C0392B') : 'var(--clr-muted, #888)' ?>">
                     <?= $user_medal !== 'NONE' ? $medal_tiers[$user_medal]['label'] : '—' ?>
                 </div>
                 <div class="stat-label">MEDAL</div>
             </div>
             <div class="stat-box">
-                <div class="stat-val" style="color: #e03030"><?= $user_reward ?>%</div>
+                <div class="stat-val" style="color: #C0392B"><?= $user_reward ?>%</div>
                 <div class="stat-label">REWARD</div>
             </div>
         </div>

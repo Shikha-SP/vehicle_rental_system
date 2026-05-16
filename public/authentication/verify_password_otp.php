@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transition: all 0.3s ease;
         }
         .otp-input:focus {
-            border-color: #e74c3c;
+            border-color: #C0392B;
             outline: none;
             box-shadow: 0 0 10px rgba(231, 76, 60, 0.2);
         }
@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <main class="login-main">
         <div class="login-card">
-            <div class="login-card__rule" style="background: #e74c3c;"></div>
+            <div class="login-card__rule" style="background: #C0392B;"></div>
             
             <div class="login-card__heading">
                 <span>Verify</span>
@@ -125,13 +125,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <input type="hidden" name="otp" id="finalOtp">
 
-                <button class="login-form__submit" type="submit" style="background: #e74c3c;">
+                <button class="login-form__submit" type="submit" style="background: #C0392B;">
                     Verify & Continue
                 </button>
             </form>
 
             <div style="text-align: center; margin-top: 20px; font-size: 14px;">
-                Didn't receive the code? <a href="forgot_password.php" style="color: #e74c3c; text-decoration: none; font-weight: bold;">Resend Request</a>
+                Didn't receive the code? <a href="forgot_password.php" style="color: #C0392B; text-decoration: none; font-weight: bold;">Resend Request</a>
             </div>
         </div>
     </main>

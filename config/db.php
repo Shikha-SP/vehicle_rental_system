@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
     transmission ENUM('Manual','Automatic') NOT NULL,
     fuel_type ENUM('Petrol','Diesel','Electric','Hybrid','CNG') NOT NULL,
     price_per_day DECIMAL(10,2) NOT NULL,
-    color VARCHAR(20) DEFAULT '#e03030',
+    color VARCHAR(20) DEFAULT '#C0392B',
     top_speed INT,
     fuel_capacity INT,
     image_path VARCHAR(255),

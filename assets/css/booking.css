@@ -163,7 +163,7 @@
 }
 
 .btn-pay:hover {
-    background: #A93226;
+    background: #C0392B;
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(192,57,43,0.3);
 }

@@ -57,11 +57,11 @@ body {
   border-radius: 4px;
   outline: none;
   box-sizing: border-box;
-  caret-color: var(--accent-red, #e3000f);
+  caret-color: var(--accent-red, #C0392B);
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 #pay-button {
-  background-color: var(--accent-red, #c8332d);
+  background-color: var(--accent-red, #C0392B);
   color: var(--clr-text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
@@ -82,7 +82,7 @@ body {
 }
 
 #pay-button:hover {
-  background-color: #c0000d;
+  background-color: #C0392B;
 }
 
 
@@ -248,7 +248,7 @@ body {
 }
 
 .total-amount {
-  color: #e3000f;
+  color: #C0392B;
   font-size: 24px;
   font-weight: 900;
   letter-spacing: 0.02em;

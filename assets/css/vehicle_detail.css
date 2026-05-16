@@ -488,7 +488,7 @@ html[data-theme="light"] select#return-time option {
 .btn-submit-review {
     width: 100%;
     padding: 0.8rem;
-    background: #e8272a;
+    background: #C0392B;
     color: white;
     border: none;
     border-radius: 8px;
@@ -498,7 +498,7 @@ html[data-theme="light"] select#return-time option {
 
 .review-trigger {
     cursor: pointer;
-    color: #e8272a;
+    color: #C0392B;
     font-size: 0.85rem;
     text-decoration: underline;
 }
@@ -519,7 +519,7 @@ html[data-theme="light"] select#return-time option {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: #e8272a;
+    background: #C0392B;
     color: white;
     display: flex;
     align-items: center;
@@ -689,7 +689,7 @@ html[data-theme="light"] .summary-line.total {
 .btn-submit-review {
     width: 100%;
     padding: 0.8rem;
-    background: #e8272a;
+    background: #C0392B;
     color: white;
     border: none;
     border-radius: 8px;
@@ -698,7 +698,7 @@ html[data-theme="light"] .summary-line.total {
 }
 .review-trigger {
     cursor: pointer;
-    color: #e8272a;
+    color: #C0392B;
     font-size: 0.85rem;
     text-decoration: underline;
 }
@@ -719,7 +719,7 @@ html[data-theme="light"] .summary-line.total {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: #e8272a;
+    background: #C0392B;
     color: white;
     display: flex;
     align-items: center;
@@ -880,7 +880,7 @@ html[data-theme="light"] .summary-line.total {
 }
 
 .ext-msg.success { color: #16a34a; }
-.ext-msg.error   { color: #dc2626; }
+.ext-msg.error   { color: #C0392B; }
 
 .btn-extend-toggle {
     width: 100%;

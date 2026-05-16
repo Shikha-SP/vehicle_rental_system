@@ -3,8 +3,8 @@
    ============================================================ */
 
 :root {
-    --s-accent:         #B03A2E; 
-    --s-accent-hover:   #943126;
+    --s-accent:         #C0392B; 
+    --s-accent-hover:   #C0392B;
     --s-bg:             #121416; 
     --s-bg-alt:         #111113; /* Slightly lighter base */
     --s-border:         rgba(255,255,255,0.05);
@@ -151,7 +151,7 @@
 
 .settings-page-nav-item.delete-item {
     margin-top: auto;
-    color: #ff4d4d;
+    color: #C0392B;
     padding-top: 24px;
     border-top: 1px solid var(--s-border);
     border-radius: 0;
@@ -480,7 +480,7 @@
 .settings-page-btn-danger {
     background: rgba(255, 77, 77, 0.1);
     border: 1px solid rgba(255, 77, 77, 0.2);
-    color: #ff4d4d;
+    color: #C0392B;
 }
 
 .settings-page-btn-danger:hover {
@@ -532,7 +532,7 @@
 }
 
 .danger-title {
-    color: #ff4d4d !important;
+    color: #C0392B !important;
     margin-bottom: 16px !important;
     font-size: 13px !important;
 }
@@ -565,7 +565,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    color: #ff4d4d;
+    color: #C0392B;
     margin-bottom: 20px;
 }
 
@@ -593,7 +593,7 @@
 
 .delete-impact-list li i {
     font-size: 10px;
-    color: #ff4d4d;
+    color: #C0392B;
 }
 
 .confirm-instruction {
