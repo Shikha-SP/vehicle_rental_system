@@ -303,8 +303,6 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
 /* ── Page Hero (Shared) ────────────────────────────────────── */
 .page-hero {
   position: relative;
-  background-size: cover;
-  background-position: center 30%;
   min-height: 360px;
   display: flex;
   align-items: center;
@@ -314,18 +312,20 @@ input, button, textarea, select { font-family: inherit; font-size: inherit; }
   margin-bottom: 0;
   padding: 80px 24px;
   overflow: hidden;
-}
-
-/* Dark mode background (default) */
-.page-hero {
+  
+  /* Background configuration */
   background: linear-gradient(135deg, rgba(10,10,11,0.92) 0%, rgba(24,24,27,0.96) 100%), 
               url('../images/hero-car2.jpg');
+  background-size: cover;
+  background-position: center 30%;
 }
 
 /* Light mode background */
 html[data-theme="light"] .page-hero {
-  background: linear-gradient(135deg, rgba(245,244,242,0.92) 0%, rgba(236,234,231,0.96) 100%), 
+  background: linear-gradient(135deg, rgba(245,244,242,0.8) 0%, rgba(236,234,231,0.85) 100%), 
               url('../images/LightModeVechiles.png');
+  background-size: cover;
+  background-position: center 30%;
 }
 
 /* Subtle grid overlay for that "tech/blueprint" look */
