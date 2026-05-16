@@ -511,7 +511,7 @@
 
 .review-text {
     font-size: 0.9rem;
-    color: #FFFF !important;
+    color: #CCCCCC !important;
     line-height: 1.5;
 }
 
@@ -809,6 +809,7 @@ html[data-theme="light"] .secure-note {
 .btn-toggle-reply {
     margin-top: 8px;
     border-radius: 6px;
+    border: none;
     padding: 4px 12px;
     cursor: pointer;
     font-size: 0.85rem;

@@ -19,14 +19,16 @@ if (!$review_id || !$reply) {
     exit;
 }
 
-// Verify the logged-in user actually owns the vehicle this review is for
+// Verify the logged-in user actually owns the vehicle associated with this review
 $check_sql = "SELECT r.id FROM reviews r 
               JOIN vehicles v ON r.vehicle_id = v.id 
-              WHERE r.id = ? AND v.user_id = ?";
+              WHERE r.id = ? AND v.user_id = ? 
+              LIMIT 1";
 $check_stmt = $conn->prepare($check_sql);
 $check_stmt->bind_param("ii", $review_id, $owner_id);
 $check_stmt->execute();
-if (!$check_stmt->get_result()->fetch_assoc()) {
+$check_result = $check_stmt->get_result();
+if (!$check_result || !$check_result->fetch_assoc()) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;
 }

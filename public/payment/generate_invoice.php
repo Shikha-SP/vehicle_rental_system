@@ -34,7 +34,6 @@ function generateInvoicePDF(array $data): string
     $basicFee    = $data['basic_fee'] ?? 500;
     $subtotal    = $dailyTotal + $basicFee;
     $discount    = $data['discount_amount'] ?? 0;
-    $tax         = 0;
     $total       = $data['total_price'];
 
     // ── TCPDF setup ──────────────────────────────────────────────────────────
@@ -275,7 +274,6 @@ function generateInvoicePDF(array $data): string
     };
 
     $summaryRow($iy, 'SUBTOTAL', $fmt($subtotal), $MUTED, $WHITE);
-    $summaryRow($iy, 'TAX (0%)', $fmt($tax), $MUTED, $WHITE);
 
     $divider($px, $iy, $pcw);
     $iy += 4;
