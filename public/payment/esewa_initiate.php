@@ -37,6 +37,25 @@ if (!$vehicle) {
 $basicprice = 500; // From paymentdetail.php
 $total_price_npr = ($vehicle['price_per_day'] * $days) + $basicprice;
 
+$discount_code = $_GET['discount_code'] ?? null;
+$discount_amount = 0;
+
+if ($discount_code) {
+    $dc_sql = "SELECT id, discount_percent FROM discount_codes WHERE code = ? AND is_active = 1 AND (expiry_date IS NULL OR expiry_date >= CURDATE()) LIMIT 1";
+    $dc_stmt = $conn->prepare($dc_sql);
+    $dc_stmt->bind_param("s", $discount_code);
+    $dc_stmt->execute();
+    $dc_res = $dc_stmt->get_result();
+    if ($dc_res->num_rows > 0) {
+        $dc_row = $dc_res->fetch_assoc();
+        $discount_amount = ($total_price_npr * $dc_row['discount_percent']) / 100;
+        $total_price_npr -= $discount_amount;
+        $_SESSION['esewa_discount_code'] = $discount_code;
+        $_SESSION['esewa_discount_amount'] = $discount_amount;
+        $_SESSION['esewa_discount_code_id'] = $dc_row['id'];
+    }
+}
+
 // Generate a unique transaction UUID
 $transaction_uuid = "ESEWA-" . $user_id . "-" . $vehicle_id . "-" . time();
 

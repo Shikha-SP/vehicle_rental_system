@@ -39,6 +39,26 @@ if (!$data) {
 
 $basicprice = 500; // From paymentdetail.php
 $total_price_npr = ($data['price_per_day'] * $days) + $basicprice;
+
+$discount_code = $_GET['discount_code'] ?? null;
+$discount_amount = 0;
+
+if ($discount_code) {
+    $dc_sql = "SELECT id, discount_percent FROM discount_codes WHERE code = ? AND is_active = 1 AND (expiry_date IS NULL OR expiry_date >= CURDATE()) LIMIT 1";
+    $dc_stmt = $conn->prepare($dc_sql);
+    $dc_stmt->bind_param("s", $discount_code);
+    $dc_stmt->execute();
+    $dc_res = $dc_stmt->get_result();
+    if ($dc_res->num_rows > 0) {
+        $dc_row = $dc_res->fetch_assoc();
+        $discount_amount = ($total_price_npr * $dc_row['discount_percent']) / 100;
+        $total_price_npr -= $discount_amount;
+        $_SESSION['khalti_discount_code'] = $discount_code;
+        $_SESSION['khalti_discount_amount'] = $discount_amount;
+        $_SESSION['khalti_discount_code_id'] = $dc_row['id'];
+    }
+}
+
 $amount_paisa = $total_price_npr * 100; // Khalti expects amount in paisa
 
 // Generate a unique purchase order ID
@@ -63,10 +83,10 @@ $post_data = [
 ];
 
 // Pre-create the booking as pending so the callback knows about it without needing the session
-$insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, created_at)
-               VALUES (?, ?, ?, ?, ?, 'confirmed', 'pending', ?, NOW())";
+$insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, discount_code, discount_amount, created_at)
+               VALUES (?, ?, ?, ?, ?, 'confirmed', 'pending', ?, ?, ?, NOW())";
 $insert_stmt = $conn->prepare($insert_sql);
-$insert_stmt->bind_param("iissds", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $total_price_npr, $purchase_order_id);
+$insert_stmt->bind_param("iissdssd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $total_price_npr, $purchase_order_id, $discount_code, $discount_amount);
 if (!$insert_stmt->execute()) {
     die("Failed to create pending booking.");
 }

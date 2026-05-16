@@ -115,6 +115,69 @@ if (isset($khalti_data['status']) && $khalti_data['status'] === 'Completed') {
             throw new Exception("DB update failed.");
         }
 
+        $discount_code = $_SESSION['khalti_discount_code'] ?? null;
+        $discount_amount = $_SESSION['khalti_discount_amount'] ?? 0;
+        $discount_code_id = $_SESSION['khalti_discount_code_id'] ?? null;
+
+        // Record discount usage & increment used_count
+        if ($discount_code_id) {
+            $stmt = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
+            $stmt->bind_param("ii", $user_id, $discount_code_id);
+            $stmt->execute();
+            $stmt->close();
+            $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = $discount_code_id");
+
+            $gold_check = $conn->query("
+                SELECT id FROM discount_codes 
+                WHERE id = $discount_code_id 
+                  AND owner_user_id = $user_id 
+                  AND discount_percent = 20 
+                LIMIT 1
+            ");
+            if ($gold_check && $gold_check->num_rows > 0) {
+                $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
+            }
+        }
+
+        // Milestone logic
+        $conn->query("UPDATE users SET completed_rentals = completed_rentals + 1 WHERE id = $user_id");
+        $res = $conn->query("SELECT completed_rentals, medal FROM users WHERE id = $user_id");
+        if ($res && $res->num_rows > 0) {
+            $u_data = $res->fetch_assoc();
+            $rentals = (int)$u_data['completed_rentals'];
+            $current_medal = $u_data['medal'];
+
+            $new_medal = $current_medal;
+            $milestone_code = '';
+            $milestone_percent = 0;
+
+            if ($rentals >= 3 && $current_medal === 'NONE') {
+                $new_medal = 'BRONZE';
+                $milestone_code = 'BRONZE5';
+                $milestone_percent = 5;
+            } elseif ($rentals >= 7 && $current_medal === 'BRONZE') {
+                $new_medal = 'SILVER';
+                $milestone_code = 'SILVER10';
+                $milestone_percent = 10;
+            } elseif ($rentals >= 15 && $current_medal === 'SILVER') {
+                $new_medal = 'GOLD';
+                $milestone_code = 'GOLD20';
+                $milestone_percent = 20;
+            }
+
+            if ($new_medal !== $current_medal) {
+                $conn->query("UPDATE users SET medal = '$new_medal' WHERE id = $user_id");
+                if ($milestone_code !== '') {
+                    $unique_suffix = substr(md5(uniqid($user_id, true)), 0, 4);
+                    $personal_code = $milestone_code . "-U" . $user_id . "-" . $unique_suffix;
+                    $conn->query("
+                        INSERT INTO discount_codes (code, type, discount_percent, discount_flat, max_uses, owner_user_id) 
+                        VALUES ('$personal_code', 'percent', $milestone_percent, 0, 1, $user_id)
+                    ");
+                }
+            }
+        }
+
         // Insert transaction record (avoid duplicate if already inserted)
         $check_txn = $conn->prepare("SELECT id FROM transactions WHERE booking_id = ? LIMIT 1");
         $check_txn->bind_param("i", $booking_id);
@@ -158,6 +221,8 @@ if (isset($khalti_data['status']) && $khalti_data['status'] === 'Completed') {
                     'days'         => $days,
                     'price_per_day' => $vehicle['price_per_day'],
                     'total_price'  => $totalprice,
+                    'discount_code' => $discount_code ?? null,
+                    'discount_amount' => $discount_amount ?? 0,
                 ];
                 $pdf_string = generateInvoicePDF($invoice_data);
 
@@ -195,7 +260,10 @@ if (isset($khalti_data['status']) && $khalti_data['status'] === 'Completed') {
             $_SESSION['payment_days'],
             $_SESSION['khalti_purchase_order_id'],
             $_SESSION['khalti_amount'],
-            $_SESSION['khalti_pidx']
+            $_SESSION['khalti_pidx'],
+            $_SESSION['khalti_discount_code'],
+            $_SESSION['khalti_discount_amount'],
+            $_SESSION['khalti_discount_code_id']
         );
 
         echo json_encode(['status' => 'paid', 'booking_id' => $booking_id]);
