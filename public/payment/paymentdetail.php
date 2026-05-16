@@ -285,10 +285,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
 
                 // UPDATE existing booking's end date
                 $update_sql = "UPDATE bookings 
-                        SET end_date = ?, total_price = total_price + ?, payment_status = 'paid'
+                        SET end_date = ?, total_price = total_price + ?, payment_status = 'paid', discount_amount = discount_amount + ?, discount_code = COALESCE(NULLIF(?, ''), discount_code)
                         WHERE id = ? AND user_id = ?";
                 $update_stmt = $conn->prepare($update_sql);
-                $update_stmt->bind_param("sdii", $dropoff_date, $charged_amount, $booking_id, $user_id);
+                $update_stmt->bind_param("sddsii", $dropoff_date, $charged_amount, $discount_amount, $discount_code, $booking_id, $user_id);
                 if ($update_stmt->execute() && $update_stmt->affected_rows > 0) {
                     $update_stmt->close();
 
@@ -790,9 +790,10 @@ if ($uid) {
                 $extra_cost = $extend['extra_cost'] ?? 0.0;
                 $extra_days = $extend['extra_days'] ?? 0;
                 ?>
-                <h2>Additional Price: NPR <?= number_format($extra_cost, 0) ?></h2>
+                <h2>Additional Price: NPR <span id="extension-additional-price"><?= number_format($totalprice, 0) ?></span></h2>
                 <input type="hidden" name="source" value="extend_booking">
             <?php else: ?>
+
                 <p class="price-breakdown-label">Price Breakdown</p>
 
                 <div class="price-row">
@@ -930,6 +931,7 @@ if ($uid) {
     const discountRow = document.getElementById('discount-row');
     const discountName = document.getElementById('discount-name');
     const discountAmountDisplay = document.getElementById('discount-amount');
+    const extensionPriceDisplay = document.getElementById('extension-additional-price');
     const appliedDiscountInput = document.getElementById('applied_discount_code');
     const payButton = document.getElementById('pay-button');
 
@@ -965,6 +967,9 @@ if ($uid) {
                         // Update UI Total
                         finalTotalDisplay.innerHTML = 'NPR ' + data.new_total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                         payButton.innerHTML = 'CONFIRM & PAY NPR ' + data.new_total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                        if (extensionPriceDisplay) {
+                            extensionPriceDisplay.textContent = data.new_total.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+                        }
 
                         // Show discount row
                         discountRow.style.display = 'flex';

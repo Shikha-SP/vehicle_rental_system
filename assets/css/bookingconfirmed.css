@@ -1,61 +1,128 @@
-* {
+/* ── CSS VARIABLES ── */
+:root {
+  --bg-primary: #0e0e0e;
+  --bg-secondary: #161616;
+  --bg-card: #1c1c1c;
+  --accent: #e8192c;
+  --accent-soft: #f4b7ae;
+  --accent-dark: #b01020;
+  --text-primary: #e4e2e1;
+  --text-muted: #888890;
+  --text-faint: #a3a3a3;
+  --border: rgba(255, 255, 255, 0.07);
+  --radius-card: 12px;
+  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html[data-theme="light"] {
+  --bg-primary: #f2f1ef;
+  --bg-secondary: #e8e7e5;
+  --bg-card: #ffffff;
+  --accent: #d91424;
+  --accent-soft: #c8332d;
+  --accent-dark: #a50f1e;
+  --text-primary: #111111;
+  --text-muted: #555560;
+  --text-faint: #888890;
+  --border: rgba(0, 0, 0, 0.08);
+}
+
+/* ── RESET ── */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
+
+/* ── BODY ── */
 body {
-  background: linear-gradient(145deg, #101010 0%, #1a1a1a 100%);
-  font-family: "Inter", sans-serif;
-  display: block;
-  align-items: center;
-  justify-content: center;
+  background-color: var(--bg-primary);
+  /* Subtle grain texture via SVG data URI */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  font-family: "Barlow", "Helvetica Neue", Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  padding: 0;
-  color: #e4e2e1;
+  color: var(--text-primary);
+  transition: background-color var(--transition), color var(--transition);
 }
 
+/* ── CONTAINER ── */
 .container {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1240px;
   margin: 0 auto;
+  padding: 0 40px;
 }
+
 /* ── HERO SECTION ── */
 .hero {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 40px;
-  min-height: 70vh;
-  padding: 20px 0 20px 40px;
+  gap: 48px;
+  flex: 1;
+  min-height: calc(100vh - 64px); /* fills below nav */
+  padding: 60px 40px 60px 40px;
 }
 
 .hero-left {
   flex: 1;
-  max-width: 540px;
+  min-width: 0; /* prevents flex overflow */
+  max-width: 520px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
+  /* Staggered fade-in */
+  animation: fadeUp 0.6s ease both;
 }
+
+/* ── TAGLINE ── */
 .tagline {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 15px;
+  gap: 10px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: #f4b7ae;
+  color: var(--accent-soft);
 }
+
+.tagline::before {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 2px;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ── HERO TITLE ── */
+.hero-title {
+  font-size: clamp(2.6rem, 5vw, 4.2rem);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  text-transform: uppercase;
+}
+
 .highlight {
-  color: #d03530;
+  color: var(--accent);
   display: block;
 }
+
+/* ── HERO DESCRIPTION ── */
 .hero-description {
-  color: #b5b4ba;
+  color: var(--text-muted);
   font-size: 15px;
   font-weight: 400;
-  line-height: 1.7;
-  max-width: 420px;
+  line-height: 1.75;
+  max-width: 400px;
+  border-left: 2px solid var(--border);
+  padding-left: 16px;
 }
 
 /* ── BUTTONS ── */
@@ -63,48 +130,76 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-top: 8px;
+  margin-top: 4px;
 }
+
 .btnn {
-  padding: 16px 28px;
-  font-size: 13px;
+  padding: 15px 30px;
+  font-family: inherit;
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color var(--transition),
+              transform var(--transition),
+              box-shadow var(--transition);
+  position: relative;
+  overflow: hidden;
 }
+
 .btnn-primary {
   display: inline-block;
   text-decoration: none;
-  background-color: #e8192c;
+  background-color: var(--accent);
   color: #ffffff;
+  box-shadow: 0 4px 24px rgba(232, 25, 44, 0.3);
 }
 
+.btnn-primary:hover {
+  background-color: var(--accent-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(232, 25, 44, 0.45);
+}
+
+.btnn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 12px rgba(232, 25, 44, 0.25);
+}
 
 /* ── RIGHT SIDE ── */
 .hero-right {
   flex: 1;
-  max-width: 580px;
-  margin-right: 0;
+  min-width: 0; /* prevents flex overflow */
+  max-width: 560px;
+  animation: fadeUp 0.6s 0.15s ease both;
 }
 
 /* ── CONFIRMATION CARD ── */
 .confirmation-card {
   position: relative;
   width: 100%;
-  height: 420px;
-  border-radius: 10px 0 0 10px; /* only round left side */
+  min-height: 440px;
+  border-radius: var(--radius-card) 0 0 var(--radius-card);
   overflow: hidden;
+  /* Fallback background if image fails */
+  background-color: var(--bg-card);
+  background-image: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+  box-shadow:
+    -8px 0 40px rgba(0, 0, 0, 0.5),
+    0 20px 60px rgba(0, 0, 0, 0.4);
 }
+
 .car-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
   display: block;
+  position: absolute;
+  inset: 0;
 }
 
 /* Dark gradient overlay */
@@ -113,77 +208,141 @@ body {
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.05) 40%,
-    rgba(0, 0, 0, 0.8) 100%
+    rgba(0, 0, 0, 0.0) 30%,
+    rgba(0, 0, 0, 0.75) 80%,
+    rgba(0, 0, 0, 0.92) 100%
   );
+  z-index: 1;
 }
-/* Confirmation + Status row at bottom */
-.confirmation-card .confirmation-item {
+
+/* ── CONFIRMATION FOOTER ROW ── */
+.confirmation-footer {
   position: absolute;
-  bottom: 24px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  z-index: 2;
+  padding: 24px 24px 24px;
+  gap: 40px;
+}
+
+.confirmation-item {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.confirmation-card .confirmation-item:first-of-type {
-  left: 24px;
-}
-
-.confirmation-card .confirmation-item:last-of-type {
-  left: 200px;
-}
 .confirmation-card .label {
   font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.15em;
+  font-weight: 700;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #a3a3a3;
+  color: var(--text-faint);
 }
+
 .confirmation-card .value {
   font-size: 18px;
   font-weight: 800;
-  letter-spacing: 0.05em;
-  color: #e4e2e1;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
   text-transform: uppercase;
 }
 
-.confirmation-card .value-status {
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  color: #f4b7ae;
-  text-transform: uppercase;
+.confirmation-card .value--status {
+  color: var(--accent-soft);
 }
 
+/* Accent bar on status */
+.confirmation-card .value--status::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 8px;
+  animation: pulse 2s ease infinite;
+}
+
+/* ── LOCATION CARD ── */
 .location-card {
   flex: 1;
-  background-color: #2a2a2a;
-  border-radius: 8px;
-  padding: 25px 28px 24px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px 28px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  transition: background-color var(--transition);
 }
 
-/* ============================================================
-   MANUAL LIGHT MODE FIXES
-   ============================================================ */
-
-html[data-theme="light"] body {
-  background: #f7f7f7 !important;
-  color: #111111 !important;
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-html[data-theme="light"] .tagline {
-  color: #c8332d;
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
 }
 
-html[data-theme="light"] .hero-description {
-  color: #555555;
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: auto;
+    padding: 48px 24px 60px;
+    gap: 40px;
+  }
+
+  .hero-left,
+  .hero-right {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .confirmation-card {
+    border-radius: var(--radius-card); /* all corners rounded on mobile */
+    min-height: 360px;
+  }
 }
 
-html[data-theme="light"] .location-card {
-  background-color: #ffffff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+@media (max-width: 520px) {
+  .container {
+    padding: 0 20px;
+  }
+
+  .hero {
+    padding: 36px 20px 48px;
+  }
+
+  .hero-title {
+    font-size: 2.4rem;
+  }
+
+  .btnn {
+    padding: 14px 22px;
+    font-size: 11px;
+  }
+
+  .confirmation-footer {
+    gap: 28px;
+    padding: 20px;
+  }
+
+  .confirmation-card .value {
+    font-size: 15px;
+  }
 }
