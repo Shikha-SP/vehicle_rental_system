@@ -369,14 +369,14 @@ document.addEventListener('DOMContentLoaded', () => {
             datasets: [{
                 label: 'Revenue',
                 data: <?= json_encode(array_values($revenueTrend)) ?>,
-                borderColor: '#e03535',
+                borderColor: '#C0392B',
                 borderWidth: 4,
                 backgroundColor: (context) => {
                     const ctx = context.chart.ctx;
                     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-                    gradient.addColorStop(0, 'rgba(224, 53, 53, 0.4)');
-                    gradient.addColorStop(0.5, 'rgba(224, 53, 53, 0.1)');
-                    gradient.addColorStop(1, 'rgba(224, 53, 53, 0)');
+                    gradient.addColorStop(0, 'rgba(192, 57, 43, 0.4)');
+                    gradient.addColorStop(0.5, 'rgba(192, 57, 43, 0.1)');
+                    gradient.addColorStop(1, 'rgba(192, 57, 43, 0)');
                     return gradient;
                 },
                 fill: true,
@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pointHitRadius: 20,
                 pointHoverRadius: 6,
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: '#e03535',
+                pointHoverBorderColor: '#C0392B',
                 pointHoverBorderWidth: 3
             }]
         },

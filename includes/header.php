@@ -1,25 +1,25 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+  session_start();
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-  
+
 <head>
   <?php if (!empty($extraStyles)) echo $extraStyles; ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TD Rentals</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/loading.css?v=<?= time() ?>">
-    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
-    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/footer.css">
-    <!-- From HEAD: Chatbot & Icons -->
-    <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/chatbot.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/loading.css?v=<?= time() ?>">
+  <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/header.css">
+  <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/footer.css">
+  <!-- From HEAD: Chatbot & Icons -->
+  <link rel="stylesheet" href="/vehicle_rental_collab_project/assets/css/chatbot.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <!-- From Gaurav: Theme Initialization Script (Prevents FOUC) -->
     <script>
@@ -31,17 +31,20 @@ if (session_status() === PHP_SESSION_NONE) {
       })();
     </script>
 </head>
+
 <body>
 
-<!-- Top Progress Bar -->
-<div id="td-progress-bar"></div>
+  <!-- Top Progress Bar -->
+  <div id="td-progress-bar"></div>
 
-<!-- Full-page Overlay -->
-<div id="td-overlay">
-  <div class="loader-logo">TD <span>RENTALS</span></div>
-  <div class="loader-bar-track"><div class="loader-bar-fill"></div></div>
-  <div id="td-overlay-msg">Loading…</div>
-</div>
+  <!-- Full-page Overlay -->
+  <div id="td-overlay">
+    <div class="loader-logo">TD <span>RENTALS</span></div>
+    <div class="loader-bar-track">
+      <div class="loader-bar-fill"></div>
+    </div>
+    <div id="td-overlay-msg">Loading…</div>
+  </div>
 
 <header class="td-site-header">
   <nav class="td-site-header__inner" aria-label="Main navigation">
@@ -57,50 +60,50 @@ if (session_status() === PHP_SESSION_NONE) {
         <!-- NAV LINKS (only for logged-in users) -->
         <?php $currentPage = basename($_SERVER['PHP_SELF']); ?>
         <ul class="nav-links" id="navLinks">
-          
+
           <?php if (!empty($_SESSION['is_admin'])): ?>
             <!-- ADMIN NAVIGATION -->
             <li>
-              <a href="/vehicle_rental_collab_project/public/admin/dashboard.php" 
-                 class="<?= ($currentPage == 'dashboard.php') ? 'active' : '' ?>">Dashboard</a>
+              <a href="/vehicle_rental_collab_project/public/admin/dashboard.php"
+                class="<?= ($currentPage == 'dashboard.php') ? 'active' : '' ?>">Dashboard</a>
             </li>
             <li>
-              <a href="/vehicle_rental_collab_project/public/admin/review_rental_requests.php" 
-                 class="<?= ($currentPage == 'review_rental_requests.php') ? 'active' : '' ?>">Review Vehicles</a>
+              <a href="/vehicle_rental_collab_project/public/admin/review_rental_requests.php"
+                class="<?= ($currentPage == 'review_rental_requests.php') ? 'active' : '' ?>">Review Vehicles</a>
             </li>
             <li>
-              <a href="/vehicle_rental_collab_project/public/admin/vehicle_listings.php" 
-                 class="<?= ($currentPage == 'vehicle_listings.php') ? 'active' : '' ?>">Add Vehicles</a>
+              <a href="/vehicle_rental_collab_project/public/admin/vehicle_listings.php"
+                class="<?= ($currentPage == 'vehicle_listings.php') ? 'active' : '' ?>">Add Vehicles</a>
             </li>
             <li>
-              <a href="/vehicle_rental_collab_project/public/admin/customers.php" 
-                 class="<?= ($currentPage == 'customers.php') ? 'active' : '' ?>">Customers</a>
+              <a href="/vehicle_rental_collab_project/public/admin/customers.php"
+                class="<?= ($currentPage == 'customers.php') ? 'active' : '' ?>">Customers</a>
             </li>
             <li>
-              <a href="/vehicle_rental_collab_project/public/admin/audit.php" 
-                 class="<?= ($currentPage == 'audit.php') ? 'active' : '' ?>">Analytics</a>
+              <a href="/vehicle_rental_collab_project/public/admin/audit.php"
+                class="<?= ($currentPage == 'audit.php') ? 'active' : '' ?>">Analytics</a>
             </li>
 
           <?php else: ?>
             <!-- REGULAR USER NAVIGATION -->
             <li>
-              <a href="/vehicle_rental_collab_project/public/user/home_page.php" 
-                 class="<?= ($currentPage == 'home_page.php') ? 'active' : '' ?>">Home</a>
+              <a href="/vehicle_rental_collab_project/public/user/home_page.php"
+                class="<?= ($currentPage == 'home_page.php') ? 'active' : '' ?>">Home</a>
             </li>
             <li>
-              <a href="/vehicle_rental_collab_project/public/vehicle/vehicles.php" 
-                 class="<?= ($currentPage == 'vehicles.php') ? 'active' : '' ?>">Vehicles</a>
+              <a href="/vehicle_rental_collab_project/public/vehicle/vehicles.php"
+                class="<?= ($currentPage == 'vehicles.php') ? 'active' : '' ?>">Vehicles</a>
             </li>
             <li>
-              <a href="/vehicle_rental_collab_project/public/user/bookings.php" 
-                 class="<?= ($currentPage == 'bookings.php') ? 'active' : '' ?>">My Bookings</a>
+              <a href="/vehicle_rental_collab_project/public/user/bookings.php"
+                class="<?= ($currentPage == 'bookings.php') ? 'active' : '' ?>">My Bookings</a>
             </li>
             <li>
-              <a href="/vehicle_rental_collab_project/public/renter/my_vehicles.php" 
-                 class="<?= ($currentPage == 'my_vehicles.php') ? 'active' : '' ?>">My Listings</a>
+              <a href="/vehicle_rental_collab_project/public/renter/my_vehicles.php"
+                class="<?= ($currentPage == 'my_vehicles.php') ? 'active' : '' ?>">My Listings</a>
             </li>
           <?php endif; ?>
-          
+
         </ul>
 
         <!-- RIGHT SIDE -->
@@ -127,7 +130,8 @@ if (session_status() === PHP_SESSION_NONE) {
                 <a href="/vehicle_rental_collab_project/public/admin/inquiries.php">Messages</a>
               <?php endif; ?>
               <a href="/vehicle_rental_collab_project/public/user/settings.php">Settings</a>
-              <a href="/vehicle_rental_collab_project/public/authentication/logout.php?return=<?= urlencode($_SERVER['REQUEST_URI']) ?>">Logout</a>
+              <a
+                href="/vehicle_rental_collab_project/public/authentication/logout.php?return=<?= urlencode($_SERVER['REQUEST_URI']) ?>">Logout</a>
             </div>
           </div>
 
@@ -137,20 +141,34 @@ if (session_status() === PHP_SESSION_NONE) {
             </a>
           <?php endif; ?>
         </div>
-        
-    <?php else: ?>
-        <!-- GUESTS -->
-        <div class="nav-auth" id="navAuth">
-            <a href="/vehicle_rental_collab_project/public/authentication/login.php" class="btn-ghost">Log In</a>
-            <a href="/vehicle_rental_collab_project/public/authentication/signup.php" class="btn-primary">Register</a>
-        </div>
-    <?php endif; ?>
 
-    <!-- THEME TOGGLE (From Gaurav) -->
-    <button id="themeToggleBtn" class="theme-toggle" aria-label="Toggle Theme" title="Toggle Light/Dark Mode">
-        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-    </button>
+      <?php else: ?>
+        <!-- ONLY LOGIN & REGISTER FOR GUESTS -->
+        <div class="nav-auth" id="navAuth">
+          <a href="/vehicle_rental_collab_project/public/authentication/login.php" class="btn-ghost">Log In</a>
+          <a href="/vehicle_rental_collab_project/public/authentication/signup.php" class="btn-primary">Register</a>
+        </div>
+      <?php endif; ?>
+
+      <!-- THEME TOGGLE (From Gaurav) -->
+      <button id="themeToggleBtn" class="theme-toggle" aria-label="Toggle Theme" title="Toggle Light/Dark Mode">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
 
     <!-- MOBILE TOGGLE -->
     <button type="button"
@@ -162,44 +180,44 @@ if (session_status() === PHP_SESSION_NONE) {
       <span></span><span></span><span></span>
     </button>
 
-  </nav>
-</header>
+    </nav>
+  </header>
 
-<!-- AI CHATBOT WIDGET (From HEAD) -->
-<div class="chatbot-widget">
+  <!-- AI CHATBOT WIDGET (From HEAD) -->
+  <div class="chatbot-widget">
     <button class="chatbot-toggle" title="Chat with AI">
-        <i class="fa-solid fa-comments"></i>
+      <i class="fa-solid fa-comments"></i>
     </button>
-    
-    <div class="chatbot-window">
-        <div class="chat-header">
-            <div class="bot-avatar">
-                <i class="fa-solid fa-robot"></i>
-            </div>
-            <div class="chat-header-info">
-                <h3>TD RENTALS AI</h3>
-                <span>Always Online</span>
-            </div>
-        </div>
-        
-        <div class="chat-messages">
-            <div class="typing-indicator">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        
-        <div class="chat-input-area">
-            <form class="chat-input-form">
-                <input type="text" placeholder="Ask about bookings, wishlist..." required autocomplete="off">
-                <button type="submit" class="chat-send-btn">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
-            </form>
-        </div>
-    </div>
-</div>
 
-<script src="/vehicle_rental_collab_project/assets/js/chatbot.js"></script>
+    <div class="chatbot-window">
+      <div class="chat-header">
+        <div class="bot-avatar">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <div class="chat-header-info">
+          <h3>TD RENTALS AI</h3>
+          <span>Always Online</span>
+        </div>
+      </div>
+
+      <div class="chat-messages">
+        <div class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <div class="chat-input-area">
+        <form class="chat-input-form">
+          <input type="text" placeholder="Ask about bookings, wishlist..." required autocomplete="off">
+          <button type="submit" class="chat-send-btn">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="/vehicle_rental_collab_project/assets/js/chatbot.js"></script>
 
 <script>
 function toggleDropdown() {
@@ -330,3 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <script src="/vehicle_rental_collab_project/assets/js/loading.js?v=<?= time() ?>"></script>
+
+</body>
+
+</html>

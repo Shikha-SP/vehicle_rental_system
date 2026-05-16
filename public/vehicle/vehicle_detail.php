@@ -7,6 +7,7 @@ require_once '../../config/db.php';
 require_once '../../includes/functions.php';
 
 $id = (int) ($_GET['id'] ?? 0);
+$id = (int) ($_GET['id'] ?? 0);
 if (!$id) {
     header('Location: vehicles.php');
     exit;
@@ -32,8 +33,12 @@ if (!$vehicle) {
 // Redirected to paymentdetail.php for final step
 $user_id = $_SESSION['user_id'] ?? null;
 
+// Check whether logged-in user is the vehicle owner
+$isOwner = ($user_id && $user_id == $vehicle['user_id']);
+
 // Check whether the current user already has an active confirmed booking for this vehicle
 $userBooking = false;
+$booking_id = null;
 if ($user_id) {
     $booking_check_sql = "SELECT id FROM bookings WHERE user_id = ? AND vehicle_id = ? AND status = 'confirmed' AND end_date >= CURDATE() LIMIT 1";
     $booking_check_stmt = $conn->prepare($booking_check_sql);
@@ -91,9 +96,15 @@ if ($user_id && $effective_booking_id) {
 }
 
 // Fetch all reviews for this vehicle
-$reviews_sql = "SELECT r.rating, r.review, u.first_name, r.created_at 
+$reviews_sql = "SELECT r.id, r.rating, r.review, r.created_at AS review_created, 
+                       rr.reply_text, rr.created_at AS reply_created, 
+                       u.first_name AS reviewer_name, 
+                       ou.first_name AS owner_name
                 FROM reviews r 
                 JOIN users u ON r.user_id = u.id 
+                LEFT JOIN review_replies rr ON r.id = rr.review_id
+                LEFT JOIN vehicles v ON r.vehicle_id = v.id
+                LEFT JOIN users ou ON rr.owner_id = ou.id
                 WHERE r.vehicle_id = ? AND r.review IS NOT NULL AND r.review != ''
                 ORDER BY r.created_at DESC";
 $reviews_stmt = $conn->prepare($reviews_sql);
@@ -130,8 +141,11 @@ include '../../includes/header.php';
         <div class="hero-bg">
             <img src="../../<?= htmlspecialchars($vehicle['image_path'] ?? 'assets/images/placeholder.png') ?>"
                 alt="<?= htmlspecialchars($vehicle['model']) ?>">
+            <img src="../../<?= htmlspecialchars($vehicle['image_path'] ?? 'assets/images/placeholder.png') ?>"
+                alt="<?= htmlspecialchars($vehicle['model']) ?>">
             <div class="hero-overlay"></div>
         </div>
+
 
         <div class="container hero-content">
             <div class="hero-text">
@@ -159,9 +173,13 @@ include '../../includes/header.php';
                     <span class="spec-label">TOP SPEED</span>
                     <span class="spec-value"><?= htmlspecialchars($vehicle['top_speed'] ?? '—') ?>
                         <small>KM/H</small></span>
+                    <span class="spec-value"><?= htmlspecialchars($vehicle['top_speed'] ?? '—') ?>
+                        <small>KM/H</small></span>
                 </div>
                 <div class="spec-card">
                     <span class="spec-label">CAPACITY</span>
+                    <span class="spec-value"><?= htmlspecialchars($vehicle['fuel_capacity'] ?? '—') ?>
+                        <small>LITERS</small></span>
                     <span class="spec-value"><?= htmlspecialchars($vehicle['fuel_capacity'] ?? '—') ?>
                         <small>LITERS</small></span>
                 </div>
@@ -169,6 +187,17 @@ include '../../includes/header.php';
 
             <div class="vehicle-description">
                 <h2>Performance Excellence</h2>
+                <p>The <?= htmlspecialchars($vehicle['model']) ?> represents a masterclass in automotive engineering,
+                    meticulously finished in a striking <?= htmlspecialchars($vehicle['color'] ?? 'custom') ?> exterior.
+                    This performance-driven <?= htmlspecialchars($vehicle['fuel_type']) ?> vehicle is equipped with a
+                    precise <?= htmlspecialchars($vehicle['transmission']) ?> transmission, ensuring every mile is
+                    delivered with absolute control.</p>
+                <p>Boasting a top speed of <?= htmlspecialchars($vehicle['top_speed'] ?? 'N/A') ?> KM/H and a
+                    substantial <?= htmlspecialchars($vehicle['fuel_capacity'] ?? 'N/A') ?>-liter fuel capacity, this
+                    <?= htmlspecialchars(strtoupper($vehicle['license_type'])) ?> category vehicle is built for
+                    long-distance cruising and exhilarating performance alike.
+                </p>
+
                 <p>The <?= htmlspecialchars($vehicle['model']) ?> represents a masterclass in automotive engineering,
                     meticulously finished in a striking <?= htmlspecialchars($vehicle['color'] ?? 'custom') ?> exterior.
                     This performance-driven <?= htmlspecialchars($vehicle['fuel_type']) ?> vehicle is equipped with a
@@ -222,34 +251,65 @@ include '../../includes/header.php';
                         <?php if (empty($all_reviews)): ?>
                             <p class="no-reviews">No reviews yet. Be the first to review!</p>
                         <?php else: ?>
-                            <?php foreach ($all_reviews as $review): ?>
+                                <?php foreach ($all_reviews as $review): ?>
                                 <div class="review-card">
                                     <div class="review-card-header">
                                         <div class="reviewer-avatar">
-                                            <?= strtoupper(substr($review['first_name'], 0, 1)) ?>
+                                                    <?= strtoupper(substr($review['reviewer_name'], 0, 1)) ?>
                                         </div>
                                         <div class="reviewer-meta">
-                                            <strong>
-                                                <?= htmlspecialchars($review['first_name']) ?>
-                                            </strong>
-                                            <span class="review-date">
-                                                <?= date('M d, Y', strtotime($review['created_at'])) ?>
-                                            </span>
+                                            <strong><?= htmlspecialchars($review['reviewer_name']) ?></strong>
+                                            <span class="review-date"><?= date('M d, Y', strtotime($review['review_created'])) ?></span>
                                         </div>
                                     </div>
                                     <div class="review-stars">
-                                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                                                <?php for ($i = 1; $i <= 5; $i++): ?>
                                             <i class="fa-<?= $i <= $review['rating'] ? 'solid' : 'regular' ?> fa-star"></i>
-                                        <?php endfor; ?>
+                                                <?php endfor; ?>
                                     </div>
-                                    <p class="review-text">
-                                        <?= htmlspecialchars($review['review']) ?>
-                                    </p>
+                                    <p class="review-text"><?= htmlspecialchars($review['review']) ?></p>
+                        
+                                            <?php if (!empty($review['reply_text'])): ?>
+                                        <div class="owner-reply">
+                                            <div class="owner-reply-header">
+                                                <div class="reviewer-avatar">
+                                                    <?= strtoupper(substr($review['owner_name'], 0, 1)) ?>
+                                                </div>
+                                                <div class="owner-info">
+                                                    <strong><?= htmlspecialchars($review['owner_name']) ?></strong>
+                                                    <span class="review-date"><?= date('M d, Y', strtotime($review['reply_created'])) ?></span>
+                                                </div>
+                                            </div>
+                                            <p><?= htmlspecialchars($review['reply_text']) ?></p>
+                                        </div>
+                                            <?php endif; ?>
+                        
+                                            <?php if ($isOwner): ?>
+                                            <div class="reply-form" id="reply-form-<?= $review['id'] ?>">
+                                                <?php if (!empty($review['reply_text'])): ?>
+                                                <button class="btn-toggle-reply" data-review-id="<?= $review['id'] ?>">
+                                                    Edit Reply
+                                                </button>
+                                                        <?php else: ?>
+                                                <button class="btn-toggle-reply" data-review-id="<?= $review['id'] ?>">
+                                                    Reply to Review
+                                                </button>
+                                                        <?php endif; ?>
+                                            <div class="reply-input-box" id="reply-input-<?= $review['id'] ?>" style="display:none;">
+                                                <textarea id="reply-text-<?= $review['id'] ?>" rows="3"
+                                                    placeholder="Write your response..."><?= htmlspecialchars($review['reply_text'] ?? '') ?></textarea>
+                                                <button class="btn-submit-reply" data-review-id="<?= $review['id'] ?>">
+                                                    <?= empty($review['reply_text']) ? 'Post Reply' : 'Update Reply' ?>
+                                                </button>
+                                                <span class="reply-msg" id="reply-msg-<?= $review['id'] ?>"></span>
+                                            </div>
+                                        </div>
+                                            <?php endif; ?>
                                 </div>
-                            <?php endforeach; ?>
+                                <?php endforeach; ?>
                         <?php endif; ?>
+                        </div>
                     </div>
-                </div>
             </div>
         </div>
 
@@ -340,6 +400,7 @@ include '../../includes/header.php';
                         <div class="form-group">
                             <label>Drop-off Date</label>
                             <input type="date" name="dropoff_date" id="dropoff-date" min="<?= date('Y-m-d') ?>"
+                               
                                 value="<?= $def_dropoff ?>" required>
                         </div>
 
@@ -359,9 +420,13 @@ include '../../includes/header.php';
                                 <span>Base Rate (<span id="summary-days"><?= $def_days ?></span> days)</span>
                                 <span id="summary-total">NPR
                                     <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
+                                <span id="summary-total">NPR
+                                    <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
                             </div>
                             <div class="summary-line total">
                                 <span>Total Estimated</span>
+                                <span id="summary-grand">NPR
+                                    <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
                                 <span id="summary-grand">NPR
                                     <?= number_format($vehicle['price_per_day'] * $def_days, 0) ?></span>
                             </div>
@@ -596,7 +661,7 @@ include '../../includes/header.php';
             toggleBtn.addEventListener('click', () => {
                 const isOpen = extensionBox.style.display !== 'none';
                 extensionBox.style.display = isOpen ? 'none' : 'block';
-                toggleBtn.textContent = isOpen ? '📅 Extend Booking' : '✖ Cancel';
+                toggleBtn.textContent = isOpen ? 'Extend Booking' : '✖ Cancel';
             });
         }
 

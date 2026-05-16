@@ -14,7 +14,7 @@ function generateInvoicePDF($data) {
 
     $html = "
     <style>
-        h1 { color: #e63946; }
+        h1 { color: #C0392B; }
         h3 { margin-top: 20px; }
         p { font-size: 12px; }
     </style>

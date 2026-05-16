@@ -92,14 +92,14 @@ $medal_tiers = [
     --text-soft: #bbbbbb;
     --text-muted: #777777;
 
-    --accent: #e03535;
-    --accent-hover: #c92f2f;
+    --accent: #C0392B;
+    --accent-hover: #C0392B;
 
     --input-bg: #111111;
     --input-border: #2a2a2a;
 
     --success: #2ecc71;
-    --danger: #e03535;
+    --danger: #C0392B;
 
     --shadow: none;
 }
@@ -121,14 +121,14 @@ html[data-theme="light"]{
     --text-soft: #666666;
     --text-muted: #888888;
 
-    --accent: #e03535;
-    --accent-hover: #c92f2f;
+    --accent: #C0392B;
+    --accent-hover: #C0392B;
 
     --input-bg: #ffffff;
     --input-border: #d8d8d8;
 
     --success: #2ecc71;
-    --danger: #e03535;
+    --danger: #C0392B;
 
     --shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
@@ -187,8 +187,8 @@ h1 span{
 }
 
 .msg.error{
-    background: rgba(224, 53, 53, 0.10);
-    border: 1px solid rgba(224, 53, 53, 0.30);
+    background: rgba(192, 57, 43, 0.10);
+    border: 1px solid rgba(192, 57, 43, 0.30);
     color: var(--danger);
 }
 
@@ -288,7 +288,7 @@ input:focus,
 select:focus{
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(224, 53, 53, 0.12);
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
 }
 
 /* =========================================================
@@ -431,11 +431,11 @@ select{
 .btn-del{
     background: transparent;
     color: var(--danger);
-    border: 1px solid rgba(224, 53, 53, 0.30);
+    border: 1px solid rgba(192, 57, 43, 0.30);
 }
 
 .btn-del:hover{
-    background: rgba(224, 53, 53, 0.08);
+    background: rgba(192, 57, 43, 0.08);
 }
 
 /* =========================================================
@@ -572,7 +572,7 @@ select{
                 </span>
                 <span class="code-type"><?= $type_label ?></span>
                 <?php if ($c['owner_user_id']): ?>
-                    <span style="font-size: 0.65rem; color: #ff6b6b; border: 1px solid #ff6b6b; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 8px;">PERSONAL</span>
+                    <span style="font-size: 0.65rem; color: #C0392B; border: 1px solid #C0392B; padding: 2px 6px; border-radius: 4px; font-weight: 700; margin-left: 8px;">PERSONAL</span>
                 <?php endif; ?>
                 <span class="code-uses"><?= $uses_label ?></span>
                 <span class="code-expiry"><?= $expiry_label ?></span>

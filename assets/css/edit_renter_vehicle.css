@@ -12,9 +12,9 @@
     --bg-input:         #1e1e1e;
     --border:           #2c2c2c;
     --border-light:     #3a3a3a;
-    --accent:           #e03030;
-    --accent-dim:       rgba(224, 48, 48, 0.12);
-    --accent-glow:      rgba(224, 48, 48, 0.30);
+    --accent:           #C0392B;
+    --accent-dim:       rgba(192, 57, 43, 0.12);
+    --accent-glow:      rgba(192, 57, 43, 0.30);
     --text:             #f0f0f0;
     --text-muted:       #777777;
     --text-label:       #999999;
@@ -85,7 +85,7 @@
 }
 
 .alert-error {
-    background: rgba(224, 48, 48, 0.1);
+    background: rgba(192, 57, 43, 0.1);
     border-left: 4px solid var(--accent);
     color: #ff8a8a;
 }
@@ -324,7 +324,7 @@ input[type="file"]::file-selector-button {
 }
 
 input[type="file"]::file-selector-button:hover {
-    background: #c82020;
+    background: #C0392B;
 }
 
 .form-hint {
@@ -370,8 +370,8 @@ input[type="file"]::file-selector-button:hover {
 
 /* Primary button (Update) */
 .btn-primary {
-    background: linear-gradient(135deg, #c82020 0%, #f04040 100%);
-    box-shadow: 0 4px 12px rgba(224, 48, 48, 0.3);
+    background: linear-gradient(135deg, #C0392B 0%, #C0392B 100%);
+    box-shadow: 0 4px 12px rgba(192, 57, 43, 0.3);
 }
 
 /* Secondary button (Cancel) */
@@ -412,7 +412,7 @@ input[type="file"]::file-selector-button:hover {
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(224, 48, 48, 0.5);
+    box-shadow: 0 8px 24px rgba(192, 57, 43, 0.5);
 }
 
 .btn-secondary:hover {

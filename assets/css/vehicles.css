@@ -487,7 +487,7 @@ html[data-theme="light"] .spec svg {
 .vehicle-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-hover);
-    border-color: rgba(192,57,43,0.28);
+    border-color: rgba(192, 57, 43, 0.28);
 }
 
 .vehicle-image-wrapper { position: relative; overflow: hidden; height: 220px; }
@@ -537,7 +537,7 @@ html[data-theme="light"] .spec svg {
     padding: 12px 20px; cursor: pointer; text-decoration: none;
     transition: background var(--t), transform var(--t), box-shadow var(--t);
 }
-.btn-view:hover { background: #A93226; transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
+.btn-view:hover { background: #C0392B; transform: translateY(-2px); box-shadow: 0 6px 20px var(--accent-glow); }
 
 /* ── No vehicles ──────────────────────────────────────────── */
 .no-vehicles {
@@ -559,7 +559,7 @@ html[data-theme="light"] .spec svg {
 .alert { padding: 14px 18px; border-radius: var(--radius); margin-bottom: 24px; font-size: 14px; animation: slideDown 0.3s ease-out; }
 @keyframes slideDown { from { opacity:0; transform: translateY(-10px); } to { opacity:1; transform: translateY(0); } }
 .alert.success { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.3); color: #4caf50; }
-.alert.error   { background: rgba(224,48,48,0.1); border: 1px solid rgba(224,48,48,0.3); color: #ff8080; }
+.alert.error   { background: rgba(192, 57, 43, 0.1); border: 1px solid rgba(192, 57, 43, 0.3); color: #ff8080; }
 
 /* ── Responsive ───────────────────────────────────────────── */
 @media (max-width: 1200px) {

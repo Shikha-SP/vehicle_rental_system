@@ -36,7 +36,21 @@ $errors  = [];
 $success = false;
 
 // Track current step in the multi-step form process (defaults to step 1)
-$current_step = isset($_POST['step']) ? (int)$_POST['step'] : 1;
+$current_step = isset($_GET['step']) ? (int)$_GET['step'] : (isset($_POST['step']) ? (int)$_POST['step'] : 1);
+
+// Persistent form data from session (PRG pattern)
+if (isset($_SESSION['signup_data'])) {
+    $first_name   = $_SESSION['signup_data']['first_name'] ?? '';
+    $last_name    = $_SESSION['signup_data']['last_name'] ?? '';
+    $email        = $_SESSION['signup_data']['email'] ?? '';
+    $address      = $_SESSION['signup_data']['address'] ?? '';
+    $phone        = $_SESSION['signup_data']['phone'] ?? '';
+    $password     = $_SESSION['signup_data']['password'] ?? '';
+    $confirm      = $_SESSION['signup_data']['confirm'] ?? '';
+} else {
+    $first_name = $last_name = $email = $address = $phone = $password = $confirm = '';
+}
+$license_no = $license_type = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -44,21 +58,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Security error: Invalid CSRF token.");
     }
 
-    // Capture and sanitize ALL input fields immediately. 
-    // This allows data persistence so form values aren't lost when moving between Step 1 and Step 2 or if validation fails.
-    $first_name   = trim(filter_input(INPUT_POST, 'first_name',   FILTER_SANITIZE_SPECIAL_CHARS));
-    $last_name    = trim(filter_input(INPUT_POST, 'last_name',    FILTER_SANITIZE_SPECIAL_CHARS));
-    $email        = strtolower(trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)));
-    $address      = trim(filter_input(INPUT_POST, 'address',      FILTER_SANITIZE_SPECIAL_CHARS));
-    $phone        = trim(filter_input(INPUT_POST, 'phone',        FILTER_SANITIZE_NUMBER_INT));
-    $password     = trim($_POST['password'] ?? '');
-    $confirm      = trim($_POST['confirm_password'] ?? '');
-    $license_no   = trim(filter_input(INPUT_POST, 'license_no',   FILTER_SANITIZE_SPECIAL_CHARS));
-    $license_type = trim(filter_input(INPUT_POST, 'license_type', FILTER_SANITIZE_SPECIAL_CHARS));
+    // Capture and sanitize input fields
+    if ($current_step === 1) {
+        $first_name   = trim(filter_input(INPUT_POST, 'first_name',   FILTER_SANITIZE_SPECIAL_CHARS));
+        $last_name    = trim(filter_input(INPUT_POST, 'last_name',    FILTER_SANITIZE_SPECIAL_CHARS));
+        $email        = strtolower(trim(filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL)));
+        $address      = trim(filter_input(INPUT_POST, 'address',      FILTER_SANITIZE_SPECIAL_CHARS));
+        $phone        = trim(filter_input(INPUT_POST, 'phone',        FILTER_SANITIZE_NUMBER_INT));
+        $password     = trim($_POST['password'] ?? '');
+        $confirm      = trim($_POST['confirm_password'] ?? '');
+    } else {
+        $license_no   = trim(filter_input(INPUT_POST, 'license_no',   FILTER_SANITIZE_SPECIAL_CHARS));
+        $license_type = trim(filter_input(INPUT_POST, 'license_type', FILTER_SANITIZE_SPECIAL_CHARS));
+    }
 
     // Check if the user clicked the "Go Back" button from step 2
     if (isset($_POST['go_back'])) {
-        $current_step = 1;
+        redirect('signup.php?step=1');
     } 
     // === STEP 1 VALIDATION (Basic Account Details) ===
     else if ($current_step === 1) {
@@ -84,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             if (strlen($password) < 8) {
                 $errors['password'] = "Password must be at least 8 characters.";
-            } else if (!preg_match('/[A-Z]/', $password) || !preg_match('/[0-9]/', $password)) {
-                $errors['password'] = "Password must contain uppercase and numbers.";
+            } else if (!preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[0-9]/', $password) || !preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
+                $errors['password'] = "Password must contain uppercase, lowercase, numbers, and special characters.";
             }
         }
         
@@ -109,15 +125,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (empty($errors)) {
-            $current_step = 2;
+            $_SESSION['signup_data'] = [
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+                'email' => $email,
+                'address' => $address,
+                'phone' => $phone,
+                'password' => $password, // We'll hash it before database insertion
+                'confirm' => $confirm
+            ];
+            redirect('signup.php?step=2');
         }
     } 
     // === STEP 2 VALIDATION & PROCESSING (Driver Details) ===
     else if ($current_step === 2) {
+        if (!isset($_SESSION['signup_data'])) {
+            redirect('signup.php?step=1');
+        }
+
         if (empty($license_no)) {
             $errors['license_no'] = "License number is required.";
         } else if (!preg_match('/^[A-Z0-9-]{5,20}$/', $license_no)) {
             $errors['license_no'] = "Invalid license format (5-20 characters).";
+        } else {
+            // Check if license number is unique among verified users
+            $stmt = mysqli_prepare($conn, "SELECT id FROM users WHERE license_number = ? AND is_verified = 1");
+            mysqli_stmt_bind_param($stmt, "s", $license_no);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_store_result($stmt);
+            if (mysqli_stmt_num_rows($stmt) > 0) {
+                $errors['license_no'] = "This license number is already registered.";
+            }
+            mysqli_stmt_close($stmt);
         }
         
         if (empty($license_type)) {
@@ -155,22 +194,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Store a secure hash of the password, never plain text. Also generate an activation token.
             $password_hash      = password_hash($password, PASSWORD_DEFAULT);
             $otp                = generateOTP(6);
-            $token_expires_at   = date('Y-m-d H:i:s', strtotime('+30 minutes'));
 
             $stmt = mysqli_prepare($conn,
                 "INSERT INTO users
                     (first_name, last_name, email, address, phone_number, password,
                      license_number, license_type, is_admin, is_verified, verification_token, token_expires_at)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, ?)"
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))"
             );
-            mysqli_stmt_bind_param($stmt, "ssssssssss",
+            mysqli_stmt_bind_param($stmt, "sssssssss",
                 $first_name, $last_name, $email, $address, $phone,
                 $password_hash, $license_no, $license_type,
-                $otp, $token_expires_at
+                $otp
             );
 
             if (mysqli_stmt_execute($stmt)) {
-                $verify_url = "http://localhost/vehicle_rental_collab_project/public/authentication/verify.php?token=" . $verification_token;
+                $verify_url = "http://localhost/vehicle_rental_collab_project/public/authentication/verify.php?token=" . $otp;
 
                 try {
                     $mail = createMailer();
@@ -195,6 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $mail->send();
                     
                     $_SESSION['verify_email'] = $email;
+                    unset($_SESSION['signup_data']);
                     redirect('verify_otp.php');
                 } catch (Exception $e) {
                     $del = mysqli_prepare($conn, "DELETE FROM users WHERE verification_token = ?");
@@ -282,11 +321,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         .signup-form__input.error {
-            border-color: #f44336;
+            border-color: #C0392B;
         }
         
         .error-message {
-            color: #f44336;
+            color: #C0392B;
             font-size: 11px;
             margin-top: 4px;
             display: block;
@@ -302,7 +341,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
 
-
+<!-- Loading Overlay UI -->
+<div id="td-progress-bar"></div>
+<div id="td-overlay">
+  <div class="loader-logo">TD <span>RENTALS</span></div>
+  <div class="loader-bar-track"><div class="loader-bar-fill"></div></div>
+  <div id="td-overlay-msg">Loading…</div>
+</div>
 
 <div class="signup-page">
 
@@ -534,7 +579,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="signup-form__terms">
                         <input class="signup-form__checkbox" type="checkbox" id="terms" name="terms" required>
                         <label class="signup-form__terms-text" for="terms">
-                            I agree to the <a href="#">Rental Agreement</a> and <a href="#">Privacy Policy</a>.
+                            I agree to the <a href="../info/terms-of-service.php">Rental Agreement</a> and <a href="../info/privacy-policy.php">Privacy Policy</a>.
                         </label>
                         <?php if (isset($errors['terms'])): ?>
                             <span class="field-error" style="display:block; width:100%; margin-top:4px;">⚠️ <?= e($errors['terms']) ?></span>
@@ -660,7 +705,7 @@ function checkPasswordStrength(password) {
     strengthBar.style.width = width + '%';
     
     if (strength <= 2) {
-        strengthBar.style.backgroundColor = '#f44336';
+        strengthBar.style.backgroundColor = '#C0392B';
     } else if (strength <= 3) {
         strengthBar.style.backgroundColor = '#ff9800';
     } else if (strength <= 4) {
@@ -720,7 +765,7 @@ if (licenseInput) {
                 licenseFormatCheck.innerHTML = '✓ License number format valid';
                 this.classList.remove('error');
             } else {
-                licenseFormatCheck.style.color = '#f44336';
+                licenseFormatCheck.style.color = '#C0392B';
                 licenseFormatCheck.innerHTML = '✗ License number must be 5-20 characters (letters, numbers, hyphens)';
                 this.classList.add('error');
             }
@@ -811,7 +856,7 @@ if (step1Form && document.getElementById('password')) {
                 banner.id = 'signup-error-banner';
                 banner.className = 'error-message';
                 banner.style.padding = '10px';
-                banner.style.background = 'rgba(244, 67, 54, 0.1)';
+                banner.style.background = 'rgba(192, 57, 43, 0.1)';
                 banner.style.borderRadius = '6px';
                 banner.style.marginBottom = '15px';
                 banner.style.fontSize = '14px';
@@ -831,7 +876,7 @@ if (step1Form && document.getElementById('password')) {
                 banner.id = 'signup-error-banner';
                 banner.className = 'error-message';
                 banner.style.padding = '10px';
-                banner.style.background = 'rgba(244, 67, 54, 0.1)';
+                banner.style.background = 'rgba(192, 57, 43, 0.1)';
                 banner.style.borderRadius = '6px';
                 banner.style.marginBottom = '15px';
                 banner.style.fontSize = '14px';

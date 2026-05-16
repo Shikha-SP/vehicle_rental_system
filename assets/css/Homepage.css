@@ -11,7 +11,7 @@
     --text-main: #F5F4F2;
     --text-muted: #8A8A8E;
     --accent-red: #C0392B;
-    --accent-hover: #A93226;
+    --accent-hover: #C0392B;
     --card-bg: #18181b;
     --card-hover: #222226;
     --nav-text: #8A8A8E;
@@ -615,7 +615,7 @@ html[data-theme="light"] .dashboard-content .btn-ghosts:hover {
 }
 
 .light-mode .btn-rent:hover {
-    background: #d92020;
+    background: #C0392B;
 }
 
 /* --- Brand Filter Tabs (DB: distinct brand values) --- */
@@ -662,7 +662,7 @@ html[data-theme="light"] .dashboard-content .btn-ghosts:hover {
    4. PROMOTIONAL BANNER
 ============================================================================= */
 .red-banner {
-    background: linear-gradient(135deg, #A93226 0%, #C0392B 60%, #B03228 100%);
+    background: linear-gradient(135deg, #C0392B 0%, #C0392B 60%, #C0392B 100%);
     padding: 60px 0;
 }
 
@@ -930,5 +930,5 @@ html[data-theme="light"] .car-card {
 }
 
 html[data-theme="light"] .red-banner {
-    background: linear-gradient(135deg, #8C2016 0%, #A93226 100%);
+    background: linear-gradient(135deg, #C0392B 0%, #C0392B 100%);
 }

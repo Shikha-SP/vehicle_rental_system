@@ -8,6 +8,12 @@ body {
   font-size: 15px;
   margin-top: 20px;
 }
+.subtitle
+{
+  color: #F3B7AE;
+  font-size: 15px;
+  margin-top: 20px;
+}
 .section-title {
   color: var(--clr-text);
 }
@@ -51,11 +57,11 @@ body {
   border-radius: 4px;
   outline: none;
   box-sizing: border-box;
-  caret-color: var(--accent-red, #e3000f);
+  caret-color: var(--accent-red, #C0392B);
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 #pay-button {
-  background-color: var(--accent-red, #c8332d);
+  background-color: var(--accent-red, #C0392B);
   color: var(--clr-text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
@@ -72,15 +78,17 @@ body {
   justify-content: center;
   gap: 12px;
   margin-top: 20px;
+  margin-top: 20px;
 }
 
 #pay-button:hover {
-  background-color: #c0000d;
+  background-color: #C0392B;
 }
 
 
 
 #summary-section {
+  margin-top: 20px;
   margin-top: 20px;
   background-color: var(--clr-surface);
 }
@@ -240,7 +248,7 @@ body {
 }
 
 .total-amount {
-  color: #e3000f;
+  color: #C0392B;
   font-size: 24px;
   font-weight: 900;
   letter-spacing: 0.02em;
@@ -313,8 +321,8 @@ body {
 
 /* Highlight the input that has an error */
 .input-field.input-error {
-    box-shadow: 0 0 0 1.5px rgba(224, 48, 48, 0.6);
-    background-color: rgba(224, 48, 48, 0.07);
+    box-shadow: 0 0 0 1.5px rgba(192, 57, 43, 0.6);
+    background-color: rgba(192, 57, 43, 0.07);
 }
 
 /* ── EXPIRY DATE DROPDOWNS ── */

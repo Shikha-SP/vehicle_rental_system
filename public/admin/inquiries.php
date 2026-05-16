@@ -102,7 +102,7 @@ require_once __DIR__ . '/../../includes/header.php';
         align-items: center;
     }
     .conv-item:hover { background: rgba(255,255,255,0.03); }
-    .conv-item.active { background: rgba(224,48,48,0.1); border-left: 4px solid var(--red); }
+    .conv-item.active { background: rgba(192, 57, 43, 0.1); border-left: 4px solid var(--red); }
     .conv-user-name { font-weight: 600; font-size: 0.9rem; }
     .conv-car { font-size: 0.75rem; color: var(--fg3); }
     .unread-dot {

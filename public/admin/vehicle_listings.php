@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $transmission = $_POST['transmission']       ?? 'Manual';
         $fuel_type    = $_POST['fuel_type']          ?? 'Petrol';
         $license_type = $_POST['license_type']       ?? 'B';
-        $color        = $_POST['color']              ?? '#A93226';
+        $color        = $_POST['color']              ?? '#C0392B';
         $status       = isset($_POST['available'])   ? 'approved' : 'pending';
 
         if (!$model || !$price) {
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $transmission = $_POST['transmission']       ?? 'Manual';
         $fuel_type    = $_POST['fuel_type']          ?? 'Petrol';
         $license_type = $_POST['license_type']       ?? 'B';
-        $color        = $_POST['color']              ?? '#A93226';
+        $color        = $_POST['color']              ?? '#C0392B';
         $status       = isset($_POST['available'])   ? 'approved' : 'pending';
 
         if (!$model || !$price) {
@@ -397,7 +397,7 @@ require_once __DIR__ . '/../../includes/header.php';
                           'transmission' => $c['transmission'],
                           'fuel_type'    => $c['fuel_type'],
                           'license_type' => $c['license_type'] ?? 'B',
-                          'color'        => $c['color'] ?? '#A93226',
+                          'color'        => $c['color'] ?? '#C0392B',
                           'available'    => ($c['status'] === 'approved' ? 1 : 0)
                       ], JSON_HEX_APOS|JSON_HEX_QUOT) ?>)'>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
@@ -505,11 +505,11 @@ require_once __DIR__ . '/../../includes/header.php';
             <div class="lf-field">
               <label class="lf-label">Vehicle Colour</label>
               <div class="lf-color-row" id="aColorTrigger" title="Click to pick colour">
-                <input type="color" id="aColorPicker" name="color" value="#A93226">
-                <div class="lf-color-swatch" id="aColorSwatch" style="background:#A93226"></div>
+                <input type="color" id="aColorPicker" name="color" value="#C0392B">
+                <div class="lf-color-swatch" id="aColorSwatch" style="background:#C0392B"></div>
                 <div class="lf-color-meta">
                   <span class="lf-color-name" id="aColorName">Racing Red</span>
-                  <span class="lf-color-hex"  id="aColorHex">#A93226</span>
+                  <span class="lf-color-hex"  id="aColorHex">#C0392B</span>
                 </div>
               </div>
               <div class="lf-color-presets">
@@ -632,11 +632,11 @@ require_once __DIR__ . '/../../includes/header.php';
             <div class="lf-field">
               <label class="lf-label">Vehicle Colour</label>
               <div class="lf-color-row" id="eColorTrigger" title="Click to pick colour">
-                <input type="color" id="eColorPicker" name="color" value="#A93226">
-                <div class="lf-color-swatch" id="eColorSwatch" style="background:#A93226"></div>
+                <input type="color" id="eColorPicker" name="color" value="#C0392B">
+                <div class="lf-color-swatch" id="eColorSwatch" style="background:#C0392B"></div>
                 <div class="lf-color-meta">
                   <span class="lf-color-name" id="eColorName">Racing Red</span>
-                  <span class="lf-color-hex"  id="eColorHex">#A93226</span>
+                  <span class="lf-color-hex"  id="eColorHex">#C0392B</span>
                 </div>
               </div>
               <div class="lf-color-presets">
@@ -721,8 +721,8 @@ document.addEventListener('keydown', e => {
 
 /* ── Colour presets ── */
 const COLOR_PRESETS = [
-    { hex:'#A93226', name:'Racing Red'    },
-    { hex:'#7B241C', name:'Deep Red'      },
+    { hex:'#C0392B', name:'Racing Red'    },
+    { hex:'#C0392B', name:'Deep Red'      },
     { hex:'#ffffff', name:'White'         },
     { hex:'#f0f0f0', name:'Pearl White'   },
     { hex:'#c0c0c0', name:'Silver'        },
@@ -834,7 +834,7 @@ function openEditModal(car) {
     document.getElementById('eLicenseType').value  = car.license_type  || 'B';
     document.getElementById('eAvail').checked      = car.available == 1;
 
-    const col = car.color || '#A93226';
+    const col = car.color || '#C0392B';
     document.getElementById('eColorPicker').value          = col;
     document.getElementById('eColorSwatch').style.background = col;
     document.getElementById('eColorName').textContent      = col;

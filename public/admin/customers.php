@@ -123,7 +123,7 @@ require_once __DIR__ . '/../../includes/header.php';
 <!-- Timeout Modal -->
 <div id="timeoutModal" class="modal-overlay" style="display:none;">
   <div class="modal-box" style="max-width:420px;">
-    <h3 class="modal-title" style="color:#a93226;font-size:1.6rem;">Set Timeout Duration</h3>
+    <h3 class="modal-title" style="color:#C0392B;font-size:1.6rem;">Set Timeout Duration</h3>
     <p class="tm-desc">The user will be temporarily suspended for the specified number of days.</p>
     <input type="hidden" id="timeoutUserId">
     <div class="form-row tm-fields">

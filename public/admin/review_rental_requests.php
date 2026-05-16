@@ -72,7 +72,7 @@ if (!$result) {
           </div>
       <?php endif; ?>
       <?php if (isset($_SESSION['error'])): ?>
-          <div style="padding: 1rem; background: rgba(224,53,53,0.1); color: #e03535; border: 1px solid rgba(224,53,53,0.3); border-radius: 8px; margin-bottom: 1.5rem;">
+          <div style="padding: 1rem; background: rgba(192, 57, 43, 0.1); color: #C0392B; border: 1px solid rgba(192, 57, 43, 0.3); border-radius: 8px; margin-bottom: 1.5rem;">
               <?= $_SESSION['error']; unset($_SESSION['error']); ?>
           </div>
       <?php endif; ?>

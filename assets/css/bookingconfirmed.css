@@ -47,7 +47,7 @@ body {
   color: #f4b7ae;
 }
 .highlight {
-  color: #d03530;
+  color: #C0392B;
   display: block;
 }
 .hero-description {
@@ -79,7 +79,7 @@ body {
 .btnn-primary {
   display: inline-block;
   text-decoration: none;
-  background-color: #e8192c;
+  background-color: #C0392B;
   color: #ffffff;
 }
 
@@ -176,7 +176,7 @@ html[data-theme="light"] body {
 }
 
 html[data-theme="light"] .tagline {
-  color: #c8332d;
+  color: #C0392B;
 }
 
 html[data-theme="light"] .hero-description {

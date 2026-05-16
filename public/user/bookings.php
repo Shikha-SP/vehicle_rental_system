@@ -209,7 +209,7 @@ include '../../includes/header.php';
     }
     .booking-card:hover {
         transform: translateY(-6px);
-        border-color: rgba(224,48,48,0.3);
+        border-color: rgba(192, 57, 43, 0.3);
         box-shadow: 0 22px 40px rgba(0,0,0,0.35);
     }
 
@@ -290,19 +290,19 @@ include '../../includes/header.php';
 
     
     .btn-cancel { 
-        background: rgba(220,38,38,0.1); 
-        border: 1px solid rgba(220,38,38,0.4); 
-        color: #f87171; 
+        background: rgba(192, 57, 43, 0.1); 
+        border: 1px solid rgba(192, 57, 43, 0.4); 
+        color: #C0392B; 
         padding: 10px 18px; 
         border-radius: 10px; 
         font-size: 0.7rem; font-weight: 800; 
         cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .btn-cancel:hover { background: #dc2626; color: #fff; transform: scale(1.05); box-shadow: 0 0 20px rgba(220,38,38,0.4); }
+    .btn-cancel:hover { background: #C0392B; color: #fff; transform: scale(1.05); box-shadow: 0 0 20px rgba(192, 57, 43, 0.4); }
 
     .alert { padding: 1.2rem; border-radius: 12px; margin-bottom: 3rem; font-size: 0.95rem; display: flex; align-items: center; gap: 1rem; }
     .alert-success { background: rgba(34,197,94,0.1); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
-    .alert-error { background: rgba(220,38,38,0.1); color: #f87171; border: 1px solid rgba(220,38,38,0.2); }
+    .alert-error { background: rgba(192, 57, 43, 0.1); color: #C0392B; border: 1px solid rgba(192, 57, 43, 0.2); }
 
     /* Status Badge */
     .status-badge {
@@ -315,7 +315,7 @@ include '../../includes/header.php';
         z-index: 2;
     }
     .status-confirmed { background: rgba(34,197,94,0.2); color: #4ade80; border-color: rgba(34,197,94,0.3); }
-    .status-cancelled { background: rgba(220,38,38,0.95); color: #fff; border-color: rgba(255,255,255,0.2); }
+    .status-cancelled { background: rgba(192, 57, 43, 0.95); color: #fff; border-color: rgba(255,255,255,0.2); }
     .status-completed { background: rgba(59,130,246,0.2); color: #60a5fa; border-color: rgba(59,130,246,0.3); }
     .status-banner {
         margin-bottom: 1.5rem;
@@ -334,7 +334,7 @@ include '../../includes/header.php';
         border-color: rgba(255,255,255,0.2);
     }
     .status-banner-cancelled {
-        background: rgba(220,38,38,0.95);
+        background: rgba(192, 57, 43, 0.95);
         color: #fff;
         border-color: rgba(255,255,255,0.2);
     }
@@ -426,7 +426,7 @@ include '../../includes/header.php';
     .progress-section { margin-top: 4px; }
     .progress-header  { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; margin-bottom: 8px; }
     .progress-track   { background: #222; border-radius: 100px; height: 6px; overflow: hidden; margin-bottom: 8px; }
-    .progress-fill    { height: 100%; background: linear-gradient(90deg, #e03030, #ff6b6b); border-radius: 100px; transition: width 0.5s ease; }
+    .progress-fill    { height: 100%; background: linear-gradient(90deg, #C0392B, #C0392B); border-radius: 100px; transition: width 0.5s ease; }
     .progress-ticks   { display: flex; justify-content: space-between; font-size: 0.65rem; color: #555; }
 
     /* Light Mode - Medal Panel */
@@ -441,7 +441,7 @@ include '../../includes/header.php';
     }
     html[data-theme="light"] .medal-tier-card.active-tier {
         background: #fff0f0;
-        border-color: #ffcccc;
+        border-color: #C0392B;
     }
     html[data-theme="light"] .tier-sub { color: #666; }
     html[data-theme="light"] .stat-box {
@@ -460,7 +460,7 @@ include '../../includes/header.php';
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
     html[data-theme="light"] .booking-card:hover {
-        border-color: #ffcccc;
+        border-color: #C0392B;
         box-shadow: 0 12px 24px rgba(0,0,0,0.1);
     }
     html[data-theme="light"] .card-content h3 { color: #111; }
@@ -557,17 +557,17 @@ include '../../includes/header.php';
         <!-- Stats Row -->
         <div class="medal-stats">
             <div class="stat-box">
-                <div class="stat-val" style="color: #e03030"><?= $user_rentals ?></div>
+                <div class="stat-val" style="color: #C0392B"><?= $user_rentals ?></div>
                 <div class="stat-label">RENTALS DONE</div>
             </div>
             <div class="stat-box">
-                <div class="stat-val" style="color: <?= $user_medal !== 'NONE' ? ($medal_tiers[$user_medal]['color'] ?? '#e03030') : 'var(--clr-muted, #888)' ?>">
+                <div class="stat-val" style="color: <?= $user_medal !== 'NONE' ? ($medal_tiers[$user_medal]['color'] ?? '#C0392B') : 'var(--clr-muted, #888)' ?>">
                     <?= $user_medal !== 'NONE' ? $medal_tiers[$user_medal]['label'] : '—' ?>
                 </div>
                 <div class="stat-label">MEDAL</div>
             </div>
             <div class="stat-box">
-                <div class="stat-val" style="color: #e03030"><?= $user_reward ?>%</div>
+                <div class="stat-val" style="color: #C0392B"><?= $user_reward ?>%</div>
                 <div class="stat-label">REWARD</div>
             </div>
         </div>
@@ -600,7 +600,7 @@ include '../../includes/header.php';
     <!-- Cancellation Policy Hub -->
     <div class="policy-box">
         <div class="policy-content">
-            <h4 style="color: #f87171;">NO REFUND POLICY</h4>
+            <h4 style="color: #C0392B;">NO REFUND POLICY</h4>
             <p><strong>Important:</strong> All bookings are subject to our strict No Refund policy. Cancelling will permanently remove the record from your history.</p>
         </div>
     </div>
@@ -626,7 +626,7 @@ include '../../includes/header.php';
                         <div class="status-badge payment-status-<?= $b['payment_status'] ?>" style="right: auto; left: 15px; top: 15px;
                             <?php
                                 if ($b['payment_status'] === 'paid') echo 'background: rgba(34,197,94,0.9); color: white;';
-                                elseif ($b['payment_status'] === 'failed') echo 'background: rgba(220,38,38,0.9); color: white;';
+                                elseif ($b['payment_status'] === 'failed') echo 'background: rgba(192, 57, 43, 0.9); color: white;';
                                 else echo 'background: rgba(245,158,11,0.9); color: white;';
                             ?>">
                             <?= strtoupper($b['payment_status']) ?>

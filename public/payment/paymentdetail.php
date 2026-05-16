@@ -293,24 +293,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                     $mail->Subject = 'Booking Confirmation';
                     $mail->isHTML(true);
                     $mail->Body = "
-                            <p>Hi {$first_name},</p>
-                            <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
-                            <p>Pickup date: {$pickup_date}</p>
-                            <p>Dropoff date: {$dropoff_date}</p>
-                            <p>Total Paid: NPR " . number_format($totalprice, 2) . "</p>
-                            {$savings_msg}
+                    <html>
+                    <body style=\"font-family: Montserrat, Arial, sans-serif; max-width: 600px; margin: auto; background-color: #1A1A1A; color: #FFF; text-align: center;\">
+                        <h1 style=\"color: #C0392B\">TD Rentals</h1>
+                        <div>
+                            <h1 style=\"font-size: 22px\">Hi {$first_name},</h1>
+                            <p style=\"font-size: 14px\">Your booking for <strong>{$vehicle['model']}</strong> is confirmed.</p>
+                            <h2 style=\"font-size: 19px\">{$vehicle['model']}</h2>
+                            <hr>
+                            <p style=\"font-size: 16px\">Booking Date</p>
+                            <h1 style=\"font-size: 25px\">{$pickup_date} - {$dropoff_date}</h1>
+                            <hr>
                             <p>Please find your invoice attached.</p>
                             <p>Thank you for choosing TD Rentals 🚀</p>
-                            
-                            <p>Best Regards,</p>
-                            <p>TD Rentals Team</p>
-                        ";
-                    $mail->AltBody = "Hi {$first_name}, Your booking for {$vehicle['model']} is confirmed.";
+                            <p>Call us: +9779706704349</p>
+                        </div>
+                    </body>
+                    </html>
+                    ";
+                    $mail->AltBody = "Hi $first_name, your booking for {$vehicle['model']} is confirmed. Dates: $pickup_date - $dropoff_date.";
                     // Attach PDF from string (no temp file needed)
                     $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
 
                     if (isNotificationEnabled($conn, $user_id)) {
                         $mail->send();
+                    }
+                    // send payment confirmation mail with invoice
+                    $mail2 = createMailer();
+                    $mail2->addAddress($email, $first_name . ' ' . $last_name);
+                    $mail2->Subject = 'Payment Confirmed!';
+                    $mail2->isHTML(true);
+                    $mail2->Body = "
+                        <html>
+                            <body style=\"font-family: Montserrat, Arial, sans-serif; max-width: 600px; margin: auto; text-align: center; background-color: #1A1A1A; color: #FFF;\">
+                                <h1 style=\"color: #C0392B\">TD Rentals</h1>
+                                <div>
+                                    <h2 style=\"font-size: 22px;\">Your Payment has been confirmed. </h2>
+                                    <hr>
+                                    <p style=\"font-size: 14px;\">Booking ID: <strong>{$booking_id}</strong></p>
+                                    <p style=\"font-size: 14px;\">Vehicle: <strong>{$vehicle['model']}</strong></p>
+                                    <hr>
+                                    <p style=\"font-size: 16px;\">Booking Date</p>
+                                    <h2 style=\"font-size: 25px;\">{$pickup_date} - {$dropoff_date}</h2>
+                                    <hr>
+                                    <p style=\"font-size: 16px;\">Total Paid: <strong>NPR {$totalprice}</strong></p>
+                                    <hr>
+                                    <p>Please find your invoice attached.</p>
+                                    <p>Thank you for choosing TD Rentals 🚀</p>
+                                    <br>
+                                    <p>Best Regards,</p>
+                                    <p><strong>TD Rentals Team</strong></p>
+                                </div>
+                            </body>
+                            </html>    
+                    ";
+                    $mail2->AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
+                    // Attach PDF from string (no temp file needed)
+                    $mail2->addStringAttachment($pdf_string, "TD_Rentals_Invoice.pdf", 'base64', 'application/pdf');
+                    if (isNotificationEnabled($conn, $user_id)) {
+                        $mail2->send();
                     }
                 } catch (Throwable $e) {
                     // Temporarily dump the error to the screen so we can read it
@@ -400,7 +441,7 @@ if ($uid) {
 
             <?php if (!empty($errors['discount'])): ?>
                 <div class="field-error"
-                    style="margin-bottom: 15px; padding: 10px; background: rgba(224, 48, 48, 0.1); border-left: 3px solid #e03030;">
+                    style="margin-bottom: 15px; padding: 10px; background: rgba(192, 57, 43, 0.1); border-left: 3px solid #C0392B;">
                     <?= e($errors['discount']) ?>
                 </div>
             <?php endif; ?>
@@ -620,9 +661,9 @@ if ($uid) {
                             <?php foreach ($available_codes as $ac): ?>
                                 <span class="available-code-badge"
                                     onclick="document.getElementById('discount-input').value='<?= htmlspecialchars($ac['code']) ?>'"
-                                    style="background: rgba(224,48,48,0.1); border: 1px solid rgba(224,48,48,0.3); color: var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600;"
-                                    onmouseover="this.style.background='rgba(224,48,48,0.2)'"
-                                    onmouseout="this.style.background='rgba(224,48,48,0.1)'">
+                                    style="background: rgba(192, 57, 43, 0.1); border: 1px solid rgba(192, 57, 43, 0.3); color: var(--red); padding: 4px 8px; border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600;"
+                                    onmouseover="this.style.background='rgba(192, 57, 43, 0.2)'"
+                                    onmouseout="this.style.background='rgba(192, 57, 43, 0.1)'">
                                     <?= htmlspecialchars($ac['code']) ?> (-<?= floatval($ac['discount_percent']) ?>%)
                                 </span>
                             <?php endforeach; ?>
@@ -726,7 +767,7 @@ if ($uid) {
             const code = discountInput.value.trim();
             if (!code) {
                 discountMsg.textContent = 'Please enter a code.';
-                discountMsg.style.color = '#e74c3c';
+                discountMsg.style.color = '#C0392B';
                 return;
             }
 
@@ -787,7 +828,7 @@ if ($uid) {
 
                     } else {
                         discountMsg.textContent = data.message;
-                        discountMsg.style.color = '#e74c3c';
+                        discountMsg.style.color = '#C0392B';
 
                         // Reset to base total
                         finalTotalDisplay.innerHTML = 'NPR ' + baseTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -823,7 +864,7 @@ if ($uid) {
                     applyBtn.textContent = 'APPLY';
                     applyBtn.disabled = false;
                     discountMsg.textContent = 'Error verifying code. Try again.';
-                    discountMsg.style.color = '#e74c3c';
+                    discountMsg.style.color = '#C0392B';
                 });
         });
     }

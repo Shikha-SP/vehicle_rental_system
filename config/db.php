@@ -55,11 +55,12 @@ CREATE TABLE IF NOT EXISTS vehicles (
     transmission ENUM('Manual','Automatic') NOT NULL,
     fuel_type ENUM('Petrol','Diesel','Electric','Hybrid','CNG') NOT NULL,
     price_per_day DECIMAL(10,2) NOT NULL,
-    color VARCHAR(20) DEFAULT '#e03030',
+    color VARCHAR(20) DEFAULT '#C0392B',
     top_speed INT,
     fuel_capacity INT,
     image_path VARCHAR(255),
     status ENUM('pending','approved','rejected','available','rented') DEFAULT 'pending',
+    avg_rating DECIMAL(3,2),  
     avg_rating DECIMAL(3,2),  
     approved_at DATETIME NULL,
     rejected_at DATETIME NULL,
@@ -97,6 +98,18 @@ CREATE TABLE IF NOT EXISTS password_resets (
 )");
 
 $conn->query("
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_id INT DEFAULT NULL,
+    admin_name VARCHAR(100) DEFAULT NULL,
+    action VARCHAR(80) NOT NULL,
+    target_type VARCHAR(40) DEFAULT NULL,
+    target_id INT DEFAULT NULL,
+    detail TEXT DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)");
+
+$conn->query("
 CREATE TABLE IF NOT EXISTS transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
@@ -128,7 +141,7 @@ CREATE TABLE IF NOT EXISTS wishlist (
     UNIQUE KEY (user_id, vehicle_id)
 )");
 
-// 2. Added from HEAD: User Inquiries Table
+// 3. Added from HEAD: User Inquiries Table
 $conn->query("
 CREATE TABLE IF NOT EXISTS user_inquiries (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -139,7 +152,35 @@ CREATE TABLE IF NOT EXISTS user_inquiries (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 )");
 
-// 3. Added from Pratikshya: Discount Codes Table
+// 4. Added: Contact Messages Table (for App Recommendations)
+$conn->query("
+CREATE TABLE IF NOT EXISTS contact_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT DEFAULT NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    status ENUM('pending', 'resolved') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+)");
+
+// 5. Added: Live Messages (Chat) Table
+$conn->query("
+CREATE TABLE IF NOT EXISTS messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    message TEXT NOT NULL,
+    is_read TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE,
+    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
+)");
+
+// 6. Added from Pratikshya: Discount Codes Table
 $conn->query("
 CREATE TABLE IF NOT EXISTS discount_codes (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -155,7 +196,7 @@ CREATE TABLE IF NOT EXISTS discount_codes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )");
 
-// 4. Added from Pratikshya: Helper function and dynamic column updates
+// 7. Added from Pratikshya: Helper function and dynamic column updates
 function addColumn($conn, $table, $column, $definition)
 {
     $check = $conn->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
@@ -172,7 +213,7 @@ addColumn($conn, 'discount_codes', 'used_count', "INT DEFAULT 0");
 addColumn($conn, 'discount_codes', 'expires_at', "DATE DEFAULT NULL");
 addColumn($conn, 'discount_codes', 'owner_user_id', "INT DEFAULT NULL");
 
-// 5. Added from Pratikshya: Discount Tracking & User Medals
+// 8. Added from Pratikshya: Discount Tracking & User Medals
 $conn->query("
 CREATE TABLE IF NOT EXISTS discount_code_uses (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -191,7 +232,7 @@ addColumn($conn, 'bookings', 'discount_amount', "DECIMAL(10,2) DEFAULT 0.00");
 addColumn($conn, 'bookings', 'pickup_time', "TIME DEFAULT '09:00:00'");
 addColumn($conn, 'bookings', 'return_time', "TIME DEFAULT '18:00:00'");
 
-// 6. Added: Reminder Log Table
+// 9. Added: Reminder Log Table
 $conn->query("
 CREATE TABLE IF NOT EXISTS reminder_log (
     id              INT AUTO_INCREMENT PRIMARY KEY,
@@ -217,6 +258,17 @@ CREATE TABLE IF NOT EXISTS reviews (
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );");
 
+// Create review replies table if not exists
+$conn->query("
+    CREATE TABLE IF NOT EXISTS review_replies (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    review_id INT NOT NULL UNIQUE,
+    owner_id INT NOT NULL,
+    reply_text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (review_id) REFERENCES reviews(id) ON DELETE CASCADE,
+    FOREIGN KEY (owner_id) REFERENCES users(id)
+);");
 //Create notification preference table
 $conn->query("
     CREATE TABLE IF NOT EXISTS notification_preference (
@@ -227,6 +279,27 @@ $conn->query("
     FOREIGN KEY (user_id) REFERENCES users(id)
     )
 ");
+
+$conn->query("
+CREATE TABLE IF NOT EXISTS transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    booking_id INT NOT NULL,
+    user_id INT NOT NULL,
+
+    amount DECIMAL(10,2) NOT NULL,
+    payment_method VARCHAR(50) DEFAULT 'card',
+
+    card_last4 VARCHAR(4),         -- last 4 digits only (security)
+    card_type VARCHAR(20),         -- Visa, Mastercard
+
+    transaction_ref VARCHAR(100),  -- fake reference ID
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (booking_id) REFERENCES bookings(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);");
 
 // confirmation
 // echo "Database and tables are ready.";

@@ -222,8 +222,8 @@ require_once '../../includes/header.php';
             <div class="form-group">
                 <label for="color">Vehicle Color</label>
                 <div class="color-input-group">
-                    <input type="color" id="color" name="color" value="<?= htmlspecialchars($vehicle['color'] ?? '#e03030') ?>">
-                    <span class="color-value"><?= htmlspecialchars($vehicle['color'] ?? '#e03030') ?></span>
+                    <input type="color" id="color" name="color" value="<?= htmlspecialchars($vehicle['color'] ?? '#C0392B') ?>">
+                    <span class="color-value"><?= htmlspecialchars($vehicle['color'] ?? '#C0392B') ?></span>
                 </div>
             </div>
         </div>

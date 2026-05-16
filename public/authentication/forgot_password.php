@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <h3 style='color: #333;'>Password Reset Request</h3>
                             <p>Hello {$user['first_name']},</p>
                             <p>We received a request to reset your password. Please use the following code to proceed:</p>
-                            <div style='background: #f4f7f6; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #e74c3c; margin: 20px 0; border-radius: 5px;'>
+                            <div style='background: #f4f7f6; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #C0392B; margin: 20px 0; border-radius: 5px;'>
                                 {$otp}
                             </div>
                             <p>This code will expire in <strong>15 minutes</strong>.</p>

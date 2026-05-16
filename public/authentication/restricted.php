@@ -83,12 +83,12 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
     <link rel="stylesheet" href="../../assets/css/login.css">
     <style>
         .message-box {
-            background: rgba(220, 38, 38, 0.1);
-            border: 1px solid rgba(220, 38, 38, 0.3);
+            background: rgba(192, 57, 43, 0.1);
+            border: 1px solid rgba(192, 57, 43, 0.3);
             padding: 1.5rem;
             border-radius: 12px;
             margin-bottom: 2rem;
-            color: #f87171;
+            color: #C0392B;
             font-size: 1rem;
             line-height: 1.5;
         .days-left {
@@ -115,7 +115,7 @@ if (isset($_COOKIE['theme']) && $_COOKIE['theme'] === 'dark') {
         }
         .form-group textarea:focus {
             outline: none;
-            border-bottom-color: var(--red, #e03030);
+            border-bottom-color: var(--red, #C0392B);
         }
     </style>
 </head>

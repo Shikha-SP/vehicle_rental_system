@@ -1,5 +1,5 @@
 :root {
-    --primary-red: #e8192c;
+    --primary-red: #C0392B;
     --dark-bg: #050505;
     --card-bg: rgba(20, 20, 20, 0.95);
 }
@@ -27,7 +27,7 @@ body, html {
     position: absolute;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(232, 25, 44, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(192, 57, 43, 0.15) 0%, transparent 70%);
     border-radius: 50%;
     filter: blur(60px);
     animation: move 20s infinite alternate;
@@ -123,7 +123,7 @@ body, html {
 }
 
 .btn-yes:hover {
-    background: #c11424; /* Darker red, no glow */
+    background: #C0392B; /* Darker red, no glow */
 }
 
 /* Minimal Gray - Ghost Style */

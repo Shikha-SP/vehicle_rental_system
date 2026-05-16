@@ -10,7 +10,7 @@
 :root {
   /* Brand */
   --primary:          #C0392B;
-  --primary-hover:    #A93226;
+  --primary-hover:    #C0392B;
   --primary-dim:      rgba(192, 57, 43, 0.14);
   --primary-glow:     rgba(192, 57, 43, 0.22);
   --primary-fg:       #FFFFFF;
@@ -96,10 +96,10 @@ html[data-theme="light"] {
   --fg-subtle:        #9A9A9E;
   --border:           rgba(0, 0, 0, 0.09);
   --border-strong:    rgba(0, 0, 0, 0.15);
-  --primary:          #B03A2E;
-  --primary-hover:    #962D23;
-  --primary-dim:      rgba(176, 58, 46, 0.12);
-  --primary-glow:     rgba(176, 58, 46, 0.18);
+  --primary:          #C0392B;
+  --primary-hover:    #C0392B;
+  --primary-dim:      rgba(192, 57, 43, 0.12);
+  --primary-glow:     rgba(192, 57, 43, 0.18);
   --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.07);
   --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.1);
   --shadow-lg:  0 12px 40px rgba(0, 0, 0, 0.13);
@@ -333,7 +333,7 @@ html[data-theme="light"] .page-hero {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(192,57,43,0.05) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(192, 57, 43, 0.05) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
   z-index: 1;

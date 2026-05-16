@@ -21,7 +21,7 @@ $license_type = $_POST['license_type'] ?? '';
 $transmission = $_POST['transmission'] ?? '';
 $fuel_type = $_POST['fuel_type'] ?? '';
 $price = $_POST['price'] ?? 2500;
-$color = $_POST['color'] ?? '#e03030';
+$color = $_POST['color'] ?? '#C0392B';
 $top_speed = $_POST['kms'] ?? '';           // 'kms' from form stores top speed
 $fuel_capacity = $_POST['fuel_capacity'] ?? '';
 
