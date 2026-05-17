@@ -196,7 +196,7 @@ include '../../includes/header.php';
         gap: 2rem;
     }
     
-    .booking-card { 
+    .booking-history-card { 
         background: var(--bg-surface); 
         backdrop-filter: blur(14px);
         border: 1px solid var(--border); 
@@ -207,7 +207,7 @@ include '../../includes/header.php';
         flex-direction: column;
         min-height: 440px;
     }
-    .booking-card:hover {
+    .booking-history-card:hover {
         transform: translateY(-6px);
         border-color: rgba(192, 57, 43, 0.3);
         box-shadow: 0 22px 40px rgba(0,0,0,0.35);
@@ -423,6 +423,18 @@ include '../../includes/header.php';
     .stat-val   { font-size: 1.8rem; font-weight: 800; margin-bottom: 4px; }
     .stat-label { font-size: 0.65rem; color: #555; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
 
+    @media (max-width: 768px) {
+        .medal-tier-grid {
+            grid-template-columns: 1fr;
+        }
+        .medal-stats {
+            grid-template-columns: 1fr;
+        }
+        .bookings-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
     .progress-section { margin-top: 4px; }
     .progress-header  { display: flex; justify-content: space-between; font-size: 0.8rem; color: #888; margin-bottom: 8px; }
     .progress-track   { background: #222; border-radius: 100px; height: 6px; overflow: hidden; margin-bottom: 8px; }
@@ -454,12 +466,12 @@ include '../../includes/header.php';
     html[data-theme="light"] .progress-ticks { color: #666; }
 
     /* Light Mode - Booking Cards */
-    html[data-theme="light"] .booking-card {
+    html[data-theme="light"] .booking-history-card {
         background: #ffffff;
         border-color: #e5e5e5;
         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     }
-    html[data-theme="light"] .booking-card:hover {
+    html[data-theme="light"] .booking-history-card:hover {
         border-color: #C0392B;
         box-shadow: 0 12px 24px rgba(0,0,0,0.1);
     }
@@ -615,7 +627,7 @@ include '../../includes/header.php';
     <?php else: ?>
         <div class="bookings-grid">
             <?php foreach ($bookings as $b): ?>
-                <div class="booking-card" data-booking-id="<?= $b['id'] ?>">
+                <div class="booking-history-card" data-booking-id="<?= $b['id'] ?>">
                     <div class="card-banner">
                         <?php
                           $img = $b['image_path'];
@@ -799,12 +811,12 @@ function dismissBooking(id, btn) {
         dismissed.push(id);
         localStorage.setItem('dismissedBookings', JSON.stringify(dismissed));
     }
-    btn.closest('.booking-card').style.display = 'none';
+    btn.closest('.booking-history-card').style.display = 'none';
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     let dismissed = JSON.parse(localStorage.getItem('dismissedBookings')) || [];
-    document.querySelectorAll('.booking-card').forEach(card => {
+    document.querySelectorAll('.booking-history-card').forEach(card => {
         let bookingId = card.getAttribute('data-booking-id');
         if (bookingId && dismissed.includes(parseInt(bookingId))) {
             card.style.display = 'none';

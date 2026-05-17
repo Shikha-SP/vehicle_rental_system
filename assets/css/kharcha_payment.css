@@ -853,3 +853,88 @@
 .kh2-subtab:not(.active):hover { background: rgba(255,255,255,0.06); color: #aaa; }
 
 .kh2-subtab-content { display: block; }
+
+/* ══════════════════════════════════════════════════════════════
+   LIGHT MODE OVERRIDES
+   ══════════════════════════════════════════════════════════════ */
+
+html[data-theme="light"] .payment-tabs {
+    border-bottom-color: rgba(0,0,0,0.1);
+}
+
+html[data-theme="light"] .payment-tab {
+    color: #555;
+}
+
+html[data-theme="light"] .payment-tab:hover {
+    color: #111;
+}
+
+html[data-theme="light"] .payment-tab.active {
+    color: #111;
+    border-bottom-color: #C0392B;
+}
+
+/* ── Kharcha banners ── */
+html[data-theme="light"] .kharcha-banner-title {
+    color: #1a1a1a;
+}
+
+html[data-theme="light"] .kharcha-banner-sub,
+html[data-theme="light"] .portal-amount-label,
+html[data-theme="light"] .qr-idle-text,
+html[data-theme="light"] .qr-scan-hint,
+html[data-theme="light"] .qr-status-row,
+html[data-theme="light"] .qr-timer-row,
+html[data-theme="light"] .qr-success-sub,
+html[data-theme="light"] .esewa-banner-sub,
+html[data-theme="light"] .esewa-amount-label,
+html[data-theme="light"] .khalti-banner-sub,
+html[data-theme="light"] .khalti-amount-label,
+html[data-theme="light"] .kharcha-hint {
+    color: #555;
+}
+
+html[data-theme="light"] .kharcha-info-box,
+html[data-theme="light"] .khalti-info-box,
+html[data-theme="light"] .esewa-info-box {
+    background: rgba(0,0,0,0.03);
+    border-color: rgba(0,0,0,0.1);
+    color: #555;
+}
+
+/* ── Sub-tab pill containers ── */
+html[data-theme="light"] .kharcha-subtabs,
+html[data-theme="light"] .khalti-subtabs {
+    background: rgba(0,0,0,0.04);
+    border-color: rgba(0,0,0,0.1);
+}
+
+html[data-theme="light"] .kh-subtab {
+    color: #666;
+}
+html[data-theme="light"] .kh-subtab:hover {
+    color: #111;
+    background: rgba(0,0,0,0.06);
+}
+
+html[data-theme="light"] .kh2-subtab { color: #666; }
+html[data-theme="light"] .kh2-subtab:not(.active):hover {
+    background: rgba(0,0,0,0.05);
+    color: #111;
+}
+
+/* ── QR panel ── */
+html[data-theme="light"] .qr-panel {
+    background: rgba(0,0,0,0.02);
+    border-color: rgba(0,0,0,0.1);
+}
+
+html[data-theme="light"] #qr-timer { color: #444; }
+
+/* ── Alert box ── */
+html[data-theme="light"] .alert-error {
+    background: rgba(220,60,60,0.08);
+    border-color: rgba(220,60,60,0.3);
+    color: #c0392b;
+}
