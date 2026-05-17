@@ -51,21 +51,15 @@ if ($received_signature !== $expected_signature) {
 }
 
 // Proceed with booking creation
-$user_id = $_SESSION['user_id'];
-$vehicle_id = $_SESSION['payment_vehicle_id'] ?? 0;
-$pickup_date = $_SESSION['payment_pickup'] ?? '';
-$dropoff_date = $_SESSION['payment_dropoff'] ?? '';
-$days = $_SESSION['payment_days'] ?? 0;
-$totalprice = (float) ($_SESSION['esewa_amount'] ?? 0);
-
-$paid_amount = (float) $total_amount;
-if (abs($paid_amount - $totalprice) > 0.05) {
-    die("Amount mismatch. Expected NPR {$totalprice}, received NPR {$paid_amount}.");
-}
-
-$discount_code_saved = (string) ($_SESSION['esewa_discount_code'] ?? '');
-$discount_amount_saved = (float) ($_SESSION['esewa_discount_amount'] ?? 0);
-$discount_code_id = isset($_SESSION['esewa_discount_code_id']) ? (int) $_SESSION['esewa_discount_code_id'] : 0;
+$user_id      = $_SESSION['user_id'];
+$vehicle_id   = $_SESSION['payment_vehicle_id']   ?? 0;
+$pickup_date  = $_SESSION['payment_pickup']        ?? '';
+$dropoff_date = $_SESSION['payment_dropoff']       ?? '';
+$days         = $_SESSION['payment_days']          ?? 0;
+$totalprice   = $_SESSION['esewa_amount']          ?? 0;
+$discount_code    = $_SESSION['esewa_discount_code']    ?? '';
+$discount_amount  = (float)($_SESSION['esewa_discount_amount']  ?? 0);
+$discount_code_id = $_SESSION['esewa_discount_code_id'] ?? null;
 
 if (!$vehicle_id) {
     die("Booking session expired.");
@@ -75,90 +69,19 @@ if (!$vehicle_id) {
 $conn->begin_transaction();
 
 try {
-    $discount_code = $_SESSION['esewa_discount_code'] ?? null;
-    $discount_amount = $_SESSION['esewa_discount_amount'] ?? 0;
-    $discount_code_id = $_SESSION['esewa_discount_code_id'] ?? null;
-
-    // Insert into bookings
-    $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, discount_code, discount_amount, created_at)
+    // Insert into bookings (with discount fields)
+    $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status,
+                       payment_status, purchase_order_id, discount_code, discount_amount, created_at)
                    VALUES (?, ?, ?, ?, ?, 'confirmed', 'paid', ?, ?, ?, NOW())";
     $insert_stmt = $conn->prepare($insert_sql);
-    $insert_stmt->bind_param(
-        "iissdssd",
-        $user_id,
-        $vehicle_id,
-        $pickup_date,
-        $dropoff_date,
-        $totalprice,
-        $transaction_uuid,
-        $discount_code_saved,
-        $discount_amount_saved
-    );
-    
+    $insert_stmt->bind_param("iissdssd", $user_id, $vehicle_id, $pickup_date, $dropoff_date,
+                              $totalprice, $transaction_uuid, $discount_code, $discount_amount);
+
     if (!$insert_stmt->execute()) {
         throw new Exception("Failed to create booking.");
     }
-    
+
     $booking_id = $insert_stmt->insert_id;
-
-    // Record discount usage & increment used_count
-    if ($discount_code_id) {
-        $stmt = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
-        $stmt->bind_param("ii", $user_id, $discount_code_id);
-        $stmt->execute();
-        $stmt->close();
-        $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = $discount_code_id");
-
-        $gold_check = $conn->query("
-            SELECT id FROM discount_codes 
-            WHERE id = $discount_code_id 
-              AND owner_user_id = $user_id 
-              AND discount_percent = 20 
-            LIMIT 1
-        ");
-        if ($gold_check && $gold_check->num_rows > 0) {
-            $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
-        }
-    }
-
-    // Milestone logic
-    $conn->query("UPDATE users SET completed_rentals = completed_rentals + 1 WHERE id = $user_id");
-    $res = $conn->query("SELECT completed_rentals, medal FROM users WHERE id = $user_id");
-    if ($res && $res->num_rows > 0) {
-        $u_data = $res->fetch_assoc();
-        $rentals = (int)$u_data['completed_rentals'];
-        $current_medal = $u_data['medal'];
-
-        $new_medal = $current_medal;
-        $milestone_code = '';
-        $milestone_percent = 0;
-
-        if ($rentals >= 3 && $current_medal === 'NONE') {
-            $new_medal = 'BRONZE';
-            $milestone_code = 'BRONZE5';
-            $milestone_percent = 5;
-        } elseif ($rentals >= 7 && $current_medal === 'BRONZE') {
-            $new_medal = 'SILVER';
-            $milestone_code = 'SILVER10';
-            $milestone_percent = 10;
-        } elseif ($rentals >= 15 && $current_medal === 'SILVER') {
-            $new_medal = 'GOLD';
-            $milestone_code = 'GOLD20';
-            $milestone_percent = 20;
-        }
-
-        if ($new_medal !== $current_medal) {
-            $conn->query("UPDATE users SET medal = '$new_medal' WHERE id = $user_id");
-            if ($milestone_code !== '') {
-                $unique_suffix = substr(md5(uniqid($user_id, true)), 0, 4);
-                $personal_code = $milestone_code . "-U" . $user_id . "-" . $unique_suffix;
-                $conn->query("
-                    INSERT INTO discount_codes (code, type, discount_percent, discount_flat, max_uses, owner_user_id) 
-                    VALUES ('$personal_code', 'percent', $milestone_percent, 0, 1, $user_id)
-                ");
-            }
-        }
-    }
 
     // Insert into transactions table
     $transaction_ref = $response_data['transaction_code'] ?? ('ES-' . strtoupper(bin2hex(random_bytes(8))));
@@ -166,9 +89,42 @@ try {
                 VALUES (?, ?, ?, 'esewa', 'ESWA', 'eSewa', ?, NOW())";
     $txn_stmt = $conn->prepare($txn_sql);
     $txn_stmt->bind_param("iids", $booking_id, $user_id, $totalprice, $transaction_ref);
-    
+
     if (!$txn_stmt->execute()) {
         throw new Exception("Failed to record transaction.");
+    }
+
+    // ── Discount usage + Gold reset ──────────────────────────────
+    if ($discount_code_id) {
+        $du = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
+        $du->bind_param("ii", $user_id, $discount_code_id);
+        $du->execute(); $du->close();
+        $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = $discount_code_id");
+        $gold_check = $conn->query("SELECT id FROM discount_codes WHERE id = $discount_code_id AND owner_user_id = $user_id AND discount_percent = 20 LIMIT 1");
+        if ($gold_check && $gold_check->num_rows > 0) {
+            $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
+        }
+    }
+
+    // ── Milestone progression ────────────────────────────────────
+    $conn->query("UPDATE users SET completed_rentals = completed_rentals + 1 WHERE id = $user_id");
+    $res = $conn->query("SELECT completed_rentals, medal FROM users WHERE id = $user_id");
+    if ($res && $res->num_rows > 0) {
+        $u_data = $res->fetch_assoc();
+        $rentals = (int) $u_data['completed_rentals'];
+        $current_medal = $u_data['medal'];
+        $new_medal = $current_medal; $milestone_code = ''; $milestone_percent = 0;
+        if ($rentals >= 3 && $current_medal === 'NONE')    { $new_medal='BRONZE'; $milestone_code='BRONZE5';  $milestone_percent=5;  }
+        elseif ($rentals >= 7 && $current_medal === 'BRONZE') { $new_medal='SILVER'; $milestone_code='SILVER10'; $milestone_percent=10; }
+        elseif ($rentals >= 15 && $current_medal === 'SILVER') { $new_medal='GOLD';   $milestone_code='GOLD20';   $milestone_percent=20; }
+        if ($new_medal !== $current_medal) {
+            $conn->query("UPDATE users SET medal = '$new_medal' WHERE id = $user_id");
+            if ($milestone_code !== '') {
+                $sfx = substr(md5(uniqid($user_id, true)), 0, 4);
+                $pcode = $milestone_code . "-U" . $user_id . "-" . $sfx;
+                $conn->query("INSERT INTO discount_codes (code, type, discount_percent, discount_flat, max_uses, owner_user_id) VALUES ('$pcode','percent',$milestone_percent,0,1,$user_id)");
+            }
+        }
     }
 
     // Fetch vehicle data for email
@@ -198,8 +154,6 @@ try {
             'days' => $days,
             'price_per_day' => $vehicle['price_per_day'],
             'total_price' => $totalprice,
-            'discount_code' => $discount_code_saved,
-            'discount_amount' => $discount_amount_saved,
         ];
 
         $pdf_string = generateInvoicePDF($invoice_data);

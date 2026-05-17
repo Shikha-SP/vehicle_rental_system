@@ -1,0 +1,855 @@
+/* assets/css/kharcha_payment.css
+   Kharcha Card payment tab — styles that extend paymentdetail.css
+   ---------------------------------------------------------------- */
+
+/* ── Payment Method Tabs ──────────────────────────────────────── */
+.payment-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    border-bottom: 2px solid #2a2a2a;
+    padding-bottom: 0;
+}
+
+.payment-tab {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    color: #888;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.payment-tab:hover {
+    color: #ccc;
+}
+
+.payment-tab.active {
+    color: #fff;
+    border-bottom-color: #e5c97e; /* gold accent matching the site */
+}
+
+.kharcha-tab-icon {
+    color: #4caf8a; /* Kharcha green */
+}
+
+.payment-tab.active .kharcha-tab-icon {
+    color: #5dd4a4;
+}
+
+/* ── Global alert box ─────────────────────────────────────────── */
+.alert-error {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(220, 60, 60, 0.12);
+    border: 1px solid rgba(220, 60, 60, 0.45);
+    border-radius: 8px;
+    padding: 14px 18px;
+    color: #ff8a8a;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.alert-error i {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+/* ── Kharcha Card Tab Panel ───────────────────────────────────── */
+.kharcha-card-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Branding banner */
+.kharcha-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(76, 175, 138, 0.12), rgba(93, 212, 164, 0.06));
+    border: 1px solid rgba(76, 175, 138, 0.3);
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.kharcha-banner-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    background: rgba(76, 175, 138, 0.2);
+    border-radius: 50%;
+    font-size: 1.3rem;
+    color: #4caf8a;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.kharcha-banner-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+    margin: 0 0 4px;
+    letter-spacing: 0.03em;
+}
+
+.kharcha-banner-sub {
+    font-size: 0.82rem;
+    color: #aaa;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Card number input with badge */
+.kharcha-card-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.kharcha-card-input-wrap .input-field {
+    width: 100%;
+    padding-right: 128px; /* room for the widest badge (Mastercard) */
+}
+
+/* ── Unified card-type badge ──────────────────────────────────── */
+.card-type-badge {
+    position: absolute;
+    right: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 3px 9px;
+    border-radius: 20px;
+    pointer-events: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+}
+
+/* Visa — classic blue */
+.card-type-badge--visa {
+    background: rgba(26, 87, 183, 0.18);
+    border: 1px solid rgba(26, 87, 183, 0.55);
+    color: #6ba3f5;
+}
+
+/* Mastercard — red/orange */
+.card-type-badge--mastercard {
+    background: rgba(235, 88, 25, 0.15);
+    border: 1px solid rgba(235, 88, 25, 0.5);
+    color: #f5946a;
+}
+
+/* Amex — grey-blue */
+.card-type-badge--amex {
+    background: rgba(0, 120, 190, 0.14);
+    border: 1px solid rgba(0, 120, 190, 0.45);
+    color: #63b8e8;
+}
+
+/* Kharcha — green (unchanged) */
+.card-type-badge--kharcha {
+    background: rgba(76, 175, 138, 0.18);
+    border: 1px solid rgba(76, 175, 138, 0.5);
+    color: #5dd4a4;
+}
+
+.kharcha-hint {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.78rem;
+    color: #777;
+}
+
+/* Info box at bottom of Kharcha tab */
+.kharcha-info-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 0.82rem;
+    color: #999;
+    line-height: 1.55;
+}
+
+.kharcha-info-box i {
+    color: #4caf8a;
+    font-size: 1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.kharcha-info-box p {
+    margin: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   KHARCHA SUB-TABS  (Card | Payment Portal | Dynamic QR)
+   ══════════════════════════════════════════════════════════════ */
+.kharcha-subtabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 4px;
+    margin-bottom: 24px;
+}
+
+.kh-subtab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    color: #666;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: color 0.18s, background 0.18s;
+    white-space: nowrap;
+}
+
+.kh-subtab:hover {
+    color: #aaa;
+    background: rgba(255,255,255,0.05);
+}
+
+.kh-subtab.active {
+    background: rgba(76, 175, 138, 0.14);
+    color: #5dd4a4;
+    border: 1px solid rgba(76, 175, 138, 0.3);
+}
+
+/* ── Portal variant banner ─────────────────────────────────── */
+.kharcha-banner--portal {
+    background: linear-gradient(135deg, rgba(100, 149, 237, 0.10), rgba(100, 149, 237, 0.04));
+    border-color: rgba(100, 149, 237, 0.28);
+}
+.kharcha-banner-icon--portal {
+    background: rgba(100, 149, 237, 0.18);
+    color: #7eb0ff;
+}
+
+/* ── QR variant banner ─────────────────────────────────────── */
+.kharcha-banner--qr {
+    background: linear-gradient(135deg, rgba(229, 201, 126, 0.10), rgba(229, 201, 126, 0.04));
+    border-color: rgba(229, 201, 126, 0.28);
+}
+.kharcha-banner-icon--qr {
+    background: rgba(229, 201, 126, 0.15);
+    color: #e5c97e;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   PAYMENT PORTAL
+   ══════════════════════════════════════════════════════════════ */
+
+.portal-amount-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(100, 149, 237, 0.07);
+    border: 1px solid rgba(100, 149, 237, 0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 18px 0;
+}
+
+.portal-amount-label {
+    font-size: 0.82rem;
+    color: #888;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.portal-amount-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #7eb0ff;
+    letter-spacing: 0.02em;
+}
+
+.portal-pay-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px 28px;
+    background: linear-gradient(135deg, #4a7fd4, #2563a8);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+}
+
+.portal-pay-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.portal-pay-btn:active { transform: translateY(0); }
+
+/* ══════════════════════════════════════════════════════════════
+   DYNAMIC QR CODE PANEL
+   ══════════════════════════════════════════════════════════════ */
+.qr-panel {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 28px 24px;
+    margin-bottom: 4px;
+}
+
+/* Idle state */
+.qr-idle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+}
+
+.qr-idle-icon {
+    font-size: 3rem;
+    color: rgba(229, 201, 126, 0.35);
+    line-height: 1;
+}
+
+.qr-idle-text {
+    font-size: 0.88rem;
+    color: #777;
+    margin: 0;
+}
+
+.qr-amount-badge {
+    background: rgba(229, 201, 126, 0.12);
+    border: 1px solid rgba(229, 201, 126, 0.3);
+    color: #e5c97e;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 8px 20px;
+    border-radius: 30px;
+}
+
+.qr-generate-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 28px;
+    background: linear-gradient(135deg, rgba(229,201,126,0.22), rgba(229,201,126,0.10));
+    border: 1px solid rgba(229, 201, 126, 0.45);
+    color: #e5c97e;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    margin-top: 4px;
+}
+
+.qr-generate-btn:hover { background: rgba(229,201,126,0.22); transform: translateY(-1px); }
+.qr-generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Active state */
+.qr-active {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+}
+
+.qr-code-wrap {
+    background: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    display: inline-block;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+.qr-code-wrap img,
+.qr-code-wrap canvas {
+    display: block;
+    border-radius: 4px;
+}
+
+.qr-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.88rem;
+    color: #aaa;
+}
+
+.qr-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #555;
+    flex-shrink: 0;
+    transition: background 0.3s;
+}
+.qr-status-dot--pending {
+    background: #e5c97e;
+    animation: qr-pulse 1.4s ease-in-out infinite;
+}
+.qr-status-dot--success { background: #4caf8a; }
+.qr-status-dot--expired { background: #e05c5c; }
+
+@keyframes qr-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+}
+
+.qr-timer-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: #666;
+}
+
+#qr-timer {
+    font-weight: 700;
+    color: #999;
+    font-variant-numeric: tabular-nums;
+}
+
+.qr-scan-hint {
+    font-size: 0.82rem;
+    color: #777;
+    margin: 0;
+    line-height: 1.55;
+    max-width: 280px;
+}
+
+.qr-refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 22px;
+    background: transparent;
+    border: 1px solid rgba(229, 201, 126, 0.35);
+    color: #e5c97e;
+    border-radius: 7px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.qr-refresh-btn:hover { background: rgba(229,201,126,0.08); }
+
+/* Success state */
+.qr-success {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    padding: 10px 0;
+}
+
+.qr-success-icon {
+    font-size: 2.8rem;
+    color: #4caf8a;
+    animation: qr-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes qr-pop {
+    0%   { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+.qr-success-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #5dd4a4;
+    margin: 0;
+}
+
+.qr-success-sub {
+    font-size: 0.85rem;
+    color: #777;
+    margin: 0;
+}
+
+.qr-success-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(76, 175, 138, 0.2);
+    border-top-color: #4caf8a;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+
+/* ══════════════════════════════════════════════════════════════
+   KHALTI PAYMENT TAB
+   Khalti brand colour: #5C2D91 (purple)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Tab icon tint */
+.khalti-tab-icon {
+    color: #7b43b6;
+}
+
+.payment-tab.active .khalti-tab-icon {
+    color: #9b5fd6;
+}
+
+/* ── Khalti panel wrapper ────────────────────────────────────── */
+.khalti-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ── Branding banner ─────────────────────────────────────────── */
+.khalti-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(92, 45, 145, 0.15), rgba(155, 95, 214, 0.06));
+    border: 1px solid rgba(123, 67, 182, 0.35);
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.khalti-banner-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    background: rgba(92, 45, 145, 0.25);
+    border-radius: 50%;
+    font-size: 1.4rem;
+    color: #9b5fd6;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.khalti-banner-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #c49af0;
+    margin: 0 0 4px;
+    letter-spacing: 0.02em;
+}
+
+.khalti-banner-sub {
+    font-size: 0.82rem;
+    color: #888;
+    margin: 0;
+    line-height: 1.55;
+}
+
+/* ── Amount display ──────────────────────────────────────────── */
+.khalti-amount-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(92, 45, 145, 0.08);
+    border: 1px solid rgba(123, 67, 182, 0.25);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin: 18px 0;
+}
+
+.khalti-amount-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.khalti-amount-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #c49af0;
+    letter-spacing: 0.02em;
+}
+
+/* ── Pay button ──────────────────────────────────────────────── */
+.khalti-pay-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px 28px;
+    background: linear-gradient(135deg, #5c2d91, #7b43b6);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: filter 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(92, 45, 145, 0.35);
+}
+
+.khalti-pay-btn:hover {
+    filter: brightness(1.12);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(92, 45, 145, 0.5);
+}
+
+.khalti-pay-btn:active {
+    transform: translateY(0);
+    filter: brightness(1);
+}
+
+.khalti-pay-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    filter: none;
+}
+
+/* ── Info / security note ────────────────────────────────────── */
+.khalti-info-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #666;
+    font-size: 0.78rem;
+    line-height: 1.55;
+}
+
+.khalti-info-box i {
+    color: #7b43b6;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.khalti-info-box p {
+    margin: 0;
+}
+
+/* ── Sandbox test badge ──────────────────────────────────────── */
+.khalti-sandbox-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(229, 201, 126, 0.1);
+    border: 1px solid rgba(229, 201, 126, 0.28);
+    color: #b89a50;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 2px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ESEWA PAYMENT TAB
+   eSewa brand colour: #60BB46 (green)
+   ══════════════════════════════════════════════════════════════ */
+
+.esewa-tab-icon { color: #60BB46; }
+.payment-tab.active .esewa-tab-icon { color: #78d458; }
+
+.esewa-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.esewa-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(96,187,70,0.12), rgba(96,187,70,0.05));
+    border: 1px solid rgba(96,187,70,0.3);
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.esewa-banner-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    background: rgba(96,187,70,0.2);
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.esewa-banner-icon img { width: 36px; height: 36px; object-fit: contain; }
+
+.esewa-banner-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #78d458;
+    margin: 0 0 4px;
+    letter-spacing: 0.02em;
+}
+
+.esewa-banner-sub {
+    font-size: 0.82rem;
+    color: #888;
+    margin: 0;
+    line-height: 1.55;
+}
+
+.esewa-amount-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(96,187,70,0.07);
+    border: 1px solid rgba(96,187,70,0.22);
+    border-radius: 10px;
+    padding: 14px 20px;
+}
+
+.esewa-amount-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.esewa-amount-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #78d458;
+    letter-spacing: 0.02em;
+}
+
+.esewa-pay-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 15px 28px;
+    background: linear-gradient(135deg, #3a9e28, #60BB46);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: filter 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(96,187,70,0.3);
+}
+
+.esewa-pay-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(96,187,70,0.45);
+}
+
+.esewa-pay-btn:active { transform: translateY(0); filter: brightness(1); }
+.esewa-pay-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; filter: none; }
+
+.esewa-info-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: #666;
+    font-size: 0.78rem;
+    line-height: 1.55;
+}
+
+.esewa-info-box i { color: #60BB46; font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
+.esewa-info-box p { margin: 0; }
+
+/* ══════════════════════════════════════════════════════════════
+   KHALTI SUB-TABS  (same structure as Kharcha)
+   ══════════════════════════════════════════════════════════════ */
+
+.khalti-subtabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 6px;
+}
+
+.kh2-subtab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 14px;
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    color: #777;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.kh2-subtab.active {
+    background: linear-gradient(135deg, rgba(229,201,126,0.18), rgba(229,201,126,0.08));
+    color: #e5c97e;
+    border: 1px solid rgba(229,201,126,0.25);
+}
+
+.kh2-subtab:not(.active):hover { background: rgba(255,255,255,0.06); color: #aaa; }
+
+.kh2-subtab-content { display: block; }
