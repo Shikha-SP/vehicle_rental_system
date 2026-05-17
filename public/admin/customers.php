@@ -13,8 +13,15 @@ $totalUsers = $totalUsersResult ? $totalUsersResult->fetch_row()[0] : 0;
 
 $confirmedCount = $totalBookings;
 
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
 $users = [];
-$uRes = $conn->query("SELECT * FROM users WHERE is_verified = 1 ORDER BY created_at DESC LIMIT 50");
+if (!empty($search)) {
+    $escapedSearch = $conn->real_escape_string($search);
+    $uRes = $conn->query("SELECT * FROM users WHERE is_verified = 1 AND (first_name LIKE '%$escapedSearch%' OR last_name LIKE '%$escapedSearch%' OR email LIKE '%$escapedSearch%' OR phone_number LIKE '%$escapedSearch%') ORDER BY created_at DESC LIMIT 50");
+} else {
+    $uRes = $conn->query("SELECT * FROM users WHERE is_verified = 1 ORDER BY created_at DESC LIMIT 50");
+}
 if ($uRes) {
     while($row = $uRes->fetch_assoc()) {
         $users[] = $row;
@@ -46,7 +53,7 @@ require_once __DIR__ . '/../../includes/header.php';
       <div class="topbar-right">
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" placeholder="Search customer records..."/>
+          <input type="text" id="customerSearch" placeholder="Search customer records..." value="<?= htmlspecialchars($search) ?>"/>
         </div>
       </div>
     </div>
@@ -186,6 +193,48 @@ function handleAction(userId, action, value, unit = 'days') {
         })
         .catch(err => { console.error(err); alert('An unexpected error occurred.'); });
 }
+
+/* ── Customer Directory Live Search ── */
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('customerSearch');
+    const tableRows = document.querySelectorAll('.tbl-wrap table tbody tr');
+    
+    function performFilter(term) {
+        term = term.toLowerCase().trim();
+        tableRows.forEach(row => {
+            const text = row.innerText.toLowerCase();
+            if (text.includes(term)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    if (searchInput) {
+        // Real-time filtering as you type
+        searchInput.addEventListener('input', (e) => {
+            performFilter(e.target.value);
+        });
+        
+        // Keydown Enter key support for query param persistence
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const term = e.target.value.trim();
+                if (term) {
+                    window.location.search = '?search=' + encodeURIComponent(term);
+                } else {
+                    window.location.search = '';
+                }
+            }
+        });
+        
+        // Pre-filter on page load if search term exists
+        if (searchInput.value) {
+            performFilter(searchInput.value);
+        }
+    }
+});
 </script>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
