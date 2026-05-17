@@ -15,6 +15,8 @@ $username     = $_SESSION['username'] ?? 'User';
 $search       = isset($_GET['search'])       ? trim($_GET['search'])     : '';
 $transmission = isset($_GET['transmission']) ? $_GET['transmission']     : '';
 $fuel_type    = isset($_GET['fuel_type'])    ? $_GET['fuel_type']        : '';
+$vehicle_type = isset($_GET['vehicle_type']) ? $_GET['vehicle_type']     : '';
+$sort_by      = isset($_GET['sort_by'])      ? $_GET['sort_by']          : 'relevant';
 $min_price    = isset($_GET['min_price'])    ? (float)$_GET['min_price'] : 0;
 $max_price    = isset($_GET['max_price'])    ? (float)$_GET['max_price'] : 0;
 $color        = isset($_GET['color'])        ? trim($_GET['color'])      : '';
@@ -74,11 +76,26 @@ if (!empty($color)) {
     $params[] = $color;
 }
 
+// Add vehicle type filter
+if (!empty($vehicle_type)) {
+    $conditions[] = "v.license_type = ?";
+    $param_types .= "s";
+    $params[] = $vehicle_type;
+}
+
 // Append conditions to SQL
 if (!empty($conditions)) {
     $sql .= " AND " . implode(" AND ", $conditions);
 }
-$sql .= " ORDER BY v.created_at DESC";
+
+// Apply sorting
+if ($sort_by === 'most_expensive') {
+    $sql .= " ORDER BY v.price_per_day DESC";
+} elseif ($sort_by === 'least_expensive') {
+    $sql .= " ORDER BY v.price_per_day ASC";
+} else {
+    $sql .= " ORDER BY v.created_at DESC";
+}
 
 // Prepare and execute the statement with error handling
 $stmt = $conn->prepare($sql);
@@ -96,23 +113,9 @@ if (!$stmt->execute()) {
 
 $result = $stmt->get_result();
 
-// Get filter options for dropdowns
-$filter_result = $conn->query("SELECT DISTINCT transmission, fuel_type FROM vehicles WHERE status = 'approved'");
-$transmissions = [];
-$fuel_types = [];
-
-if ($filter_result && $filter_result->num_rows > 0) {
-    while ($row = $filter_result->fetch_assoc()) {
-        if (!empty($row['transmission'])) $transmissions[] = $row['transmission'];
-        if (!empty($row['fuel_type']))    $fuel_types[]    = $row['fuel_type'];
-    }
-    $transmissions = array_unique($transmissions);
-    $fuel_types    = array_unique($fuel_types);
-}
-
-// Sort arrays for better display
-sort($fuel_types);
-sort($transmissions);
+// Static lists for filter dropdowns based on database ENUMs
+$transmissions = ['Automatic', 'Manual'];
+$fuel_types = ['CNG', 'Diesel', 'Electric', 'Hybrid', 'Petrol'];
 
 // Fetch user's wishlist IDs
 $wishlist_ids = [];
@@ -168,6 +171,32 @@ if (isset($_SESSION['user_id'])) {
                             <?php foreach ($fuel_types as $f): ?>
                                 <option value="<?= htmlspecialchars($f) ?>" <?= $fuel_type==$f?'selected':'' ?>><?= htmlspecialchars($f) ?></option>
                             <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <select name="vehicle_type">
+                            <option value="">All Types</option>
+                            <?php 
+                            $all_types = [
+                                'A' => 'Motorcycle (A)', 
+                                'B' => 'Car/Jeep (B)', 
+                                'C' => 'Tempo/Auto Rickshaw (C)', 
+                                'D' => 'Heavy Vehicle (D)', 
+                                'E' => 'Tractor (E)'
+                            ];
+                            foreach ($all_types as $val => $label): 
+                            ?>
+                                <option value="<?= htmlspecialchars($val) ?>" <?= $vehicle_type==$val?'selected':'' ?>><?= htmlspecialchars($label) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <select name="sort_by">
+                            <option value="relevant" <?= $sort_by=='relevant'?'selected':'' ?>>Most Relevant</option>
+                            <option value="most_expensive" <?= $sort_by=='most_expensive'?'selected':'' ?>>Most Expensive</option>
+                            <option value="least_expensive" <?= $sort_by=='least_expensive'?'selected':'' ?>>Least Expensive</option>
                         </select>
                     </div>
 

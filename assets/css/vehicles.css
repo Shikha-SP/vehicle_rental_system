@@ -62,30 +62,31 @@ body {
 }
 
 .search-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
     align-items: end;
 }
 
-.search-input-wrapper { grid-column: 1 / -1; }
-.filter-group { width: 100%; }
-.color-filter-group { width: 100%; }
-.price-range-filters { width: 100%; }
-
-@media (min-width: 1024px) {
-    .search-row {
-        grid-template-columns: 2fr 1fr 1fr 1fr;
-    }
-    .search-input-wrapper { grid-column: span 2; }
+.search-input-wrapper { 
+    flex: 2 1 280px; 
 }
 
-@media (min-width: 1400px) {
-    .search-row {
-        grid-template-columns: 2.5fr 1fr 1fr 1fr 1.5fr auto auto;
-    }
-    .search-input-wrapper { grid-column: auto; }
+.filter-group, 
+.color-filter-group { 
+    flex: 1 1 160px; 
 }
+
+.price-range-filters { 
+    flex: 2 1 240px; 
+}
+
+.apply-filters-btn, 
+.reset-filters-btn {
+    flex: 0 0 auto;
+}
+
+/* Remove old grid specifics for 1024px/1400px since Flexbox handles it perfectly now */
 
 .filter-label {
     font-family: var(--font-head);
@@ -579,14 +580,6 @@ html[data-theme="light"] .spec svg {
 @media (max-width: 1200px) {
     .vehicles-container { padding: 40px 24px; }
     .color-popup { left: auto; right: 0; }
-}
-
-@media (max-width: 1023px) {
-    .search-row {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-    .search-input-wrapper { grid-column: 1 / -1; }
-    .price-range-filters { grid-column: span 2; }
 }
 
 @media (max-width: 768px) {

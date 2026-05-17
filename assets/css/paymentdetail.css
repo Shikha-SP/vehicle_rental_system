@@ -1,12 +1,6 @@
 body {
-  background-color: var(--clr-bg);
-  color: var(--clr-text);
-}
-.subtitle
-{
-  color: #F3B7AE;
-  font-size: 15px;
-  margin-top: 20px;
+  background-color: #131313;
+  color: #ffffff; /* make text color white */
 }
 .subtitle
 {
@@ -15,10 +9,10 @@ body {
   margin-top: 20px;
 }
 .section-title {
-  color: var(--clr-text);
+  color: #e4e2e1;
 }
 .labels {
-  color: var(--clr-muted);
+  color: #6f6f6f;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -26,27 +20,22 @@ body {
   margin-bottom: 8px;
 }
 .checkbox-group {
-  color: var(--clr-muted);
+  color: #959595;
 }
 .security-note {
-  color: var(--clr-muted);
+  color: #585858;
 }
 .summary {
-  color: var(--clr-muted);
+  color: #686868;
 }
 
 .note-box {
-  background-color: var(--clr-surface);
-  color: var(--clr-muted);
-}
-.primary-btn {
-  background: var(--btn-bg);
-  color: var(--btn-text);
-  border: 1px solid var(--btn-border);
+  background-color: #262525;
+  color: #9d9d9d;
 }
 .input-field {
-  background-color: var(--clr-surface);
-  color: var(--clr-text);
+  background-color: #353534;
+  color: whitesmoke;
   font-family: 'Arial', sans-serif;
   font-size: 15px;
   font-weight: 400;
@@ -57,12 +46,12 @@ body {
   border-radius: 4px;
   outline: none;
   box-sizing: border-box;
-  caret-color: var(--accent-red, #C0392B);
+  caret-color: #e3000f;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 #pay-button {
-  background-color: var(--accent-red, #C0392B);
-  color: var(--clr-text);
+  background-color: #c8332d;
+  color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 16px;
   font-weight: 900;
@@ -78,19 +67,17 @@ body {
   justify-content: center;
   gap: 12px;
   margin-top: 20px;
-  margin-top: 20px;
 }
 
 #pay-button:hover {
-  background-color: #C0392B;
+  background-color: #c0000d;
 }
 
 
 
 #summary-section {
   margin-top: 20px;
-  margin-top: 20px;
-  background-color: var(--clr-surface);
+  background-color: #1d1b1b;
 }
 /* make two sections side by side */
 #payment-page {
@@ -117,7 +104,7 @@ body {
 }
 
 .icon {
-  color: var(--clr-accent);
+  color: #f4b7ae;
 }
 
 .car-info
@@ -164,7 +151,7 @@ body {
 }
 /* Main panel container */
 .booking-panel {
-  background-color: var(--clr-surface);
+  background-color: #1e1e1e;
   padding: 24px;
   border-radius: 0 0 6px 6px;
 }
@@ -178,7 +165,7 @@ body {
 }
 
 .booking-meta-label {
-  color: var(--clr-muted);
+  color: #666666;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -187,7 +174,7 @@ body {
 }
 
 .booking-meta-value {
-  color: var(--clr-text);
+  color: #ffffff;
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.04em;
@@ -196,7 +183,7 @@ body {
 
 /* ── PRICE BREAKDOWN ── */
 .price-breakdown-label {
-  color: var(--clr-muted);
+  color: #666666;
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -212,14 +199,14 @@ body {
 }
 
 .price-row-name {
-  color: var(--clr-muted);
+  color: #aaaaaa;
   font-size: 13px;
   font-weight: 400;
   letter-spacing: 0.02em;
 }
 
 .price-row-amount {
-  color: var(--clr-text);
+  color: #ffffff;
   font-size: 13px;
   font-weight: 600;
 }
@@ -240,7 +227,7 @@ body {
 }
 
 .total-label {
-  color: var(--clr-text);
+  color: #ffffff;
   font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -248,38 +235,10 @@ body {
 }
 
 .total-amount {
-  color: #C0392B;
+  color: #e3000f;
   font-size: 24px;
   font-weight: 900;
   letter-spacing: 0.02em;
-}
-
-/* ── SPEC BADGES ROW ── */
-.spec-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.spec-badge {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background-color: var(--clr-surface);
-  color: var(--clr-muted);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 7px 12px;
-  border-radius: 4px;
-}
-
-.spec-badge svg {
-  width: 13px;
-  height: 13px;
-  opacity: 0.8;
 }
 
 /* ── NOTICE BOX ── */
@@ -287,21 +246,21 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background-color: var(--clr-surface);
-  border-left: 3px solid var(--clr-muted);
+  background-color: #252525;
+  border-left: 3px solid #555555;
   border-radius: 4px;
   padding: 14px 16px;
 }
 
 .notice-icon {
-  color: var(--clr-muted);
+  color: #888888;
   font-size: 16px;
   margin-top: 1px;
   flex-shrink: 0;
 }
 
 .notice-text {
-  color: var(--clr-muted);
+  color: #888888;
   font-size: 11px;
   font-weight: 400;
   line-height: 1.6;
@@ -321,8 +280,8 @@ body {
 
 /* Highlight the input that has an error */
 .input-field.input-error {
-    box-shadow: 0 0 0 1.5px rgba(192, 57, 43, 0.6);
-    background-color: rgba(192, 57, 43, 0.07);
+    box-shadow: 0 0 0 1.5px rgba(224, 48, 48, 0.6);
+    background-color: rgba(224, 48, 48, 0.07);
 }
 
 /* ── EXPIRY DATE DROPDOWNS ── */
@@ -367,54 +326,105 @@ body {
 }
 
 /* ============================================================
-   LIGHT MODE OVERRIDES
-   Most colors handled by var() in base rules + header.css :root redefinition.
-   Only keeping border/shadow/structural specifics unique to light mode.
+   MANUAL LIGHT MODE FIXES
    ============================================================ */
 
 html[data-theme="light"] body {
-  background-color: var(--clr-bg);
-  color: var(--clr-text);
+  background-color: #f7f7f7;
+  color: #111111;
+}
+
+html[data-theme="light"] .section-title {
+  color: #222222;
+}
+
+html[data-theme="light"] .labels,
+html[data-theme="light"] .expiry-label {
+  color: #555555;
 }
 
 html[data-theme="light"] .input-field,
 html[data-theme="light"] .expiry-dropdowns select {
-  background: #ffffff;
+  background-color: #ffffff;
   color: #111111;
   border: 1px solid #cccccc;
-  
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
-html[data-theme="dark"] {
-  --btn-bg: #6366f1;
-  --btn-text: #fff;
-  --btn-border: #6366f1;
 }
 
-html[data-theme="light"] {
-  --btn-bg: #ffffff;
-  --btn-text: #111;
-  --btn-border: #cccccc;
+html[data-theme="light"] .input-field:focus,
+html[data-theme="light"] .expiry-dropdowns select:focus {
+  border-color: #6366f1;
 }
-html[data-theme="light"] .primary-btn:hover {
-  background: #f5f5f5;
-  border-color: #999999;
-}
-}
+
 html[data-theme="light"] #summary-section {
+  background-color: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
+}
+
+html[data-theme="light"] .booking-panel {
+  background-color: #ffffff;
+  border-radius: 0 0 6px 6px;
+}
+
+html[data-theme="light"] .booking-meta-label, 
+html[data-theme="light"] .price-breakdown-label {
+  color: #555555;
+}
+
+html[data-theme="light"] .booking-meta-value {
+  color: #111111;
+}
+
+html[data-theme="light"] .price-row-name {
+  color: #555555;
+}
+
+html[data-theme="light"] .price-row-amount {
+  color: #111111;
 }
 
 html[data-theme="light"] .price-divider {
   border-top: 1px solid #e0e0e0;
 }
 
+html[data-theme="light"] .total-label {
+  color: #111111;
+}
+
+html[data-theme="light"] .spec-badge {
+  background-color: #f0f0f0;
+  color: #333333;
+}
+
 html[data-theme="light"] .notice-box {
+  background-color: #f9f9f9;
   border-left: 3px solid #cccccc;
+}
+
+html[data-theme="light"] .notice-icon, 
+html[data-theme="light"] .notice-text {
+  color: #555555;
+}
+
+html[data-theme="light"] .security-note {
+  color: #666666;
+}
+
+html[data-theme="light"] .subtitle {
+  color: #c8332d;
 }
 
 html[data-theme="light"] .car-info {
   background-color: #f0f0f0;
+}
+
+html[data-theme="light"] .title {
+  color: #111111;
+}
+
+html[data-theme="light"] .icon {
+  color: #c8332d;
 }
 
 /* ── PAYMENT METHODS GRID ── */
@@ -495,14 +505,14 @@ html[data-theme="light"] .car-info {
     left: 0;
     right: 0;
     height: 1px;
-    background: var(--clr-border);
+    background: #333;
     z-index: 1;
 }
 
 .payment-divider span {
-    background: var(--clr-bg);
+    background: #131313;
     padding: 0 15px;
-    color: var(--clr-muted);
+    color: #666;
     font-size: 12px;
     font-weight: 700;
     position: relative;

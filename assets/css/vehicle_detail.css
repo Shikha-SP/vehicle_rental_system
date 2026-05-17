@@ -1013,3 +1013,19 @@ html[data-theme="light"] .summary-line.total {
     font-size: 16px;
     box-sizing: border-box;
 }
+/* ── Calendar icon colour fix for date inputs ─────────────────────
+   On most browsers the calendar icon inherits the input's color-scheme.
+   Force it white in dark mode and black (browser default) in light mode. */
+
+/* Light mode — let browser decide (typically dark icon) */
+input[type="date"] {
+    color-scheme: light;
+}
+
+/* Dark mode — white icon so it's visible against dark backgrounds */
+html[data-theme="dark"] input[type="date"],
+html[data-theme="dark"] input[type="date"]#pickup-date,
+html[data-theme="dark"] input[type="date"]#dropoff-date,
+html[data-theme="dark"] input[type="date"]#extend-date {
+    color-scheme: dark;
+}
