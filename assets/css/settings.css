@@ -641,11 +641,11 @@
    LIGHT MODE OVERRIDES
    ============================================================ */
 html[data-theme="light"] {
-    --s-bg:         var(--clr-bg);
-    --s-bg-alt:     var(--clr-bg);
-    --s-border:     var(--clr-border);
-    --s-text:       var(--clr-text);
-    --s-muted:      var(--clr-muted);
+    --s-bg:         var(--bg);
+    --s-bg-alt:     var(--bg-secondary);
+    --s-border:     var(--border);
+    --s-text:       var(--fg);
+    --s-muted:      var(--fg-muted);
 }
 
 html[data-theme="light"] .settings-page-main-content {

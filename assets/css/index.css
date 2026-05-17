@@ -647,12 +647,12 @@ h4 {
 
 /* ── Light Mode ── */
 html[data-theme="light"] {
-    --bg-dark: #F5F4F2;
-    --text-main: #18181b;
-    --text-muted: #4B4B4F;
-    --card-bg: #FFFFFF;
-    --card-hover: #F8F7F5;
-    --nav-text: #4B4B4F;
+    --bg-dark: #EBE9E4;
+    --text-main: #2C2A28;
+    --text-muted: #5C5955;
+    --card-bg: #F2F0EC;
+    --card-hover: #E2DFD8;
+    --nav-text: #5C5955;
 }
 
 html[data-theme="light"] body {

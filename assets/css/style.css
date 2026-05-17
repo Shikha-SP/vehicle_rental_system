@@ -87,15 +87,15 @@
 
 /* ── Light Mode Tokens ─────────────────────────────────────── */
 html[data-theme="light"] {
-  --bg:               #F5F4F2;
-  --bg-secondary:     #FFFFFF;
-  --bg-surface:       #ECEAE7;
-  --bg-muted:         #EFEEEC;
-  --fg:               #18181b;
-  --fg-muted:         #4B4B4F;
-  --fg-subtle:        #9A9A9E;
-  --border:           rgba(0, 0, 0, 0.09);
-  --border-strong:    rgba(0, 0, 0, 0.15);
+  --bg:               #EBE9E4;
+  --bg-secondary:     #F2F0EC;
+  --bg-surface:       #E2DFD8;
+  --bg-muted:         #D9D5CD;
+  --fg:               #2C2A28;
+  --fg-muted:         #5C5955;
+  --fg-subtle:        #8C8781;
+  --border:           rgba(0, 0, 0, 0.12);
+  --border-strong:    rgba(0, 0, 0, 0.18);
   --primary:          #C0392B;
   --primary-hover:    #C0392B;
   --primary-dim:      rgba(192, 57, 43, 0.12);

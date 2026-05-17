@@ -72,28 +72,38 @@
    LIGHT MODE OVERRIDES
    ============================================================ */
 html[data-theme="light"] .site-footer {
-    background: linear-gradient(135deg, #e8ecf0, #f4f6f8);
-    color: #111111;
-    border-top: 1px solid #cbd5e1;
+    background: #C0392B;
+    color: #ffffff;
+    border-top: 1px solid #a93226;
+}
+
+html[data-theme="light"] .footer-brand {
+    color: #ffffff;
 }
 
 html[data-theme="light"] .footer-tagline {
-    color: #1e293b;
+    color: rgba(255, 255, 255, 0.85);
 }
 
 html[data-theme="light"] .footer-links a {
-    color: #1e293b;
+    color: rgba(255, 255, 255, 0.85);
 }
 
 html[data-theme="light"] .footer-links a:hover {
-    color: #000000;
-    background-color: rgba(192, 57, 43, 0.08);
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.15);
 }
 
 html[data-theme="light"] .footer-copy {
-    color: #334155;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 html[data-theme="light"] .footer-social a {
-    color: #1e293b;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+html[data-theme="light"] .footer-social a:hover {
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
 }
