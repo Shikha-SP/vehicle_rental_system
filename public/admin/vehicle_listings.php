@@ -108,8 +108,15 @@ $totalCars = $totalCarsResult ? $totalCarsResult->fetch_row()[0] : 0;
 $availCarsResult = $conn->query("SELECT COUNT(*) FROM vehicles WHERE status = 'approved'");
 $availCars = $availCarsResult ? $availCarsResult->fetch_row()[0] : 0;
 
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+
 $cars = [];
-$carsRes = $conn->query("SELECT v.*, u.is_admin FROM vehicles v LEFT JOIN users u ON v.user_id = u.id ORDER BY v.id ASC");
+if (!empty($search)) {
+    $escapedSearch = $conn->real_escape_string($search);
+    $carsRes = $conn->query("SELECT v.*, u.is_admin FROM vehicles v LEFT JOIN users u ON v.user_id = u.id WHERE v.model LIKE '%$escapedSearch%' ORDER BY v.id ASC");
+} else {
+    $carsRes = $conn->query("SELECT v.*, u.is_admin FROM vehicles v LEFT JOIN users u ON v.user_id = u.id ORDER BY v.id ASC");
+}
 if ($carsRes) {
     while($row = $carsRes->fetch_assoc()) {
         $cars[] = $row;
@@ -345,7 +352,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <button class="btn btn-red" onclick="openModal('addModal')">Add Vehicle</button>
         <div class="search-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input type="text" placeholder="Search model or plate..."/>
+          <input type="text" id="vehicleSearch" placeholder="Search model or plate..." value="<?= htmlspecialchars($search) ?>"/>
         </div>
       </div>
     </div>
@@ -858,6 +865,68 @@ function confirmDelete(id, name) {
         'Are you sure you want to permanently delete "' + name + '"? This action cannot be undone.';
     openModal('deleteModal');
 }
+
+/* ── Live Search Filter ── */
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('vehicleSearch');
+    const cards = document.querySelectorAll('.fleet-grid .fleet-card');
+    const addCard = document.querySelector('.fleet-grid .fleet-add-card');
+    
+    function performFilter(term) {
+        term = term.toLowerCase().trim();
+        cards.forEach(card => {
+            const modelNameEl = card.querySelector('.fleet-card-name');
+            const fuelTypeEl = card.querySelector('.fleet-card-cat');
+            
+            const modelName = modelNameEl ? modelNameEl.textContent.toLowerCase() : '';
+            const fuelType = fuelTypeEl ? fuelTypeEl.textContent.toLowerCase() : '';
+            
+            // Collect specs text as well
+            const specItems = card.querySelectorAll('.spec-item span');
+            let specsText = '';
+            specItems.forEach(span => {
+                specsText += ' ' + span.textContent.toLowerCase();
+            });
+            
+            const combinedText = `${modelName} ${fuelType} ${specsText}`;
+            
+            if (combinedText.includes(term)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Hide the "Add Vehicle" card if the user is searching for something specific
+        if (addCard) {
+            addCard.style.display = term === '' ? '' : 'none';
+        }
+    }
+
+    if (searchInput) {
+        // Real-time filtering as you type
+        searchInput.addEventListener('input', (e) => {
+            performFilter(e.target.value);
+        });
+        
+        // Also support pressing Enter to refresh the page with the search query (server-side persistence)
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const term = e.target.value.trim();
+                if (term) {
+                    window.location.search = '?search=' + encodeURIComponent(term);
+                } else {
+                    window.location.search = '';
+                }
+            }
+        });
+        
+        // If there's an initial search term from the server, perform initial filtering
+        if (searchInput.value) {
+            performFilter(searchInput.value);
+        }
+    }
+});
 </script>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
