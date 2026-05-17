@@ -149,7 +149,6 @@ include '../../includes/header.php';
             <div class="hero-text">
                 <span class="badge red"><?= htmlspecialchars(strtoupper($vehicle['license_type'])) ?> CATEGORY</span>
                 <h1><?= htmlspecialchars($vehicle['model']) ?></h1>
-                <p class="owner-pill">By <?= htmlspecialchars($vehicle['owner_name']) ?></p>
             </div>
         </div>
     </section>

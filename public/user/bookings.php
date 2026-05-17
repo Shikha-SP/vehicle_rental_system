@@ -197,9 +197,9 @@ include '../../includes/header.php';
     }
     
     .booking-card { 
-        background: rgba(20,20,20,0.7); 
+        background: var(--bg-surface); 
         backdrop-filter: blur(14px);
-        border: 1px solid rgba(255,255,255,0.08); 
+        border: 1px solid var(--border); 
         border-radius: 20px; 
         overflow: hidden;
         transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
@@ -285,8 +285,8 @@ include '../../includes/header.php';
 
     .empty-state { text-align: center; padding: 8rem 2rem; background: rgba(255,255,255,0.02); border-radius: 30px; border: 1px dashed rgba(255,255,255,0.1); }
     .empty-icon { font-size: 5rem; margin-bottom: 2rem; opacity: 0.2; }
-    .empty-state h2 { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 2.5rem; margin-bottom: 1rem; color: var(--clr-text, #f5f4f2); }
-    .empty-state p { color: var(--clr-muted, #8a8a8e); margin-bottom: 1.5rem; }
+    .empty-state h2 { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 2.5rem; margin-bottom: 1rem; color: var(--fg, #f5f4f2); }
+    .empty-state p { color: var(--fg-muted, #8a8a8e); margin-bottom: 1.5rem; }
 
     
     .btn-cancel { 
@@ -376,8 +376,8 @@ include '../../includes/header.php';
 
     /* Medal Progress Panel */
     .medal-panel {
-        background: rgba(20,20,20,0.8);
-        border: 1px solid rgba(255,255,255,0.07);
+        background: var(--bg-surface);
+        border: 1px solid var(--border);
         border-radius: 20px;
         padding: 28px 32px;
         margin-bottom: 3rem;
@@ -492,10 +492,10 @@ include '../../includes/header.php';
         border-color: rgba(0, 0, 0, 0.12);
     }
     html[data-theme="light"] .empty-state h2 {
-        color: var(--clr-text, #18181b);
+        color: var(--fg, #18181b);
     }
     html[data-theme="light"] .empty-state p {
-        color: var(--clr-muted, #4b4b4f);
+        color: var(--fg-muted, #4b4b4f);
     }
     html[data-theme="light"] .empty-icon {
         opacity: 0.35;
@@ -505,10 +505,10 @@ include '../../includes/header.php';
         border-color: rgba(0, 0, 0, 0.08);
     }
     html[data-theme="light"] .policy-content h4 {
-        color: var(--clr-text, #18181b);
+        color: var(--fg, #18181b);
     }
     html[data-theme="light"] .policy-content p {
-        color: var(--clr-muted, #4b4b4f);
+        color: var(--fg-muted, #4b4b4f);
     }
 </style>
 <link rel="stylesheet" href="../../assets/css/style.css">
@@ -561,7 +561,7 @@ include '../../includes/header.php';
                 <div class="stat-label">RENTALS DONE</div>
             </div>
             <div class="stat-box">
-                <div class="stat-val" style="color: <?= $user_medal !== 'NONE' ? ($medal_tiers[$user_medal]['color'] ?? '#C0392B') : 'var(--clr-muted, #888)' ?>">
+                <div class="stat-val" style="color: <?= $user_medal !== 'NONE' ? ($medal_tiers[$user_medal]['color'] ?? '#C0392B') : 'var(--fg-muted, #888)' ?>">
                     <?= $user_medal !== 'NONE' ? $medal_tiers[$user_medal]['label'] : '—' ?>
                 </div>
                 <div class="stat-label">MEDAL</div>

@@ -7,12 +7,11 @@
 
 
 :root {
-    --bg: #0e0e0e;
-    --bg-card: rgba(20, 20, 20, 0.7);
-    --border: rgba(255, 255, 255, 0.08);
-    --accent: #C0392B;
-    --text: #f0f0f0;
-    --red: #C0392B;
+    --bg-card: var(--bg-surface);
+    --border: var(--border);
+    --accent: var(--primary);
+    --text: var(--fg);
+    --red: var(--primary);
     --radius: 20px;
 }
 
@@ -66,13 +65,13 @@
     font-weight: 800;
     font-size: 2.5rem;
     margin-bottom: 1rem;
-    color: var(--clr-text, #f5f4f2);
+    color: var(--fg, #f5f4f2);
     letter-spacing: -0.02em;
 }
 
 .empty-state p {
     font-family: 'Inter', sans-serif;
-    color: var(--clr-muted, #8a8a8e);
+    color: var(--fg-muted, #8a8a8e);
     margin-bottom: 24px;
 }
 
@@ -193,7 +192,7 @@
     font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
-    color: var(--clr-muted);
+    color: var(--fg-muted);
     display: flex;
     align-items: center;
     gap: 5px;
@@ -211,7 +210,7 @@
     display: flex;
     justify-content: space-between;
     font-size: 0.75rem;
-    color: var(--clr-muted);
+    color: var(--fg-muted);
     margin-bottom: 0.6rem;
     font-weight: 500;
 }
@@ -347,16 +346,16 @@ html[data-theme="light"] .my-vehicles {
 }
 
 html[data-theme="light"] .empty-state {
-    background: var(--clr-surface, #ffffff);
-    border-color: var(--clr-border, rgba(0, 0, 0, 0.12));
+    background: var(--bg-surface, #ffffff);
+    border-color: var(--border, rgba(0, 0, 0, 0.12));
 }
 
 html[data-theme="light"] .empty-state h2 {
-    color: var(--clr-text, #18181b);
+    color: var(--fg, #18181b);
 }
 
 html[data-theme="light"] .empty-state p {
-    color: var(--clr-muted, #4b4b4f);
+    color: var(--fg-muted, #4b4b4f);
 }
 
 @media (max-width: 768px) {
