@@ -110,9 +110,14 @@ function isValidLuhn($number)
 
 function getCardType($number)
 {
-    if (preg_match('/^4/', $number))
+    $clean = preg_replace('/\s+/', '', $number);
+    // Kharcha cards: 16 digits starting with 733333
+    if (str_starts_with($clean, '733333')) {
+        return 'Kharcha';
+    }
+    if (preg_match('/^4/', $clean))
         return 'Visa';
-    if (preg_match('/^5[1-5]/', $number))
+    if (preg_match('/^5[1-5]/', $clean))
         return 'Mastercard';
     return 'Unknown';
 }

@@ -20,7 +20,7 @@ define('KHARCHA_CARD_BIN',     '733333'); // Kharcha card number prefix (after l
  */
 function isKharchaCard(string $cardNumber): bool {
     $clean = preg_replace('/\s+/', '', $cardNumber);
-    return str_starts_with($clean, '7' . KHARCHA_CARD_BIN);
+    return str_starts_with($clean, KHARCHA_CARD_BIN);
 }
 
 /**

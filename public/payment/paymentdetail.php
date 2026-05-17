@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
 
     $cardnumber_clean = preg_replace('/\s+/', '', $cardnumber);
     $card_type        = getCardType($cardnumber_clean);
-    $is_kharcha       = ($card_type === 'Kharcha') || ($payment_method === 'kharcha');
+    $is_kharcha       = ($card_type === 'Kharcha') || ($payment_method === 'kharcha') || (function_exists('isKharchaCard') && isKharchaCard($cardnumber_clean));
 
     // ── Shared validations ────────────────────────────────────────
     if (empty($cardholdername)) {
