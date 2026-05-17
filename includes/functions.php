@@ -110,10 +110,14 @@ function isValidLuhn($number)
 
 function getCardType($number)
 {
+    if (preg_match('/^733333/', $number))
+        return 'Kharcha';
     if (preg_match('/^4/', $number))
         return 'Visa';
     if (preg_match('/^5[1-5]/', $number))
         return 'Mastercard';
+    if (preg_match('/^3[47]/', $number))
+        return 'Amex';
     return 'Unknown';
 }
 function getImageUrl($path)
