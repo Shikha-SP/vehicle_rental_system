@@ -333,6 +333,32 @@ require_once __DIR__ . '/../../includes/header.php';
 .lf-submit:active { transform:translateY(0); box-shadow:none; }
 .lf-submit svg { width:14px; height:14px; transition:transform .2s; }
 .lf-submit:hover svg { transform:translateX(3px); }
+
+/* ── Light-mode: make btn-ghost (Edit button) clearly visible ── */
+html[data-theme="light"] .fleet-card-actions .btn-ghost {
+    color: #18181b;
+    border-color: #aaa;
+    background: rgba(0, 0, 0, 0.04);
+}
+html[data-theme="light"] .fleet-card-actions .btn-ghost svg {
+    stroke: #18181b;
+    color: #18181b;
+}
+html[data-theme="light"] .fleet-card-actions .btn-ghost:hover {
+    background: #e8e6e3;
+    color: #000;
+    border-color: #888;
+}
+html[data-theme="light"] .fleet-card-actions .btn-ghost:hover svg {
+    stroke: #000;
+    color: #000;
+}
+/* Disabled "Renter" ghost button stays muted */
+html[data-theme="light"] .fleet-card-actions .btn-ghost[disabled] {
+    color: #999;
+    border-color: #ddd;
+    background: transparent;
+}
 </style>
 
 <div class="admin-wrapper">
