@@ -951,3 +951,54 @@ html[data-theme="light"] .car-card {
 html[data-theme="light"] .red-banner {
     background: linear-gradient(135deg, #C0392B 0%, #C0392B 100%);
 }
+
+/* ── Hero — warm light gradient instead of plain white ── */
+html[data-theme="light"] .hero-section {
+    background: linear-gradient(135deg, #f0ece6 0%, #e8e4de 60%, #ede9e3 100%);
+}
+
+/* ── Red CTA button — always white text on red ── */
+html[data-theme="light"] .dashboard-content .btn-red {
+    color: #ffffff;
+}
+
+/* ── Hero heading & label — dark on light bg ── */
+html[data-theme="light"] .dashboard-content .hero-heading {
+    color: #111111;
+}
+
+html[data-theme="light"] .dashboard-content .hero-label {
+    color: var(--accent-red);
+}
+
+/* ── Car grid ── */
+html[data-theme="light"] .dashboard-content .gallery-section {
+    background: #F5F4F2;
+}
+
+html[data-theme="light"] .dashboard-content .showroom-section {
+    background: #FFFFFF;
+}
+
+html[data-theme="light"] .dashboard-content .map-container {
+    border-color: rgba(0,0,0,0.1);
+    background: #f0f0f0;
+}
+
+html[data-theme="light"] .dashboard-content .card-img-wrapper {
+    background: #f0ece6;
+}
+
+html[data-theme="light"] .dashboard-content .car-card {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+html[data-theme="light"] .dashboard-content .btn-rent {
+    background: #e8e4de;
+    color: #111111;
+}
+
+html[data-theme="light"] .dashboard-content .btn-rent:hover {
+    background: var(--accent-red);
+    color: #ffffff;
+}

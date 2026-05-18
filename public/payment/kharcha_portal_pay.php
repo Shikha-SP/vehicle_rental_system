@@ -53,6 +53,11 @@ if (!$vehicle) {
 
 $totalprice = ((float)$vehicle['price_per_day'] * $days) + 500;
 
+if (($_SESSION['payment_source'] ?? '') === 'extend_booking') {
+    $extend = $_SESSION['extend_payload'] ?? [];
+    $totalprice = (float)($extend['extra_cost'] ?? 0);
+}
+
 // ── Apply discount code if one was submitted from the payment form ─────────
 $discount_code    = trim($_POST['applied_discount_code'] ?? '');
 $discount_amount  = 0.00;

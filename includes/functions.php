@@ -110,11 +110,14 @@ function isValidLuhn($number)
 
 function getCardType($number)
 {
-    if (preg_match('/^733333/', $number))
+    $clean = preg_replace('/\s+/', '', $number);
+    // Kharcha cards: 16 digits starting with 733333
+    if (str_starts_with($clean, '733333')) {
         return 'Kharcha';
-    if (preg_match('/^4/', $number))
+    }
+    if (preg_match('/^4/', $clean))
         return 'Visa';
-    if (preg_match('/^5[1-5]/', $number))
+    if (preg_match('/^5[1-5]/', $clean))
         return 'Mastercard';
     if (preg_match('/^3[47]/', $number))
         return 'Amex';
@@ -257,4 +260,93 @@ function generateOTP($length = 6) {
     }
     return $otp;
 }
-?>
+
+// function to get user data
+function getUserData($conn, $user_id)
+{
+    $sql = "SELECT email, first_name, last_name FROM users WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    return $result;
+}
+
+// function to record transaction
+function recordTransaction(
+    $conn,
+    $booking_id,
+    $user_id,
+    $amount,
+    $card_last4,
+    $card_type,
+    $transaction_ref
+) {
+    $sql = "
+        INSERT INTO transactions (
+            booking_id,
+            user_id,
+            amount,
+            payment_method,
+            card_last4,
+            card_type,
+            transaction_ref,
+            created_at
+        )
+        VALUES (?, ?, ?, 'card', ?, ?, ?, NOW())
+    ";
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log('recordTransaction prepare failed: ' . $conn->error);
+        return false;
+    }
+    $stmt->bind_param(
+        "iidsss",
+        $booking_id,
+        $user_id,
+        $amount,
+        $card_last4,
+        $card_type,
+        $transaction_ref
+    );
+
+    if (!$stmt->execute()) {
+        error_log('recordTransaction execute failed: ' . $stmt->error);
+        error_log("Values — booking_id: $booking_id, user_id: $user_id, amount: $amount, card_last4: $card_last4, card_type: $card_type, ref: $transaction_ref");
+        return false;
+    }
+
+    return true;
+}
+function sendEmail(
+    $to,
+    $name,
+    $subject,
+    $htmlBody,
+    $altBody = '',
+    $attachment = null
+) {
+
+    $mail = createMailer();
+
+    $mail->addAddress($to, $name);
+    $mail->Subject = $subject;
+    $mail->isHTML(true);
+
+    $mail->Body = $htmlBody;
+    $mail->AltBody = $altBody;
+
+    if ($attachment) {
+        $mail->addStringAttachment(
+            $attachment['data'],
+            $attachment['filename'],
+            'base64',
+            $attachment['mime']
+        );
+    }
+
+    return $mail->send();
+}
+    ?>

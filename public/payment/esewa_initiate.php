@@ -35,6 +35,11 @@ if (!$vehicle) { die("Vehicle not found."); }
 $basicprice      = 500;
 $total_price_npr = ($vehicle['price_per_day'] * $days) + $basicprice;
 
+if (($_SESSION['payment_source'] ?? '') === 'extend_booking') {
+    $extend = $_SESSION['extend_payload'] ?? [];
+    $total_price_npr = (float)($extend['extra_cost'] ?? 0);
+}
+
 // ── Apply discount code if provided ──────────────────────────
 $discount_code   = $_GET['discount_code'] ?? '';
 $discount_amount = 0;

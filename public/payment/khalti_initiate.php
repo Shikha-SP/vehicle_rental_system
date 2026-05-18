@@ -39,6 +39,11 @@ if (!$data) {
 
 $basicprice = 500; // From paymentdetail.php
 $total_price_npr = ($data['price_per_day'] * $days) + $basicprice;
+$is_extension = (($_SESSION['payment_source'] ?? '') === 'extend_booking');
+$extend = $_SESSION['extend_payload'] ?? [];
+if ($is_extension) {
+    $total_price_npr = (float)($extend['extra_cost'] ?? 0);
+}
 
 $discount_code = $_GET['discount_code'] ?? '';
 $discount_amount = 0;
@@ -107,13 +112,15 @@ $post_data = [
     ]
 ];
 
-// Pre-create the booking as pending
-$insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, discount_code, discount_amount, created_at)
-               VALUES (?, ?, ?, ?, ?, 'confirmed', 'pending', ?, ?, ?, NOW())";
-$insert_stmt = $conn->prepare($insert_sql);
-$insert_stmt->bind_param("iissdssd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $total_price_npr, $purchase_order_id, $discount_code, $discount_amount);
-if (!$insert_stmt->execute()) {
-    die("Failed to create pending booking.");
+if (!$is_extension) {
+    // Pre-create the booking as pending for normal bookings only.
+    $insert_sql = "INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, discount_code, discount_amount, created_at)
+                   VALUES (?, ?, ?, ?, ?, 'confirmed', 'pending', ?, ?, ?, NOW())";
+    $insert_stmt = $conn->prepare($insert_sql);
+    $insert_stmt->bind_param("iissdssd", $user_id, $vehicle_id, $pickup_date, $dropoff_date, $total_price_npr, $purchase_order_id, $discount_code, $discount_amount);
+    if (!$insert_stmt->execute()) {
+        die("Failed to create pending booking.");
+    }
 }
 $curl = curl_init();
 curl_setopt_array($curl, array(

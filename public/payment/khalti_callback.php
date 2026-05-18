@@ -29,7 +29,9 @@ function khaltiClearPaymentSession(): void
         $_SESSION['khalti_pidx'],
         $_SESSION['khalti_discount_code'],
         $_SESSION['khalti_discount_amount'],
-        $_SESSION['khalti_discount_code_id']
+        $_SESSION['khalti_discount_code_id'],
+        $_SESSION['payment_source'],
+        $_SESSION['extend_payload']
     );
 }
 
@@ -74,6 +76,8 @@ $totalprice = (float) ($_SESSION['khalti_amount'] ?? 0);
 $discount_code_saved = (string) ($_SESSION['khalti_discount_code'] ?? '');
 $discount_amount_saved = (float) ($_SESSION['khalti_discount_amount'] ?? 0);
 $discount_code_id = isset($_SESSION['khalti_discount_code_id']) ? (int) $_SESSION['khalti_discount_code_id'] : 0;
+$is_extension = (($_SESSION['payment_source'] ?? '') === 'extend_booking');
+$extend = $_SESSION['extend_payload'] ?? [];
 
 if (!$vehicle_id || !$pickup_date || !$dropoff_date) {
     die("Booking session expired.");
@@ -86,7 +90,7 @@ $existing_stmt->execute();
 $existing_booking = $existing_stmt->get_result()->fetch_assoc();
 $existing_stmt->close();
 
-if ($existing_booking && $existing_booking['payment_status'] === 'paid') {
+if (!$is_extension && $existing_booking && $existing_booking['payment_status'] === 'paid') {
     khaltiClearPaymentSession();
     header("Location: bookingconfirmed.php?id=" . (int) $existing_booking['id']);
     exit;
@@ -127,7 +131,24 @@ if (isset($response_data['status']) && $response_data['status'] === 'Completed')
     $conn->begin_transaction();
 
     try {
-        if ($existing_booking) {
+        if ($is_extension) {
+            $booking_id = (int)($extend['booking_id'] ?? 0);
+            if (!$booking_id) {
+                throw new Exception("Missing extension booking.");
+            }
+
+            $update_sql = "UPDATE bookings
+                           SET end_date = ?, total_price = total_price + ?, payment_status = 'paid',
+                               discount_amount = discount_amount + ?,
+                               discount_code = COALESCE(NULLIF(?, ''), discount_code)
+                           WHERE id = ? AND user_id = ?";
+            $update_stmt = $conn->prepare($update_sql);
+            $update_stmt->bind_param("sddsii", $dropoff_date, $totalprice, $discount_amount_saved, $discount_code_saved, $booking_id, $user_id);
+            if (!$update_stmt->execute() || $update_stmt->affected_rows < 1) {
+                throw new Exception("Failed to extend booking.");
+            }
+            $update_stmt->close();
+        } elseif ($existing_booking) {
             $booking_id = (int) $existing_booking['id'];
             $update_sql = "UPDATE bookings SET payment_status = 'paid', status = 'confirmed' WHERE id = ?";
             $update_stmt = $conn->prepare($update_sql);
@@ -225,11 +246,14 @@ if (isset($response_data['status']) && $response_data['status'] === 'Completed')
         }
 
         // Insert into transactions table
-        $check_txn = $conn->prepare("SELECT id FROM transactions WHERE booking_id = ? LIMIT 1");
-        $check_txn->bind_param("i", $booking_id);
-        $check_txn->execute();
-        $has_txn = $check_txn->get_result()->num_rows > 0;
-        $check_txn->close();
+        $has_txn = false;
+        if (!$is_extension) {
+            $check_txn = $conn->prepare("SELECT id FROM transactions WHERE booking_id = ? LIMIT 1");
+            $check_txn->bind_param("i", $booking_id);
+            $check_txn->execute();
+            $has_txn = $check_txn->get_result()->num_rows > 0;
+            $check_txn->close();
+        }
 
         if (!$has_txn) {
             $transaction_ref = $response_data['transaction_id'] ?? ('KH-' . strtoupper(bin2hex(random_bytes(8))));

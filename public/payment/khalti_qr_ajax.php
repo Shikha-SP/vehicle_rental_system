@@ -53,6 +53,12 @@ if ($action === 'create') {
 
     $totalprice = ((float)$data['price_per_day'] * $days) + 500;
 
+    $is_extension = (($_SESSION['payment_source'] ?? '') === 'extend_booking');
+    $extend = $_SESSION['extend_payload'] ?? [];
+    if ($is_extension) {
+        $totalprice = (float)($extend['extra_cost'] ?? 0);
+    }
+
     // ── Apply discount ────────────────────────────────────────────
     $discount_code    = trim($_GET['discount_code'] ?? '');
     $discount_amount  = 0.00;
@@ -101,17 +107,25 @@ if ($action === 'create') {
     $amount_paisa      = (int)($totalprice * 100);
     $purchase_order_id = "KHALTI-QR-" . $user_id . "-" . $vehicle_id . "-" . time();
 
-    // Pre-create pending booking
-    $ins = $conn->prepare("INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, discount_code, discount_amount, created_at)
-                           VALUES (?, ?, ?, ?, ?, 'confirmed', 'pending', ?, ?, ?, NOW())");
-    $ins->bind_param("iissdssd", $user_id, $vehicle_id, $pickup_date, $dropoff_date,
-                     $totalprice, $purchase_order_id, $discount_code, $discount_amount);
+    if ($is_extension) {
+        $booking_id = (int)($extend['booking_id'] ?? 0);
+        if (!$booking_id) {
+            echo json_encode(['success' => false, 'message' => 'Missing extension booking.']);
+            exit;
+        }
+    } else {
+        // Pre-create pending booking for normal bookings only.
+        $ins = $conn->prepare("INSERT INTO bookings (user_id, vehicle_id, start_date, end_date, total_price, status, payment_status, purchase_order_id, discount_code, discount_amount, created_at)
+                               VALUES (?, ?, ?, ?, ?, 'confirmed', 'pending', ?, ?, ?, NOW())");
+        $ins->bind_param("iissdssd", $user_id, $vehicle_id, $pickup_date, $dropoff_date,
+                         $totalprice, $purchase_order_id, $discount_code, $discount_amount);
 
-    if (!$ins->execute()) {
-        echo json_encode(['success' => false, 'message' => 'Failed to create pending booking.']);
-        exit;
+        if (!$ins->execute()) {
+            echo json_encode(['success' => false, 'message' => 'Failed to create pending booking.']);
+            exit;
+        }
+        $booking_id = $ins->insert_id;
     }
-    $booking_id = $ins->insert_id;
     $_SESSION['khalti_qr_booking_id']         = $booking_id;
     $_SESSION['khalti_qr_purchase_order_id']  = $purchase_order_id;
 
@@ -245,34 +259,58 @@ if ($action === 'finalize' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $discount_code    = $_SESSION['khalti_qr_discount_code']            ?? '';
     $discount_amount  = (float)($_SESSION['khalti_qr_discount_amount']  ?? 0);
     $discount_code_id = $_SESSION['khalti_qr_discount_code_id']         ?? null;
+    $is_extension     = (($_SESSION['payment_source'] ?? '') === 'extend_booking');
+    $extend           = $_SESSION['extend_payload'] ?? [];
     $vehicle_id       = $_SESSION['payment_vehicle_id']                 ?? 0;
     $pickup_date      = $_SESSION['payment_pickup']                     ?? '';
     $dropoff_date     = $_SESSION['payment_dropoff']                    ?? '';
     $days             = (int)($_SESSION['payment_days']                 ?? 0);
 
-    // Mark booking paid
-    $upd = $conn->prepare("UPDATE bookings SET payment_status = 'paid' WHERE id = ?");
-    $upd->bind_param("i", $booking_id);
-    if (!$upd->execute()) {
-        echo json_encode(['success' => false, 'message' => 'Failed to confirm booking.']);
-        exit;
-    }
-
     $transaction_ref = $rd['transaction_id'] ?? ('KH-QR-' . strtoupper(bin2hex(random_bytes(8))));
-    $txn = $conn->prepare("INSERT INTO transactions (booking_id, user_id, amount, payment_method, card_last4, card_type, transaction_ref, created_at) VALUES (?, ?, ?, 'khalti_qr', 'KQRR', 'Khalti QR', ?, NOW())");
-    $txn->bind_param("iids", $booking_id, $user_id, $totalprice, $transaction_ref);
-    $txn->execute();
 
-    // ── Discount usage + Gold reset ───────────────────────────────
-    if ($discount_code_id) {
-        $du = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
-        $du->bind_param("ii", $user_id, $discount_code_id);
-        $du->execute(); $du->close();
-        $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = $discount_code_id");
-        $gc = $conn->query("SELECT id FROM discount_codes WHERE id = $discount_code_id AND owner_user_id = $user_id AND discount_percent = 20 LIMIT 1");
-        if ($gc && $gc->num_rows > 0) {
-            $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
+    $conn->begin_transaction();
+
+    try {
+        if ($is_extension) {
+            $upd = $conn->prepare("UPDATE bookings
+                                   SET end_date = ?, total_price = total_price + ?, payment_status = 'paid',
+                                       discount_amount = discount_amount + ?,
+                                       discount_code = COALESCE(NULLIF(?, ''), discount_code)
+                                   WHERE id = ? AND user_id = ?");
+            $upd->bind_param("sddsii", $dropoff_date, $totalprice, $discount_amount, $discount_code, $booking_id, $user_id);
+        } else {
+            $upd = $conn->prepare("UPDATE bookings SET payment_status = 'paid' WHERE id = ?");
+            $upd->bind_param("i", $booking_id);
         }
+
+        if (!$upd->execute() || $upd->affected_rows < 1) {
+            throw new Exception('Failed to confirm booking.');
+        }
+        $upd->close();
+
+        $txn = $conn->prepare("INSERT INTO transactions (booking_id, user_id, amount, payment_method, card_last4, card_type, transaction_ref, created_at) VALUES (?, ?, ?, 'khalti_qr', 'KQRR', 'Khalti QR', ?, NOW())");
+        $txn->bind_param("iids", $booking_id, $user_id, $totalprice, $transaction_ref);
+        if (!$txn->execute()) {
+            throw new Exception('Failed to record transaction.');
+        }
+
+        // ── Discount usage + Gold reset ───────────────────────────────
+        if ($discount_code_id) {
+            $du = $conn->prepare("INSERT INTO discount_code_uses (user_id, code_id) VALUES (?, ?)");
+            $du->bind_param("ii", $user_id, $discount_code_id);
+            $du->execute(); $du->close();
+            $conn->query("UPDATE discount_codes SET used_count = used_count + 1 WHERE id = $discount_code_id");
+            $gc = $conn->query("SELECT id FROM discount_codes WHERE id = $discount_code_id AND owner_user_id = $user_id AND discount_percent = 20 LIMIT 1");
+            if ($gc && $gc->num_rows > 0) {
+                $conn->query("UPDATE users SET medal = 'BRONZE', completed_rentals = 3 WHERE id = $user_id");
+            }
+        }
+        $conn->commit();
+    } catch (Exception $e) {
+        $conn->rollback();
+        error_log("Khalti QR booking update failed: " . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'Payment received but booking update failed. Please contact support.']);
+        exit;
     }
 
     // ── Milestone progression ─────────────────────────────────────
@@ -348,6 +386,7 @@ if ($action === 'finalize' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     unset(
         $_SESSION['payment_vehicle_id'], $_SESSION['payment_pickup'],
         $_SESSION['payment_dropoff'],    $_SESSION['payment_days'],
+        $_SESSION['payment_source'], $_SESSION['extend_payload'],
         $_SESSION['khalti_qr_pidx'],     $_SESSION['khalti_qr_booking_id'],
         $_SESSION['khalti_qr_purchase_order_id'], $_SESSION['khalti_qr_amount'],
         $_SESSION['khalti_qr_discount_code'], $_SESSION['khalti_qr_discount_amount'],
