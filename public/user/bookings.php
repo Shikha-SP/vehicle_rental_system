@@ -735,9 +735,11 @@ include '../../includes/header.php';
 <script>
 let currentBookingId = null;
 let chatInterval = null;
+let cachedMessagesJson = '';
 
 function openChat(bookingId, model) {
     currentBookingId = bookingId;
+    cachedMessagesJson = ''; // Reset cache for new chat session
     document.getElementById('chatBookingModel').innerText = model;
     document.getElementById('chatModal').classList.add('active');
     loadMessages();
@@ -753,6 +755,10 @@ function loadMessages() {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
+                const messagesJson = JSON.stringify(data.messages);
+                if (messagesJson === cachedMessagesJson) return; // Skip DOM update if no changes
+                cachedMessagesJson = messagesJson;
+
                 const container = document.getElementById('chatMessages');
                 const atBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
                 
