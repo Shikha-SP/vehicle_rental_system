@@ -45,6 +45,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $update = mysqli_prepare($conn, "UPDATE users SET is_verified = 1, verification_token = NULL, token_expires_at = NULL WHERE id = ?");
             mysqli_stmt_bind_param($update, "i", $user_id);
             if (mysqli_stmt_execute($update)) {
+                // Add preference for notification
+                $notif_sql = "INSERT INTO notification_preference(user_id, enabled) VALUES (?, 1)";
+                $notif_stmt = mysqli_prepare($conn, $notif_sql);
+
+                if (!$notif_stmt) {
+                    die("Notification insert failed: " . mysqli_error($conn));
+                }
+
+                mysqli_stmt_bind_param($notif_stmt, "i", $user_id);
+                mysqli_stmt_execute($notif_stmt);
+                mysqli_stmt_close($notif_stmt);
+
                 // Auto-login logic
                 session_regenerate_id(true);
                 $_SESSION['user_id']   = $user_id;

@@ -125,42 +125,57 @@ try {
     exit;
 }
 
-// Send confirmation email
-$u_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
-$u_stmt->bind_param("i", $user_id);
-$u_stmt->execute();
-$user_data = $u_stmt->get_result()->fetch_assoc();
+if ($is_extension) {
+    sendBookingExtensionEmail($conn, $user_id, $vehicle, $dropoff_date, $totalprice, 'Kharcha Payment Portal');
+} else {
+    // Send confirmation email
+    $u_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
+    $u_stmt->bind_param("i", $user_id);
+    $u_stmt->execute();
+    $user_data = $u_stmt->get_result()->fetch_assoc();
+    $email = $user_data['email'] ?? '';
+    $first_name = $user_data['first_name'] ?? '';
+    $last_name = $user_data['last_name'] ?? '';
 
-try {
-    $invoice_data = [
-        'booking_id' => $booking_id,
-        'first_name' => $user_data['first_name'],
-        'email' => $user_data['email'],
-        'model' => $vehicle['model'],
-        'pickup_date' => $pickup_date,
-        'dropoff_date' => $dropoff_date,
-        'days' => $days,
-        'price_per_day' => $vehicle['price_per_day'],
-        'total_price' => $totalprice,
-        'discount_code' => $discount_code,
-        'discount_amount' => $discount_amount,
-    ];
-    $pdf_string = generateInvoicePDF($invoice_data);
+    try {
+        $invoice_data = [
+            'booking_id' => $booking_id,
+            'first_name' => $first_name,
+            'email' => $email,
+            'model' => $vehicle['model'],
+            'pickup_date' => $pickup_date,
+            'dropoff_date' => $dropoff_date,
+            'days' => $days,
+            'price_per_day' => $vehicle['price_per_day'],
+            'total_price' => $totalprice,
+            'discount_code' => $discount_code,
+            'discount_amount' => $discount_amount,
+        ];
+        $pdf_string = generateInvoicePDF($invoice_data);
 
-    // send payment confimation mail
-    if (isNotificationEnabled($conn, $user_id)) {
-        $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
-        $html = require '../../includes/payment_confirmation.php';
-        sendEmail(
-            $email,
-            $first_name,
-            'Payment Confirmed!',
-            $html,
-            $AltBody
-        );
+	        // send payment confimation mail
+	        if (isNotificationEnabled($conn, $user_id)) {
+	            $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
+	            $payment_vehicle_image_src = 'cid:vehicle_image';
+	            $html = require '../../includes/payment_confirmation.php';
+	            sendEmail(
+	                $email,
+	                $first_name,
+	                'Payment Confirmed!',
+	                $html,
+	                $AltBody,
+	                [
+	                    'embedded_images' => [[
+	                        'path' => getVehicleEmailImagePath($vehicle),
+	                        'cid' => 'vehicle_image',
+	                        'name' => 'vehicle-image'
+	                    ]]
+	                ]
+	            );
+	        }
+    } catch (Exception $e) {
+        error_log("Portal booking email failed: " . $e->getMessage());
     }
-} catch (Exception $e) {
-    error_log("Portal booking email failed: " . $e->getMessage());
 }
 
 // Clean up session

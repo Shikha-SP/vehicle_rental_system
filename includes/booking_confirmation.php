@@ -1,4 +1,5 @@
 <?php
+$payment_method = $payment_method ?? ($payment_label ?? 'Card');
 return <<<HTML
 <html>
 <head>
@@ -57,12 +58,22 @@ return <<<HTML
                     <tr>
                       <td style="font-size:14px;color:#888888;">Duration</td>
                       <td style="font-size:14px;color:#ffffff;text-align:right;font-weight:600;">{$days} Days</td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
-              <tr>
-                <td style="padding:10px 0;border-top:1px solid #2e2e2e;">
+	                    </tr>
+	                  </table>
+	                </td>
+	              </tr>
+	              <tr>
+	                <td style="padding:10px 0;border-top:1px solid #2e2e2e;">
+	                  <table width="100%" cellpadding="0" cellspacing="0">
+	                    <tr>
+	                      <td style="font-size:14px;color:#888888;">Payment Method</td>
+	                      <td style="font-size:14px;color:#ffffff;text-align:right;font-weight:600;">{$payment_method}</td>
+	                    </tr>
+	                  </table>
+	                </td>
+	              </tr>
+	              <tr>
+	                <td style="padding:10px 0;border-top:1px solid #2e2e2e;">
                   <table width="100%" cellpadding="0" cellspacing="0">
                     <tr>
                       <td style="font-size:14px;color:#888888;">Status</td>

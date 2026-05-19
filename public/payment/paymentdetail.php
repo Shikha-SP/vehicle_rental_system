@@ -319,14 +319,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                         $last_name = $user_data['last_name'] ?? '';
 
 
-                        try {
-                            if (isNotificationEnabled($conn, $user_id)) {
-                                // Define email content
-                                $html = require '../../includes/booking_extension.php';
-                                $altBody = "Hi $first_name, your booking for {$vehicle['model']} has been extended to $dropoff_date.";
+	                        try {
+	                            if (isNotificationEnabled($conn, $user_id)) {
+	                                // Define email content
+	                                $payment_method = $is_kharcha ? 'Kharcha Card' : "{$card_type} Card";
+	                                $html = require '../../includes/booking_extension.php';
+	                                $altBody = "Hi $first_name, your booking for {$vehicle['model']} has been extended to $dropoff_date. Payment Method: $payment_method.";
 
-                                sendEmail($email, $first_name, 'Booking Extended - TD Rentals', $html, $altBody);
-                            }
+	                                sendEmail($email, $first_name, 'Booking Extended - TD Rentals', $html, $altBody);
+	                            }
                         } catch (Throwable $e) {
                             // Non-fatal — booking already updated, just log it
                             error_log('Extension email failed: ' . $e->getMessage());
@@ -469,48 +470,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
                         ];
                         $pdf_string = generateInvoicePDF($invoice_data);
 
-                        $mail = createMailer();
-                        $mail->addAddress($email, $first_name . ' ' . $last_name);
-                        $mail->Subject = 'Booking Confirmation – TD Rentals';
-                        $mail->isHTML(true);
-                        $mail->Body = "
-                        <p>Hi {$first_name},</p>
-                        <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
-                        <p>Pickup date: {$pickup_date}</p>
-                        <p>Dropoff date: {$dropoff_date}</p>
-                        <p>Total Paid: NPR " . number_format($totalprice, 2) . "</p>
-                        <p>Payment Method: {$payment_label}</p>
-                        {$kharcha_txn_line}
-                        {$savings_msg}
-                        <p>Please find your invoice attached.</p>
-                        <p>Thank you for choosing TD Rentals 🚀</p>
-                        <p>Best Regards,<br>TD Rentals Team</p>
-                    ";
-                        $mail->AltBody = "Hi {$first_name}, your booking for {$vehicle['model']} is confirmed.";
-                        $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
-
-                        // send booking confirmation mail
-                        if (isNotificationEnabled($conn, $user_id)) {
-                            $html = require '../../includes/booking_confirmation.php';
-                            $altBody = "Hi $first_name, your booking for {$vehicle['model']} is confirmed. Dates: $pickup_date - $dropoff_date.";
-                            sendEmail($email, $first_name, 'Booking Confirmation', $html, $altBody, [
+	                    // send booking confirmation mail
+	                    if (isNotificationEnabled($conn, $user_id)) {
+	                            $html = require '../../includes/booking_confirmation.php';
+	                            $altBody = "Hi $first_name, your booking for {$vehicle['model']} is confirmed. Dates: $pickup_date - $dropoff_date. Payment Method: $payment_label.";
+	                            sendEmail($email, $first_name, 'Booking Confirmation', $html, $altBody, [
                                 'data' => $pdf_string,
                                 'filename' => "invoice_{$booking_id}.pdf",
                                 'mime' => 'application/pdf'
                             ]);
                         }
-                        // send payment confimation mail
-                        if (isNotificationEnabled($conn, $user_id)) {
-                            $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
-                            $html = require '../../includes/payment_confirmation.php';
-                            sendEmail(
-                                $email,
-                                $first_name,
-                                'Payment Confirmed!',
-                                $html,
-                                $AltBody
-                            );
-                        }
+	                        // send payment confimation mail
+	                        if (isNotificationEnabled($conn, $user_id)) {
+	                            $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
+	                            $payment_vehicle_image_src = 'cid:vehicle_image';
+	                            $html = require '../../includes/payment_confirmation.php';
+	                            sendEmail(
+	                                $email,
+	                                $first_name,
+	                                'Payment Confirmed!',
+	                                $html,
+	                                $AltBody,
+	                                [
+	                                    'embedded_images' => [[
+	                                        'path' => getVehicleEmailImagePath($vehicle),
+	                                        'cid' => 'vehicle_image',
+	                                        'name' => 'vehicle-image'
+	                                    ]]
+	                                ]
+	                            );
+	                        }
                     } catch (Throwable $e) {
                         error_log("Booking email failed: " . $e->getMessage());
                     }

@@ -263,46 +263,57 @@ if ($action === 'finalize' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // ── Email ─────────────────────────────────────────────────────
-    $u_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
-    $u_stmt->bind_param("i", $user_id);
-    $u_stmt->execute();
-    $ud = $u_stmt->get_result()->fetch_assoc();
+    if ($is_extension) {
+        sendBookingExtensionEmail($conn, $user_id, $vehicle, $dropoff_date, $totalprice, 'Kharcha QR');
+    } else {
+        // ── Email ─────────────────────────────────────────────────────
+        $u_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
+        $u_stmt->bind_param("i", $user_id);
+        $u_stmt->execute();
+        $ud = $u_stmt->get_result()->fetch_assoc();
+        $email = $ud['email'] ?? '';
+        $first_name = $ud['first_name'] ?? '';
+        $last_name = $ud['last_name'] ?? '';
 
-    try {
-        $invoice_data = [
-            'booking_id' => $booking_id,
-            'first_name' => $ud['first_name'],
-            'email' => $ud['email'],
-            'model' => $vehicle['model'],
-            'pickup_date' => $pickup_date,
-            'dropoff_date' => $dropoff_date,
-            'days' => $days,
-            'price_per_day' => $vehicle['price_per_day'],
-            'total_price' => $totalprice,
-            'discount_code' => $discount_code,
-            'discount_amount' => $discount_amount,
-        ];
-        $pdf_string = generateInvoicePDF($invoice_data);
+        try {
+            $invoice_data = [
+                'booking_id' => $booking_id,
+                'first_name' => $first_name,
+                'email' => $email,
+                'model' => $vehicle['model'],
+                'pickup_date' => $pickup_date,
+                'dropoff_date' => $dropoff_date,
+                'days' => $days,
+                'price_per_day' => $vehicle['price_per_day'],
+                'total_price' => $totalprice,
+                'discount_code' => $discount_code,
+                'discount_amount' => $discount_amount,
+            ];
+            $pdf_string = generateInvoicePDF($invoice_data);
 
-        $savings_line = $discount_amount > 0
-            ? "<p style='color:#2ecc71;'><strong>You saved NPR " . number_format($discount_amount, 2) . " with code " . htmlspecialchars($discount_code) . "!</strong></p>"
-            : '';
-
-        // send payment confimation mail
-        if (isNotificationEnabled($conn, $user_id)) {
-            $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
-            $html = require '../../includes/payment_confirmation.php';
-            sendEmail(
-                $email,
-                $first_name,
-                'Payment Confirmed!',
-                $html,
-                $AltBody
-            );
+	            // send payment confimation mail
+	            if (isNotificationEnabled($conn, $user_id)) {
+	                $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
+	                $payment_vehicle_image_src = 'cid:vehicle_image';
+	                $html = require '../../includes/payment_confirmation.php';
+	                sendEmail(
+	                    $email,
+	                    $first_name,
+	                    'Payment Confirmed!',
+	                    $html,
+	                    $AltBody,
+	                    [
+	                        'embedded_images' => [[
+	                            'path' => getVehicleEmailImagePath($vehicle),
+	                            'cid' => 'vehicle_image',
+	                            'name' => 'vehicle-image'
+	                        ]]
+	                    ]
+	                );
+	            }
+        } catch (Exception $e) {
+            error_log("Kharcha QR email failed: " . $e->getMessage());
         }
-    } catch (Exception $e) {
-        error_log("Kharcha QR email failed: " . $e->getMessage());
     }
 
     unset(

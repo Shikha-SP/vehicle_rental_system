@@ -37,9 +37,20 @@ return "
             </table>
           </td>
         </tr>
-        <tr><td style=\"padding:0 24px;\"><div style=\"height:1px;background:#2a2a2a;\"></div></td></tr>
-        <tr>
-          <td style=\"padding:20px 24px;\">
+	        <tr><td style=\"padding:0 24px;\"><div style=\"height:1px;background:#2a2a2a;\"></div></td></tr>
+	        <tr>
+	          <td style=\"padding:20px 24px 0;\">
+	            <p style=\"margin:0 0 10px;font-size:10px;font-weight:700;color:#888888;letter-spacing:1.5px;text-transform:uppercase;\">Payment Method</p>
+	            <table cellpadding=\"0\" cellspacing=\"0\">
+	              <tr>
+	                <td style=\"padding-right:8px;font-size:16px;\">&#128179;</td>
+	                <td style=\"font-size:15px;font-weight:600;color:#ffffff;\">" . htmlspecialchars($payment_method ?? 'Card', ENT_QUOTES, 'UTF-8') . "</td>
+	              </tr>
+	            </table>
+	          </td>
+	        </tr>
+	        <tr>
+	          <td style=\"padding:20px 24px;\">
             <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\">
               <tr>
                 <td width=\"50%\" style=\"vertical-align:top;\">

@@ -172,7 +172,7 @@ try {
     }
 
     // Fetch vehicle data for email
-    $v_stmt = $conn->prepare("SELECT model, price_per_day FROM vehicles WHERE id = ?");
+    $v_stmt = $conn->prepare("SELECT model, price_per_day, image_path FROM vehicles WHERE id = ?");
     $v_stmt->bind_param("i", $vehicle_id);
     $v_stmt->execute();
     $vehicle = $v_stmt->get_result()->fetch_assoc();
@@ -187,7 +187,8 @@ try {
     $last_name = $user_data['last_name'] ?? '';
 
     // Generate Invoice and Send Email
-    try {
+    if (!$is_extension) {
+        try {
         $invoice_data = [
             'booking_id' => $booking_id,
             'first_name' => $first_name,
@@ -202,33 +203,47 @@ try {
 
         $pdf_string = generateInvoicePDF($invoice_data);
 
-        // send booking confirmation mail
-        if (isNotificationEnabled($conn, $user_id)) {
-            $html = require '../../includes/booking_confirmation.php';
-            $altBody = "Hi $first_name, your booking for {$vehicle['model']} is confirmed. Dates: $pickup_date - $dropoff_date.";
-            sendEmail($email, $first_name, 'Booking Confirmation', $html, $altBody, [
+	        // send booking confirmation mail
+	        if (isNotificationEnabled($conn, $user_id)) {
+	            $payment_method = 'eSewa';
+	            $html = require '../../includes/booking_confirmation.php';
+	            $altBody = "Hi $first_name, your booking for {$vehicle['model']} is confirmed. Dates: $pickup_date - $dropoff_date. Payment Method: $payment_method.";
+	            sendEmail($email, $first_name, 'Booking Confirmation', $html, $altBody, [
                 'data' => $pdf_string,
                 'filename' => "invoice_{$booking_id}.pdf",
                 'mime' => 'application/pdf'
             ]);
         }
-        // send payment confimation mail
-        if (isNotificationEnabled($conn, $user_id)) {
-            $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
-            $html = require '../../includes/payment_confirmation.php';
-            sendEmail(
-                $email,
-                $first_name,
-                'Payment Confirmed!',
-                $html,
-                $AltBody
-            );
+	        // send payment confimation mail
+	        if (isNotificationEnabled($conn, $user_id)) {
+	            $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
+	            $payment_vehicle_image_src = 'cid:vehicle_image';
+	            $html = require '../../includes/payment_confirmation.php';
+	            sendEmail(
+	                $email,
+	                $first_name,
+	                'Payment Confirmed!',
+	                $html,
+	                $AltBody,
+	                [
+	                    'embedded_images' => [[
+	                        'path' => getVehicleEmailImagePath($vehicle),
+	                        'cid' => 'vehicle_image',
+	                        'name' => 'vehicle-image'
+	                    ]]
+	                ]
+	            );
+	        }
+        } catch (Exception $e) {
+            error_log("Booking email failed: " . $e->getMessage());
         }
-    } catch (Exception $e) {
-        error_log("Booking email failed: " . $e->getMessage());
     }
 
     $conn->commit();
+
+    if ($is_extension) {
+        sendBookingExtensionEmail($conn, $user_id, $vehicle, $dropoff_date, $totalprice, 'eSewa');
+    }
 
     // Clear session payment data
     unset(

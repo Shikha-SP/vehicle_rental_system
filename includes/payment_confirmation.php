@@ -1,4 +1,5 @@
 <?php
+$payment_vehicle_image_src = $payment_vehicle_image_src ?? 'cid:vehicle_image';
 return "
 <html>
 <head>
@@ -45,7 +46,7 @@ return "
         </tr>
         <tr>
           <td colspan=\"2\" style=\"padding:0 16px 16px;\">
-            <img src=\"{$vehicle['image_url']}\" alt=\"{$vehicle['model']}\" width=\"100%\" style=\"display:block;height:200px;object-fit:cover;border-radius:8px;\" />
+	            <img src=\"{$payment_vehicle_image_src}\" alt=\"{$vehicle['model']}\" width=\"100%\" style=\"display:block;height:200px;object-fit:cover;border-radius:8px;\" />
           </td>
         </tr>
         <tr>

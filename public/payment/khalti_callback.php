@@ -273,58 +273,64 @@ if (isset($response_data['status']) && $response_data['status'] === 'Completed')
         $vehicle = $v_stmt->get_result()->fetch_assoc();
         $v_stmt->close();
 
-        $user_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
-        $user_stmt->bind_param("i", $user_id);
-        $user_stmt->execute();
-        $user_data = $user_stmt->get_result()->fetch_assoc();
-        $user_stmt->close();
-
-        $email = $user_data['email'] ?? '';
-        $first_name = $user_data['first_name'] ?? '';
-        $last_name = $user_data['last_name'] ?? '';
         $transaction_ref = $response_data['transaction_id'] ?? ('KH-' . strtoupper(bin2hex(random_bytes(8))));
 
-        try {
-            $invoice_data = [
-                'booking_id' => $booking_id,
-                'first_name' => $first_name,
-                'email' => $email,
-                'model' => $vehicle['model'],
-                'pickup_date' => $pickup_date,
-                'dropoff_date' => $dropoff_date,
-                'days' => max(1, $days),
-                'price_per_day' => $vehicle['price_per_day'],
-                'total_price' => $totalprice,
-                'discount_code' => $discount_code_saved,
-                'discount_amount' => $discount_amount_saved,
-            ];
+        if (!$is_extension) {
+            $user_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
+            $user_stmt->bind_param("i", $user_id);
+            $user_stmt->execute();
+            $user_data = $user_stmt->get_result()->fetch_assoc();
+            $user_stmt->close();
 
-            $pdf_string = generateInvoicePDF($invoice_data);
+            $email = $user_data['email'] ?? '';
+            $first_name = $user_data['first_name'] ?? '';
+            $last_name = $user_data['last_name'] ?? '';
 
-            $mail = createMailer();
-            $mail->addAddress($email, $first_name . ' ' . $last_name);
-            $mail->Subject = 'Booking Confirmation (Khalti Payment)';
-            $mail->isHTML(true);
-            $mail->Body = "
-                <p>Hi {$first_name},</p>
-                <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
-                <p>Payment Method: Khalti</p>
-                <p>Transaction ID: {$transaction_ref}</p>
-                <p>Pickup date: {$pickup_date}</p>
-                <p>Dropoff date: {$dropoff_date}</p>
-                <p>Total Paid: NPR $totalprice</p>
-                <p>Please find your invoice attached.</p>
-                <p>Thank you for choosing TD Rentals 🚀</p>
-                <p>Best Regards,<br>TD Rentals Team</p>
-            ";
-            $mail->AltBody = "Hi {$first_name}, Your booking for {$vehicle['model']} is confirmed via Khalti.";
-            $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
-            $mail->send();
-        } catch (Exception $e) {
-            error_log("Booking email failed: " . $e->getMessage());
+            try {
+                $invoice_data = [
+                    'booking_id' => $booking_id,
+                    'first_name' => $first_name,
+                    'email' => $email,
+                    'model' => $vehicle['model'],
+                    'pickup_date' => $pickup_date,
+                    'dropoff_date' => $dropoff_date,
+                    'days' => max(1, $days),
+                    'price_per_day' => $vehicle['price_per_day'],
+                    'total_price' => $totalprice,
+                    'discount_code' => $discount_code_saved,
+                    'discount_amount' => $discount_amount_saved,
+                ];
+
+                $pdf_string = generateInvoicePDF($invoice_data);
+
+                $mail = createMailer();
+                $mail->addAddress($email, $first_name . ' ' . $last_name);
+                $mail->Subject = 'Booking Confirmation (Khalti Payment)';
+                $mail->isHTML(true);
+                $mail->Body = "
+                    <p>Hi {$first_name},</p>
+                    <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
+                    <p>Payment Method: Khalti</p>
+                    <p>Transaction ID: {$transaction_ref}</p>
+                    <p>Pickup date: {$pickup_date}</p>
+                    <p>Dropoff date: {$dropoff_date}</p>
+                    <p>Total Paid: NPR $totalprice</p>
+                    <p>Please find your invoice attached.</p>
+                    <p>Thank you for choosing TD Rentals 🚀</p>
+                    <p>Best Regards,<br>TD Rentals Team</p>
+                ";
+                $mail->AltBody = "Hi {$first_name}, Your booking for {$vehicle['model']} is confirmed via Khalti.";
+                $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
+                $mail->send();
+            } catch (Exception $e) {
+                error_log("Booking email failed: " . $e->getMessage());
+            }
         }
 
         $conn->commit();
+        if ($is_extension) {
+            sendBookingExtensionEmail($conn, $user_id, $vehicle, $dropoff_date, $totalprice, 'Khalti');
+        }
         khaltiClearPaymentSession();
         header("Location: bookingconfirmed.php?id=" . $booking_id);
         exit;
