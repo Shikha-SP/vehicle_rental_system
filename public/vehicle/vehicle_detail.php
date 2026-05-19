@@ -113,6 +113,14 @@ $all_reviews = $reviews_stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 // Total number of reviews (with non-empty review text)
 $total_reviews = count($all_reviews);
 
+// Fetch total number of ratings (includes reviews with and without text)
+$ratings_count_sql = "SELECT COUNT(*) as count FROM reviews WHERE vehicle_id = ?";
+$ratings_count_stmt = $conn->prepare($ratings_count_sql);
+$ratings_count_stmt->bind_param("i", $id);
+$ratings_count_stmt->execute();
+$ratings_count_result = $ratings_count_stmt->get_result()->fetch_assoc();
+$total_ratings = $ratings_count_result['count'] ?? 0;
+
 // Fetch average rating
 $avg_sql = "SELECT AVG(rating) as avg_rating FROM reviews WHERE vehicle_id = ?";
 $avg_stmt = $conn->prepare($avg_sql);
@@ -209,9 +217,14 @@ include '../../includes/header.php';
                                 <?php endif; ?>
                             <?php endfor; ?>
                         </div>
-                        <p class="review-trigger" id="openReviewModal">
-                            <?= $user_rating_value ? 'Edit your review' : 'Write a review' ?>
-                        </p>
+                        <div class="rating-actions" style="display: flex; gap: 15px; margin-top: 1rem; align-items: center; justify-content: center; z-index: 5;">
+                            <span class="review-trigger" id="openReviewModal" style="margin-top: 0;">
+                                <?= $user_rating_value ? 'Edit your review' : 'Write a review' ?>
+                            </span>
+                            <span class="delete-rating-trigger" id="deleteRatingBtn" style="display: <?= $user_rating_value > 0 ? 'inline-flex' : 'none' ?>;">
+                                <i class="fa-solid fa-trash-can"></i>Delete Rating
+                            </span>
+                        </div>
                         <p>Rate this vehicle</p>
                     </div>
                 <?php endif; ?>
@@ -219,7 +232,7 @@ include '../../includes/header.php';
                 <!-- display reviews -->
                 <div class="avg-rating-box">
                     <h3>Community Reviews <span class="total-reviews">
-                        (<?= $total_reviews ?> <?= $total_reviews == 1 ? 'review' : 'reviews' ?>)
+                        (<?= $total_ratings ?> <?= $total_ratings == 1 ? 'rating' : 'ratings' ?> &amp; <?= $total_reviews ?> <?= $total_reviews == 1 ? 'review' : 'reviews' ?>)
                         </span>
                     </h3>
                     <?php
@@ -505,8 +518,7 @@ include '../../includes/header.php';
             <textarea id="reviewText" placeholder="Describe your experience with this vehicle..."
                 rows="5"><?= htmlspecialchars($user_review_text) ?></textarea>
 
-            <button class="btn-submit-review"
-                id="submitReview"><?= $user_review_text ? 'Update Review' : 'Post Review' ?></button>
+            <button class="btn-submit-review" id="submitReview"><?= $user_review_text ? 'Update Review' : 'Post Review' ?></button>
         </div>
     </div>
 <?php endif; ?>

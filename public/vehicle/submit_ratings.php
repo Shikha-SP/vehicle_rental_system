@@ -21,6 +21,17 @@ if ($rating < 1 || $rating > 5 || !$vehicle_id || !$booking_id) {
 }
 $review = isset($data['review']) ? trim($data['review']) : null;
 
+// Enforce one rating/review per user per vehicle: check if they already rated this vehicle
+$check_sql = "SELECT booking_id FROM reviews WHERE user_id = ? AND vehicle_id = ? LIMIT 1";
+$check_stmt = $conn->prepare($check_sql);
+$check_stmt->bind_param("ii", $user_id, $vehicle_id);
+$check_stmt->execute();
+$existing_review = $check_stmt->get_result()->fetch_assoc();
+if ($existing_review) {
+    // If they already have a review, update it under its original booking_id
+    $booking_id = $existing_review['booking_id'];
+}
+
 $sql = "INSERT INTO reviews (booking_id, user_id, vehicle_id, rating, review) 
         VALUES (?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE 

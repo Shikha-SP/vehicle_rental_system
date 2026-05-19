@@ -293,6 +293,8 @@ require_once __DIR__ . '/../../includes/header.php';
 <script>
 let currentBookingId = null;
 let liveInterval = null;
+let cachedConversationsJson = '';
+let cachedAdminMessagesJson = '';
 
 function switchTab(tab) {
     document.querySelectorAll('.inbox-section').forEach(s => s.classList.remove('active'));
@@ -317,6 +319,10 @@ function loadConversations() {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
+                const conversationsJson = JSON.stringify(data.conversations);
+                if (conversationsJson === cachedConversationsJson) return; // Skip DOM update if no change
+                cachedConversationsJson = conversationsJson;
+
                 const sidebar = document.getElementById('convSidebar');
                 sidebar.innerHTML = data.conversations.map(c => `
                     <div class="conv-item ${currentBookingId == c.booking_id ? 'active' : ''}" onclick="selectConv(${c.booking_id})">
@@ -333,8 +339,10 @@ function loadConversations() {
 
 function selectConv(bookingId) {
     currentBookingId = bookingId;
+    cachedAdminMessagesJson = ''; // Reset message cache to force reload on select
     document.getElementById('adminChatInputRow').style.display = 'flex';
     loadAdminMessages();
+    cachedConversationsJson = ''; // Reset conversation cache to force selection state redraw
     loadConversations(); // Refresh sidebar to clear unread badge locally
 }
 
@@ -344,6 +352,10 @@ function loadAdminMessages() {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
+                const messagesJson = JSON.stringify(data.messages);
+                if (messagesJson === cachedAdminMessagesJson) return; // Skip DOM update if no change
+                cachedAdminMessagesJson = messagesJson;
+
                 const container = document.getElementById('adminChatHistory');
                 const atBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 50;
                 
