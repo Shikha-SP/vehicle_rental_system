@@ -358,6 +358,18 @@ html[data-theme="light"] .empty-state p {
     color: var(--fg-muted, #4b4b4f);
 }
 
+html[data-theme="light"] .my-vehicles .btn-primary {
+    background: var(--primary) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+html[data-theme="light"] .my-vehicles .btn-primary:hover {
+    background: var(--primary-hover) !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
 @media (max-width: 768px) {
     .my-vehicles {
         padding: 3rem 20px;

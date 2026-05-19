@@ -150,7 +150,7 @@ if (!$result) {
           <?php else: ?>
               <div style="padding: 3rem; text-align: center; color: var(--fg3);">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                  <div style="font-size: 1.2rem; font-weight: 600; color: #fff; margin-bottom: 0.5rem;">No Pending Vehicles</div>
+                  <div style="font-size: 1.2rem; font-weight: 600; color: var(--fg); margin-bottom: 0.5rem;">No Pending Vehicles</div>
                   <div>There are currently no vehicles waiting for your review.</div>
               </div>
           <?php endif; ?>

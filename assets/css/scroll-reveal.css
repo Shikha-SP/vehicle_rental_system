@@ -52,15 +52,6 @@
         filter: none !important;
     }
 
-    .dashboard-content .hero-section .hero-heading__glitch,
-    .dashboard-content .hero-section .hero-heading__line--2 .hero-heading__glitch .text-red {
-        animation: none !important;
-        transform: none !important;
-        text-shadow: none !important;
-        filter: none !important;
-        letter-spacing: inherit !important;
-        will-change: auto !important;
-    }
 }
 
 /* -------------------------------------------------------------------------- */

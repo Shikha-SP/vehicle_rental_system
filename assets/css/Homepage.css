@@ -427,12 +427,14 @@ html[data-theme="light"] .dashboard-content .btn-ghosts:hover {
     border: 1px solid #d2c9c9;
 }
 
+
 /* =============================================================================
    3. GALLERY SECTION
 ============================================================================= */
 .gallery-section {
-    padding: 80px 0;
+    padding: 60px 0 70px;
     background: var(--card-bg);
+    overflow-x: hidden; /* prevent page-level scrollbar from the infinite slider */
 }
 
 
@@ -729,6 +731,8 @@ html[data-theme="light"] .dashboard-content .btn-ghosts:hover {
     border-color: #fff;
 }
 
+
+
 /* =============================================================================
    5. SHOWROOM SECTION
 ============================================================================= */
@@ -883,6 +887,7 @@ html[data-theme="light"] .dashboard-content .btn-ghosts:hover {
     }
 }
 
+
 @media (max-width: 480px) {
     .hero-heading {
         font-size: 2rem;
@@ -1001,4 +1006,298 @@ html[data-theme="light"] .dashboard-content .btn-rent {
 html[data-theme="light"] .dashboard-content .btn-rent:hover {
     background: var(--accent-red);
     color: #ffffff;
-}
+}
+
+/* =============================================================================
+   8. PERFORMANCE GALLERY — INFINITE AUTO-SCROLL SLIDER
+   Mirrors the Curated Collections slider in landing_page / index.css
+============================================================================= */
+
+/* Wrapper — positions nav buttons relative to itself */
+.dashboard-content .slider-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: visible; /* let the nav buttons bleed out */
+}
+
+/* Scrollable strip — hidden scrollbar, horizontal flex */
+.dashboard-content .slider-container {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    scroll-behavior: auto;          /* JS animates; smooth would fight rAF */
+    scrollbar-width: none;          /* Firefox */
+    padding: 12px 0 16px;
+}
+
+.dashboard-content .slider-container::-webkit-scrollbar {
+    display: none;                  /* Chrome / Safari / Opera */
+}
+
+/* Force row layout on every viewport (overrides the ≤960 px column rule) */
+@media (max-width: 960px) {
+    .dashboard-content .slider-container.car-grid {
+        flex-direction: row !important;
+    }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PREMIUM GALLERY CARD  (replaces plain car-card inside the slider)
+   Size: 420 × 520 px  |  Full-bleed hero image + gradient overlay + info panel
+───────────────────────────────────────────────────────────────────────────── */
+
+/* Slot width inside the slider strip */
+.dashboard-content .slider-container .car-card.gallery-card {
+    flex: 0 0 320px !important;
+    min-width: 320px !important;
+    height: 400px !important;
+    border: none !important;
+    border-radius: 8px !important;
+    overflow: hidden;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+    background: transparent !important;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: transform 0.35s ease, box-shadow 0.35s ease !important;
+}
+
+.dashboard-content .slider-container .car-card.gallery-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* ── Full-bleed image area ── */
+.gallery-card__img {
+    position: relative;
+    flex: 1 1 auto;
+    overflow: hidden;
+    background: #0d0d0f;
+}
+
+.gallery-card__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: block;
+}
+
+.gallery-card:hover .gallery-card__img img {
+    transform: scale(1.07);
+}
+
+/* No-image fallback */
+.gallery-card__no-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    background: #111113;
+}
+
+/* Gradient overlay — fades image into the info panel */
+.gallery-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        transparent 40%,
+        rgba(0, 0, 0, 0.55) 75%,
+        rgba(0, 0, 0, 0.92) 100%
+    );
+    pointer-events: none;
+}
+
+/* License-type badge — top-left chip */
+.gallery-card__badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: rgba(192, 57, 43, 0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    color: #fff;
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    padding: 5px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    z-index: 2;
+}
+
+/* ── Info panel ── */
+.gallery-card__info {
+    flex: 0 0 auto;
+    background: linear-gradient(135deg, #111113 0%, #18181b 100%);
+    padding: 14px 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-top: 2px solid var(--accent-red);
+}
+
+/* Model name + fuel row */
+.gallery-card__meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.gallery-card__name {
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #fff;
+    line-height: 1.15;
+    flex: 1;
+}
+
+.gallery-card__fuel {
+    font-size: 0.67rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Price + CTA row */
+.gallery-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.gallery-card__price {
+    font-size: 1rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.01em;
+}
+
+.gallery-card__price small {
+    font-size: 0.62rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-left: 2px;
+}
+
+/* CTA button */
+.gallery-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-red);
+    color: #fff;
+    padding: 7px 14px;
+    border-radius: 4px;
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gallery-card__cta:hover {
+    background: #e04535;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(192, 57, 43, 0.45);
+}
+
+.gallery-card__cta i {
+    font-size: 0.6rem;
+    transition: transform 0.2s ease;
+}
+
+.gallery-card__cta:hover i {
+    transform: translateX(3px);
+}
+
+/* ── Light-mode overrides ── */
+html[data-theme="light"] .gallery-card__info {
+    background: linear-gradient(135deg, #f0ece6 0%, #e8e4de 100%);
+}
+
+html[data-theme="light"] .gallery-card__name {
+    color: #111;
+}
+
+html[data-theme="light"] .gallery-card__price {
+    color: #111;
+}
+
+html[data-theme="light"] .gallery-card__fuel {
+    color: #666;
+}
+
+html[data-theme="light"] .gallery-card__price small {
+    color: #888;
+}
+
+html[data-theme="light"] .dashboard-content .slider-container .car-card.gallery-card {
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Glassmorphic Nav Buttons ── */
+.dashboard-content .slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+/* Keep buttons INSIDE the slider strip so they aren't clipped by overflow-x:hidden */
+.dashboard-content .slider-btn.left  { left:  16px; }
+.dashboard-content .slider-btn.right { right: 16px; }
+
+.dashboard-content .slider-wrapper:hover .slider-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.dashboard-content .slider-btn:hover {
+    background: var(--accent-red);
+    border-color: var(--accent-red);
+    transform: translateY(-50%) scale(1.12);
+    box-shadow: 0 6px 22px rgba(192, 57, 43, 0.55);
+}
+
+/* ── Light-mode button overrides ── */
+html[data-theme="light"] .dashboard-content .slider-btn {
+    background: rgba(0, 0, 0, 0.06);
+    border-color: rgba(0, 0, 0, 0.15);
+    color: #111;
+}
+
+html[data-theme="light"] .dashboard-content .slider-btn:hover {
+    background: var(--accent-red);
+    border-color: var(--accent-red);
+    color: #fff;
+}

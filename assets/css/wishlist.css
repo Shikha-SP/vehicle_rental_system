@@ -163,9 +163,10 @@
 }
 
 .reset-link:hover {
-    background: var(--accent-hv);
+    background: var(--primary-hover, var(--accent));
     transform: translateY(-2px);
-    box-shadow: 0 4px 15px var(--accent-glow);
+    box-shadow: none !important;
+    color: #ffffff !important;
 }
 
 /* ── Light mode ───────────────────────────────────────────── */
