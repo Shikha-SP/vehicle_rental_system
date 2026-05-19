@@ -522,6 +522,27 @@ include '../../includes/header.php';
     html[data-theme="light"] .policy-content p {
         color: var(--fg-muted, #4b4b4f);
     }
+
+    /* Empty State View Fleet Button Styling */
+    .btn-red {
+        background: #C0392B;
+        color: #ffffff !important;
+        transition: background var(--ease-default), transform var(--ease-fast), box-shadow var(--ease-default);
+    }
+    .btn-red:hover {
+        background: #e04535 !important;
+        color: #ffffff !important;
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-red);
+    }
+    html[data-theme="light"] .btn-red {
+        background: #B03A2E;
+        color: #ffffff !important;
+    }
+    html[data-theme="light"] .btn-red:hover {
+        background: #C0392B !important;
+        color: #ffffff !important;
+    }
 </style>
 <link rel="stylesheet" href="../../assets/css/style.css">
 
@@ -622,7 +643,7 @@ include '../../includes/header.php';
             <div class="empty-icon">🏎️</div>
             <h2>NO RECENT DRIVES</h2>
             <p>Your garage is currently empty. Elevate your status today.</p>
-            <a href="home_page.php" class="btn btn-red" style="padding: 1rem 3rem;">View Fleet</a>
+            <a href="home_page.php" class="btn btn-red" style="padding: 1rem 3rem; background: var(--primary, #C0392B); color: #ffffff !important; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; text-decoration: none; transition: background 0.22s, transform 0.22s, box-shadow 0.22s; box-shadow: var(--shadow-md);">View Fleet</a>
         </div>
     <?php else: ?>
         <div class="bookings-grid">
