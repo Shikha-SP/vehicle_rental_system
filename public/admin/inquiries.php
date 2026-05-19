@@ -51,7 +51,7 @@ require_once __DIR__ . '/../../includes/header.php';
         display: flex;
         gap: 1rem;
         margin-bottom: 2rem;
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border);
         padding-bottom: 1rem;
     }
     .inbox-tab {
@@ -60,7 +60,7 @@ require_once __DIR__ . '/../../includes/header.php';
         border-radius: 8px;
         font-weight: 600;
         transition: 0.3s;
-        color: var(--text-secondary);
+        color: var(--fg2);
         background: transparent;
         border: none;
     }
@@ -79,29 +79,35 @@ require_once __DIR__ . '/../../includes/header.php';
     .live-chat-layout {
         display: grid;
         grid-template-columns: 320px 1fr;
-        gap: 1rem;
+        gap: 0;
         height: 600px;
-        background: rgba(0,0,0,0.2);
+        background: var(--bg2);
         border-radius: 12px;
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--border);
         overflow: hidden;
     }
     .conv-sidebar {
-        border-right: 1px solid var(--border-color);
+        background: rgba(0, 0, 0, 0.08);
+        border-right: 1px solid var(--border);
         display: flex;
         flex-direction: column;
         overflow-y: auto;
     }
+    html[data-theme="light"] .conv-sidebar {
+        background: rgba(0, 0, 0, 0.02);
+    }
     .conv-item {
         padding: 1rem;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
+        border-bottom: 1px solid var(--border);
         cursor: pointer;
         transition: 0.2s;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        color: var(--fg);
     }
     .conv-item:hover { background: rgba(255,255,255,0.03); }
+    html[data-theme="light"] .conv-item:hover { background: rgba(0,0,0,0.02); }
     .conv-item.active { background: rgba(192, 57, 43, 0.1); border-left: 4px solid var(--red); }
     .conv-user-name { font-weight: 600; font-size: 0.9rem; }
     .conv-car { font-size: 0.75rem; color: var(--fg3); }
@@ -113,6 +119,7 @@ require_once __DIR__ . '/../../includes/header.php';
         display: flex;
         flex-direction: column;
         height: 100%;
+        background: transparent;
     }
     .chat-history {
         flex-grow: 1;
@@ -135,18 +142,21 @@ require_once __DIR__ . '/../../includes/header.php';
 
     .chat-input-row {
         padding: 1rem;
-        background: rgba(0,0,0,0.3);
+        background: rgba(0,0,0,0.15);
         display: flex;
         gap: 10px;
-        border-top: 1px solid var(--border-color);
+        border-top: 1px solid var(--border);
+    }
+    html[data-theme="light"] .chat-input-row {
+        background: rgba(0,0,0,0.02);
     }
     .chat-input-row input {
         flex-grow: 1;
-        background: #111;
-        border: 1px solid #444;
+        background: var(--bg);
+        border: 1px solid var(--border);
         padding: 0.7rem 1rem;
         border-radius: 8px;
-        color: #fff;
+        color: var(--fg);
     }
 </style>
 
@@ -171,7 +181,10 @@ require_once __DIR__ . '/../../includes/header.php';
             </div>
             <div class="chat-main">
                 <div class="chat-history" id="adminChatHistory">
-                    <div style="text-align:center; padding-top:10rem; color:#555;">Select a conversation to start chatting</div>
+                    <div style="text-align: center; margin: auto; color: var(--fg3, #555); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem;">
+                        <i class="fa-solid fa-comments" style="font-size: 3rem; opacity: 0.35; color: var(--fg, #fff);"></i>
+                        <span style="font-size: 1.05rem; font-weight: 500; letter-spacing: 0.02em;">Select a conversation to start chatting</span>
+                    </div>
                 </div>
                 <div class="chat-input-row" id="adminChatInputRow" style="display:none;">
                     <input type="text" id="adminChatInput" placeholder="Type a message...">
@@ -318,15 +331,24 @@ function loadConversations() {
         .then(data => {
             if (data.success) {
                 const sidebar = document.getElementById('convSidebar');
-                sidebar.innerHTML = data.conversations.map(c => `
-                    <div class="conv-item ${currentBookingId == c.booking_id ? 'active' : ''}" onclick="selectConv(${c.booking_id})">
-                        <div class="conv-info">
-                            <div class="conv-user-name">${c.user_name} ${c.user_last_name}</div>
-                            <div class="conv-car">${c.vehicle_model} (#${c.booking_id})</div>
+                if (data.conversations.length === 0) {
+                    sidebar.innerHTML = `
+                        <div style="text-align: center; margin: auto; padding: 2rem; color: var(--fg3); font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; opacity: 0.7;">
+                            <i class="fa-regular fa-folder-open" style="font-size: 1.5rem;"></i>
+                            <span>No active chats</span>
                         </div>
-                        ${c.unread_count > 0 ? `<span class="unread-badge">${c.unread_count}</span>` : ''}
-                    </div>
-                `).join('');
+                    `;
+                } else {
+                    sidebar.innerHTML = data.conversations.map(c => `
+                        <div class="conv-item ${currentBookingId == c.booking_id ? 'active' : ''}" onclick="selectConv(${c.booking_id})">
+                            <div class="conv-info">
+                                <div class="conv-user-name">${c.user_name} ${c.user_last_name}</div>
+                                <div class="conv-car">${c.vehicle_model} (#${c.booking_id})</div>
+                            </div>
+                            ${c.unread_count > 0 ? `<span class="unread-badge">${c.unread_count}</span>` : ''}
+                        </div>
+                    `).join('');
+                }
             }
         });
 }

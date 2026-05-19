@@ -76,7 +76,7 @@ AND id NOT IN (
 )
 /* Order by ID descending so the most recently added cars appear first */
 ORDER BY id DESC
-/* Limit to 3 to keep the UI clean and satisfy the 'minimum of 3' display requirement */
+/* Only 3 source cards — they are duplicated 4× in PHP for the seamless loop */
 LIMIT 3
 ";
 
@@ -156,21 +156,17 @@ include '../../includes/header.php';
                 <p class="hero-label">
                     WELCOME BACK, <?php echo e(strtoupper($username)); ?>
                 </p>
-                <h1 class="hero-heading hero-heading--glitch">
+                <h1 class="hero-heading">
                     <span class="hero-heading__line hero-heading__line--1">
-                        <span class="hero-heading__line-inner">
-                            <span class="hero-heading__glitch">ENGINEERED FOR</span>
-                        </span>
+                        <span class="hero-heading__line-inner">ENGINEERED FOR</span>
                     </span>
                     <span class="hero-heading__line hero-heading__line--2">
                         <span class="hero-heading__line-inner">
-                            <span class="hero-heading__glitch"><span class="text-red">PERFORMANCE.</span></span>
+                            <span class="text-red">PERFORMANCE.</span>
                         </span>
                     </span>
                     <span class="hero-heading__line hero-heading__line--3">
-                        <span class="hero-heading__line-inner">
-                            <span class="hero-heading__glitch">DRIVEN BY YOU.</span>
-                        </span>
+                        <span class="hero-heading__line-inner">DRIVEN BY YOU.</span>
                     </span>
                 </h1>
 
@@ -197,75 +193,77 @@ include '../../includes/header.php';
                 <a href="../vehicle/vehicles.php" class="view-all">EXPLORE ALL VEHICLES →</a>
             </div>
 
-            <div class="car-grid">
+            <?php
+            $gallery_cars = [];
+            if ($gallery_result && $gallery_result->num_rows > 0) {
+                while ($row = $gallery_result->fetch_assoc()) {
+                    $gallery_cars[] = $row;
+                }
+            }
+            // Duplicate the items 4 times to ensure a smooth, seamless infinite scrolling loop
+            $loop_cars = array_merge($gallery_cars, $gallery_cars, $gallery_cars, $gallery_cars);
+            ?>
 
-                <?php if ($gallery_result && $gallery_result->num_rows > 0): ?>
+            <div class="slider-wrapper">
+                <!-- Glassmorphic Navigation Buttons -->
+                <button class="slider-btn left"><i class="fa-solid fa-chevron-left"></i></button>
+                <button class="slider-btn right"><i class="fa-solid fa-chevron-right"></i></button>
 
-                    <?php while ($car = $gallery_result->fetch_assoc()): ?>
+                <div class="slider-container car-grid" id="homeSlider">
 
-                        <?php
-                        $price = number_format((float) $car['price_per_day'], 0);
-                        $fuel = $car['fuel_capacity'] ? $car['fuel_capacity'] . ' L' : 'N/A';
-                        ?>
+                    <?php if (count($loop_cars) > 0): ?>
 
-                        <div class="car-card element-class">
+                        <?php foreach ($loop_cars as $car): ?>
 
-                            <div class="card-type-badge">
-                                <?php echo e(strtoupper($car['license_type'] ?? 'CAR')); ?>
-                            </div>
+                            <?php
+                            $price = number_format((float) $car['price_per_day'], 0);
+                            $fuel = $car['fuel_capacity'] ? $car['fuel_capacity'] . ' L' : 'N/A';
+                            ?>
 
+                            <div class="car-card gallery-card element-class">
 
-                            <div class="card-img-wrapper">
-
-                                <?php
-                                $imgSrc = getImageUrl($car['image_path']);
-
-                                if ($imgSrc):
-                                    ?>
-                                    <img src="<?php echo e($imgSrc); ?>" alt="<?php echo e($car['model']); ?>">
-                                <?php else: ?>
-                                    <div class="no-img">NO IMAGE</div>
-                                <?php endif; ?>
-
-                            </div>
-
-
-                            <div class="card-info">
-
-                                <h3>
-                                    <?php echo e($car['model']); ?>
-                                    <span class="badge">NEW</span>
-                                </h3>
-
-
-                                <div class="card-specs-row">
-                                    <span class="spec-item">⛽ <?php echo e($fuel); ?></span>
+                                <!-- Full-bleed hero image -->
+                                <div class="gallery-card__img">
+                                    <?php
+                                    $imgSrc = getImageUrl($car['image_path']);
+                                    if ($imgSrc): ?>
+                                        <img src="<?php echo e($imgSrc); ?>" alt="<?php echo e($car['model']); ?>">
+                                    <?php else: ?>
+                                        <div class="gallery-card__no-img">NO IMAGE</div>
+                                    <?php endif; ?>
+                                    <!-- Gradient overlay -->
+                                    <div class="gallery-card__overlay"></div>
+                                    <!-- Type badge -->
+                                    <span class="gallery-card__badge"><?php echo e(strtoupper($car['license_type'] ?? 'CAR')); ?></span>
                                 </div>
 
-
-                                <div class="specs">
-                                    <span class="price">NPR <?php echo e($price); ?> /day</span>
-
-                                    <a href="../vehicle/vehicle_detail.php?id=<?php echo (int) $car['id']; ?>" class="btn-rent">
-                                        RENT NOW
-                                    </a>
-
+                                <!-- Info panel at the bottom -->
+                                <div class="gallery-card__info">
+                                    <div class="gallery-card__meta">
+                                        <h3 class="gallery-card__name"><?php echo e($car['model']); ?></h3>
+                                        <span class="gallery-card__fuel">⛽ <?php echo e($fuel); ?></span>
+                                    </div>
+                                    <div class="gallery-card__footer">
+                                        <span class="gallery-card__price">NPR <?php echo e($price); ?><small>/day</small></span>
+                                        <a href="../vehicle/vehicle_detail.php?id=<?php echo (int) $car['id']; ?>" class="gallery-card__cta">
+                                            RENT NOW <i class="fa-solid fa-arrow-right"></i>
+                                        </a>
+                                    </div>
                                 </div>
 
                             </div>
 
+                        <?php endforeach; ?>
+
+                    <?php else: ?>
+
+                        <div class="no-vehicle-message element-class">
+                            <p>No vehicles available at the moment.</p>
                         </div>
 
-                    <?php endwhile; ?>
+                    <?php endif; ?>
 
-                <?php else: ?>
-
-                    <div class="no-vehicle-message element-class">
-                        <p>No vehicles available at the moment.</p>
-                    </div>
-
-                <?php endif; ?>
-
+                </div>
             </div>
 
 
@@ -294,6 +292,8 @@ include '../../includes/header.php';
             </div>
         </div>
     </section>
+
+
 
 
 
@@ -346,5 +346,68 @@ include '../../includes/header.php';
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="../../assets/js/map.js?v=2"></script>
+
+<script>
+// --- Performance Gallery Glider Slider logic ---
+(function() {
+    const container = document.getElementById('homeSlider');
+    const wrapper = container ? container.closest('.slider-wrapper') : null;
+    if (!container || !wrapper) return;
+
+    let isHovered = false;
+    let scrollSpeed = 0.8; // px per frame
+    let scrollPos = 0;
+
+    // Calculate the real content width of the original items.
+    // Since we merged 4 arrays, the base length is 1/4 of total scrollWidth.
+    function getQuarterLimit() {
+        return container.scrollWidth / 4;
+    }
+
+    function step() {
+        if (!isHovered) {
+            scrollPos += scrollSpeed;
+            const limit = getQuarterLimit();
+            // Reset to 0 when we cross the quarter limit to keep looping seamless
+            if (scrollPos >= limit) {
+                scrollPos = 0;
+            }
+            container.scrollLeft = scrollPos;
+        } else {
+            // Keep scrollPos synchronized with manual scrolls/drags
+            scrollPos = container.scrollLeft;
+        }
+        requestAnimationFrame(step);
+    }
+
+    // Auto-scroll start
+    setTimeout(() => {
+        scrollPos = container.scrollLeft;
+        requestAnimationFrame(step);
+    }, 100);
+
+    // Hover state to pause sliding and show navigation buttons
+    wrapper.addEventListener('mouseenter', () => { isHovered = true; });
+    wrapper.addEventListener('mouseleave', () => { isHovered = false; });
+
+    // Left/Right glassmorphic manual controls
+    const leftBtn = wrapper.querySelector('.slider-btn.left');
+    const rightBtn = wrapper.querySelector('.slider-btn.right');
+
+    if (leftBtn) {
+        leftBtn.addEventListener('click', () => {
+            container.scrollBy({ left: -350, behavior: 'smooth' });
+            setTimeout(() => { scrollPos = container.scrollLeft; }, 400);
+        });
+    }
+
+    if (rightBtn) {
+        rightBtn.addEventListener('click', () => {
+            container.scrollBy({ left: 350, behavior: 'smooth' });
+            setTimeout(() => { scrollPos = container.scrollLeft; }, 400);
+        });
+    }
+})();
+</script>
 
 <?php include('../../includes/footer.php'); ?>

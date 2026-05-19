@@ -1,6 +1,7 @@
 /* Color Palette & Variables */
 :root {
     --bg-dark: #09090b;
+    --fog-color: 9, 9, 11; /* rgb of #09090b */
     --text-main: #ffffff;
     --text-muted: #888888;
     --accent-red: #C0392B;
@@ -62,25 +63,48 @@ h4 {
 
 /* Reusable Buttons */
 .btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 14px 28px;
     font-size: 13px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     cursor: pointer;
     border: none;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    white-space: nowrap;
+    text-decoration: none;
 }
 
 .btn-primary {
-    background-color: var(--accent-red);
+    background: linear-gradient(135deg, var(--accent-red), #96281b);
     color: white;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, #e74c3c, var(--accent-red));
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.4s ease;
+}
+
+.btn-primary:hover::before {
+    opacity: 1;
 }
 
 .btn-primary:hover {
-    background-color: var(--accent-hover);
-    box-shadow: 0 4px 15px rgba(192, 57, 43, 0.4);
+    box-shadow: 0 10px 25px rgba(192, 57, 43, 0.5);
+    transform: translateY(-3px);
 }
 
 .btn-secondary {
@@ -196,41 +220,48 @@ h4 {
     justify-content: flex-start;
     padding-left: 6%;
     overflow: hidden;
-    background: radial-gradient(circle at 60% 50%, #1a1a20, #09090b 70%);
+    background: #09090b; /* fallback while video loads */
 }
 
-/* Red Neon Tube glow line in background */
-.red-glow-line {
+/* Full-cover hero video */
+.hero-video {
     position: absolute;
-    top: 25%;
+    top: 0;
     left: 0;
     width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, transparent, #C0392B, transparent);
-    box-shadow: 0 0 30px 4px rgba(192, 57, 43, 0.4);
-    z-index: 1;
-}
-
-.hero-bg-wrapper {
-    position: absolute;
-    right: -5%;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 75%;
     height: 100%;
+    object-fit: cover;
     z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    transition: opacity 0.15s ease;
 }
 
-.hero-bg {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    opacity: 0.9;
-    /* Adding subtle drop shadow for depth */
-    filter: drop-shadow(-20px 20px 40px rgba(0, 0, 0, 0.8));
+@media (min-width: 993px) {
+    .hero-video {
+        transform: scale(1.24) translateX(22%);
+        transform-origin: right center;
+    }
+}
+
+/* Second video starts hidden */
+.hero-video-hidden {
+    opacity: 0;
+    z-index: 0;
+}
+
+/* Gradient overlay so text stays readable and video edges are hidden, clearing quickly for car clarity */
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to right,
+        rgb(var(--fog-color)) 0%,
+        rgb(var(--fog-color)) 20%,
+        rgba(var(--fog-color), 0.6) 38%,
+        rgba(var(--fog-color), 0.15) 55%,
+        transparent         70%
+    );
+    z-index: 2;
+    transition: background 0.4s ease;
 }
 
 .hero-content {
@@ -269,6 +300,7 @@ h4 {
     gap: 15px;
 }
 
+
 /* Shared Section Paddings */
 .collections,
 .features,
@@ -296,12 +328,68 @@ h4 {
     background-color: var(--accent-red);
 }
 
-/* Collections Grid Layout */
-.collections-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-auto-rows: 320px;
+/* Reusable Horizontal Sliders & Nav Controls */
+.slider-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: visible;
+}
+
+.slider-container {
+    display: flex;
     gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: auto;
+    scrollbar-width: none; /* Hide scrollbar on Firefox */
+    padding: 10px 0;
+}
+
+.slider-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar on Chrome, Safari, Opera */
+}
+
+/* Glassmorphic Navigation Buttons */
+.slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.slider-btn:hover {
+    background: var(--accent-red);
+    border-color: var(--accent-red);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 20px rgba(192, 57, 43, 0.5);
+}
+
+.slider-btn.left {
+    left: 20px;
+}
+
+.slider-btn.right {
+    right: 20px;
+}
+
+.slider-wrapper:hover .slider-btn {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .collection-card {
@@ -335,21 +423,30 @@ h4 {
     z-index: 1;
 }
 
-/* Grid Spans - exact masonry like image */
-.card-tl {
-    grid-column: span 8;
+/* Landing Page Slider Item Override */
+.slider-container .collection-card {
+    flex: 0 0 450px !important;
+    height: 300px !important;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
 }
 
-.card-tr {
-    grid-column: span 4;
+/* Homepage Gallery Slider Item Override */
+.slider-container .car-card {
+    flex: 0 0 350px !important;
+    min-width: 350px !important;
+    height: 420px !important;
+    box-sizing: border-box;
 }
 
-.card-bl {
-    grid-column: span 4;
-}
-
-.card-br {
-    grid-column: span 8;
+/* Ensure mobile layout doesn't break slider to column flex */
+@media (max-width: 960px) {
+    .slider-container.car-grid {
+        flex-direction: row !important;
+    }
 }
 
 .card-content {
@@ -555,6 +652,7 @@ h4 {
     z-index: 1;
 }
 
+
 /* Basic Responsiveness */
 @media (max-width: 1200px) {
     .hero-title {
@@ -643,16 +741,19 @@ h4 {
     .cta-bg-image {
         display: none;
     }
+
+
 }
 
 /* ── Light Mode ── */
 html[data-theme="light"] {
-    --bg-dark: #F5F4F2;
-    --text-main: #18181b;
-    --text-muted: #4B4B4F;
-    --card-bg: #FFFFFF;
-    --card-hover: #F8F7F5;
-    --nav-text: #4B4B4F;
+    --bg-dark: #EBE9E4;
+    --fog-color: 235, 233, 228; /* rgb of #EBE9E4 */
+    --text-main: #2C2A28;
+    --text-muted: #5C5955;
+    --card-bg: #F2F0EC;
+    --card-hover: #E2DFD8;
+    --nav-text: #5C5955;
 }
 
 html[data-theme="light"] body {
@@ -664,10 +765,33 @@ html[data-theme="light"] .hero {
     background: radial-gradient(circle at 60% 50%, #f0f2f5, #e0e4e8 70%);
 }
 
+/* Ensure hero text is dark and readable over the white fog */
+html[data-theme="light"] .hero-title {
+    color: #111111;
+}
+html[data-theme="light"] .hero-subtitle {
+    color: var(--accent-red);
+}
 html[data-theme="light"] .hero-desc {
-    color: var(--text-muted);
+    color: #444444;
 }
 
+/* Ensure buttons are styled perfectly in light mode */
+html[data-theme="light"] .hero-buttons .btn-primary {
+    background: linear-gradient(135deg, var(--accent-red), #96281b) !important; /* Keep background red */
+    color: #000000 !important; /* Change text to black */
+}
+
+html[data-theme="light"] .hero-buttons .btn-secondary {
+    color: #000000 !important; /* Change text to black */
+    background-color: rgba(0, 0, 0, 0.06); /* Premium semi-transparent light overlay */
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="light"] .hero-buttons .btn-secondary:hover {
+    background-color: rgba(0, 0, 0, 0.12);
+    border-color: rgba(0, 0, 0, 0.5);
+}
 
 html[data-theme="light"] .section-heading {
     color: var(--text-main);
@@ -697,3 +821,6 @@ html[data-theme="light"] .feature-title {
 html[data-theme="light"] .feature-desc {
     color: var(--text-muted);
 }
+
+
+
