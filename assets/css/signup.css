@@ -291,11 +291,11 @@ a:hover {
     color: var(--text);
 }
 
-/* Checkbox / Terms */
+/* ── Checkbox / Terms ───────────────────────────────────────── */
 .signup-form__terms {
     display: flex;
-    align-items: flex-start;
-    gap: 10px;
+    flex-direction: column;
+    gap: 0;
     margin-bottom: 28px;
     margin-top: 4px;
 }
@@ -313,6 +313,29 @@ a:hover {
     font-size: 13px;
     color: var(--text-muted);
     line-height: 1.5;
+}
+
+/* The checkbox + label sit on one row */
+.signup-form__terms-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+/* Terms error — clean pill below the checkbox row */
+.signup-form__terms .field-error {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    margin-left: 28px;
+    padding: 5px 10px;
+    background: rgba(192, 57, 43, 0.08);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 12px;
+    color: var(--accent);
+    animation: slideInDown 0.2s ease forwards;
 }
 
 /* CTA Button */
@@ -390,26 +413,12 @@ a:hover {
     display: block;
 }
 
-
-/* Fallback gradient if no image */
-/* .signup-hero__fallback {
-    position: absolute;
-    inset: 0;
-    background:
-        linear-gradient(135deg, #0d0d0d 0%, #1a0a0a 40%, #2a0808 100%);
-} */
-
 .signup-hero__overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(to right, var(--bg) 0%, transparent 75%);
     pointer-events: none;
 }
-
-
-
-
-
 
 /* ── Errors / Messages ──────────────────────────────────────── */
 .field-error {
@@ -476,7 +485,7 @@ a:hover {
 }
 
 .signup-errors {
-    display: none; /* Hide the old list at the top */
+    display: none;
 }
 
 /* ── Success State ──────────────────────────────────────────── */
@@ -580,10 +589,7 @@ a:hover {
     text-transform: uppercase;
 }
 
-
 /* ── Improved 2-Step Navigation ────────────────────────────── */
-
-/* Container for the two buttons in Step 2 */
 .signup-form__actions {
     display: flex;
     flex-direction: column;
@@ -626,7 +632,6 @@ a:hover {
     transform: translateX(-4px);
 }
 
-/* Adjusting the Submit button margin when inside the actions container */
 .signup-form__actions .signup-form__submit {
     margin-bottom: 0;
 }
@@ -679,10 +684,8 @@ a:hover {
     transition: color var(--transition), border-color var(--transition);
 }
 .login-theme-toggle:hover { color: var(--text); border-color: var(--text-muted); }
-/* Default (dark mode): show moon, hide sun */
 .login-theme-toggle .sun-icon  { display: none; }
 .login-theme-toggle .moon-icon { display: block; }
-/* Light mode: flip to sun, hide moon */
 html[data-theme="light"] .login-theme-toggle .sun-icon  { display: block; }
 html[data-theme="light"] .login-theme-toggle .moon-icon { display: none; }
 
@@ -744,7 +747,9 @@ html[data-theme="light"] .signup-form__back-btn:hover {
     background: rgba(0,0,0,0.03);
 }
 
-/* footer copy now handled by base rule using local var */
+html[data-theme="light"] .signup-form__terms .field-error {
+    background: rgba(192, 57, 43, 0.06);
+}
 
 html[data-theme="light"] .signup-success__title { color: var(--text); }
 html[data-theme="light"] .signup-success__email { color: var(--text); }
