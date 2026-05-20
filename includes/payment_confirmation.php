@@ -1,5 +1,6 @@
 <?php
 $payment_vehicle_image_src = $payment_vehicle_image_src ?? 'cid:vehicle_image';
+$payment_confirmation_method = $payment_confirmation_method ?? ($payment_label ?? ($payment_method ?? 'Card'));
 return "
 <html>
 <head>
@@ -51,11 +52,17 @@ return "
         </tr>
         <tr>
           <td colspan=\"2\" style=\"padding:0 24px 20px;\">
-            <p style=\"margin:0 0 6px;font-size:10px;font-weight:700;color:#888888;letter-spacing:1.5px;text-transform:uppercase;\">Booking Date</p>
-            <p style=\"margin:0;font-size:15px;font-weight:600;color:#ffffff;\">{$pickup_date} &mdash; {$dropoff_date}</p>
-          </td>
-        </tr>
-      </table>
+	            <p style=\"margin:0 0 6px;font-size:10px;font-weight:700;color:#888888;letter-spacing:1.5px;text-transform:uppercase;\">Booking Date</p>
+	            <p style=\"margin:0;font-size:15px;font-weight:600;color:#ffffff;\">{$pickup_date} &mdash; {$dropoff_date}</p>
+	          </td>
+	        </tr>
+	        <tr>
+	          <td colspan=\"2\" style=\"padding:0 24px 20px;\">
+	            <p style=\"margin:0 0 6px;font-size:10px;font-weight:700;color:#888888;letter-spacing:1.5px;text-transform:uppercase;\">Payment Method</p>
+	            <p style=\"margin:0;font-size:15px;font-weight:600;color:#ffffff;\">{$payment_confirmation_method}</p>
+	          </td>
+	        </tr>
+	      </table>
     </td>
   </tr>
 

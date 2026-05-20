@@ -153,26 +153,39 @@ if ($is_extension) {
         ];
         $pdf_string = generateInvoicePDF($invoice_data);
 
-	        // send payment confimation mail
+        // send booking confirmation mail
+        if (isNotificationEnabled($conn, $user_id)) {
+            $html = require '../../includes/booking_confirmation.php';
+            $altBody = "Hi $first_name, your booking for {$vehicle['model']} is confirmed. Dates: $pickup_date - $dropoff_date.";
+            sendEmail($email, $first_name, 'Booking Confirmation', $html, $altBody, [
+                'data' => $pdf_string,
+                'filename' => "invoice_{$booking_id}.pdf",
+                'mime' => 'application/pdf'
+            ]);
+        }
+        // send payment confimation mail
 	        if (isNotificationEnabled($conn, $user_id)) {
 	            $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
 	            $payment_vehicle_image_src = 'cid:vehicle_image';
+	            $payment_confirmation_method = 'Kharcha Payment Portal';
 	            $html = require '../../includes/payment_confirmation.php';
-	            sendEmail(
-	                $email,
-	                $first_name,
-	                'Payment Confirmed!',
-	                $html,
-	                $AltBody,
-	                [
-	                    'embedded_images' => [[
-	                        'path' => getVehicleEmailImagePath($vehicle),
-	                        'cid' => 'vehicle_image',
-	                        'name' => 'vehicle-image'
-	                    ]]
-	                ]
-	            );
-	        }
+            sendEmail(
+                $email,
+                $first_name,
+                'Payment Confirmed!',
+                $html,
+                $AltBody,
+                [
+                    'embedded_images' => [
+                        [
+                            'path' => getVehicleEmailImagePath($vehicle),
+                            'cid' => 'vehicle_image',
+                            'name' => 'vehicle-image'
+                        ]
+                    ]
+                ]
+            );
+        }
     } catch (Exception $e) {
         error_log("Portal booking email failed: " . $e->getMessage());
     }

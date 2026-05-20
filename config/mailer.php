@@ -25,10 +25,10 @@ function createMailer(): PHPMailer {
     $mail->SMTPAuth   = true;
     
     // SMTP username
-    $mail->Username   = 'pandeyshikha567@gmail.com';        
+    $mail->Username   = 'tdrentalsnepal@gmail.com';        
     
     // SMTP password or App Password
-    $mail->Password   = 'odtuojutiyxfvuko';     
+    $mail->Password   = 'facojwxyszcryxrc';     
     
     // Enable TLS encryption; PHPMailer::ENCRYPTION_SMTPS also accepted
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
@@ -37,7 +37,7 @@ function createMailer(): PHPMailer {
     $mail->Port       = 587;
     
     // Set the sender's email address and name
-    $mail->setFrom('pandeyshikha567@gmail.com', 'TDRentals');  
+    $mail->setFrom('tdrentalsnepal@gmail.com', 'TDRentals');  
     
     return $mail;
 }

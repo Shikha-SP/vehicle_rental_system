@@ -333,58 +333,71 @@ if ($action === 'finalize' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // ── Email ─────────────────────────────────────────────────────
-    $v_stmt = $conn->prepare("SELECT model, price_per_day FROM vehicles WHERE id = ?");
+    $v_stmt = $conn->prepare("SELECT model, price_per_day, image_path FROM vehicles WHERE id = ?");
     $v_stmt->bind_param("i", $vehicle_id);
     $v_stmt->execute();
     $vehicle = $v_stmt->get_result()->fetch_assoc();
 
-    if ($is_extension) {
-        sendBookingExtensionEmail($conn, $user_id, $vehicle, $dropoff_date, $totalprice, 'Khalti QR');
-    } else {
-        $u_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
-        $u_stmt->bind_param("i", $user_id);
-        $u_stmt->execute();
-        $ud = $u_stmt->get_result()->fetch_assoc();
+    $u_stmt = $conn->prepare("SELECT email, first_name, last_name FROM users WHERE id = ? LIMIT 1");
+    $u_stmt->bind_param("i", $user_id);
+    $u_stmt->execute();
+    $ud = $u_stmt->get_result()->fetch_assoc();
 
-        try {
-            $invoice_data = [
-                'booking_id'      => $booking_id,
-                'first_name'      => $ud['first_name'],
-                'email'           => $ud['email'],
-                'model'           => $vehicle['model'],
-                'pickup_date'     => $pickup_date,
-                'dropoff_date'    => $dropoff_date,
-                'days'            => $days,
-                'price_per_day'   => $vehicle['price_per_day'],
-                'total_price'     => $totalprice,
-                'discount_code'   => $discount_code,
-                'discount_amount' => $discount_amount,
-            ];
-            $pdf_string = generateInvoicePDF($invoice_data);
+    try {
+        $invoice_data = [
+            'booking_id'      => $booking_id,
+            'first_name'      => $ud['first_name'],
+            'email'           => $ud['email'],
+            'model'           => $vehicle['model'],
+            'pickup_date'     => $pickup_date,
+            'dropoff_date'    => $dropoff_date,
+            'days'            => $days,
+            'price_per_day'   => $vehicle['price_per_day'],
+            'total_price'     => $totalprice,
+            'discount_code'   => $discount_code,
+            'discount_amount' => $discount_amount,
+        ];
+        $pdf_string = generateInvoicePDF($invoice_data);
 
-            $savings_line = $discount_amount > 0
-                ? "<p style='color:#2ecc71;'><strong>You saved NPR " . number_format($discount_amount, 2) . " with code " . htmlspecialchars($discount_code) . "!</strong></p>"
-                : '';
+        $savings_line = $discount_amount > 0
+            ? "<p style='color:#2ecc71;'><strong>You saved NPR " . number_format($discount_amount,2) . " with code " . htmlspecialchars($discount_code) . "!</strong></p>"
+            : '';
 
-            $mail = createMailer();
-            $mail->addAddress($ud['email'], $ud['first_name'] . ' ' . $ud['last_name']);
-            $mail->Subject = 'Booking Confirmation – TD Rentals';
-            $mail->isHTML(true);
-            $mail->Body = "<p>Hi {$ud['first_name']},</p>
-                <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
-                <p>Pickup: {$pickup_date}</p><p>Dropoff: {$dropoff_date}</p>
-                <p>Total Paid: NPR " . number_format($totalprice, 2) . "</p>
-                <p>Payment Method: Khalti QR</p>
-                <p>Transaction ID: {$transaction_ref}</p>
-                {$savings_line}
-                <p>Please find your invoice attached.</p>
-                <p>Thank you for choosing TD Rentals 🚀</p><p>Best Regards,<br>TD Rentals Team</p>";
-            $mail->AltBody = "Hi {$ud['first_name']}, your booking for {$vehicle['model']} is confirmed.";
-            $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
-            if (isNotificationEnabled($conn, $user_id)) $mail->send();
-        } catch (Exception $e) {
-            error_log("Khalti QR email failed: " . $e->getMessage());
+        
+        if (isNotificationEnabled($conn, $user_id)) $mail->send();
+        // send booking confirmation mail
+        if (isNotificationEnabled($conn, $user_id)) {
+            $html = require '../../includes/booking_confirmation.php';
+            $altBody = "Hi $first_name, your booking for {$vehicle['model']} is confirmed. Dates: $pickup_date - $dropoff_date.";
+            sendEmail($email, $first_name, 'Booking Confirmation', $html, $altBody, [
+                'data' => $pdf_string,
+                'filename' => "invoice_{$booking_id}.pdf",
+                'mime' => 'application/pdf'
+            ]);
         }
+        // send payment confimation mail
+	        if (isNotificationEnabled($conn, $user_id)) {
+	            $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
+	            $payment_vehicle_image_src = 'cid:vehicle_image';
+	            $payment_confirmation_method = 'Khalti QR';
+	            $html = require '../../includes/payment_confirmation.php';
+	            sendEmail(
+	                $email,
+	                $first_name,
+	                'Payment Confirmed!',
+	                $html,
+	                $AltBody,
+	                [
+	                    'embedded_images' => [[
+	                        'path' => getVehicleEmailImagePath($vehicle),
+	                        'cid' => 'vehicle_image',
+	                        'name' => 'vehicle-image'
+	                    ]]
+	                ]
+	            );
+	        }
+    } catch (Exception $e) {
+        error_log("Khalti QR email failed: " . $e->getMessage());
     }
 
     unset(

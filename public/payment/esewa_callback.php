@@ -218,6 +218,7 @@ try {
 	        if (isNotificationEnabled($conn, $user_id)) {
 	            $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
 	            $payment_vehicle_image_src = 'cid:vehicle_image';
+	            $payment_confirmation_method = 'eSewa';
 	            $html = require '../../includes/payment_confirmation.php';
 	            sendEmail(
 	                $email,

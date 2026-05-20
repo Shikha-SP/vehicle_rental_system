@@ -484,6 +484,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cardnumber'])) {
 	                        if (isNotificationEnabled($conn, $user_id)) {
 	                            $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
 	                            $payment_vehicle_image_src = 'cid:vehicle_image';
+	                            $payment_confirmation_method = $payment_label;
 	                            $html = require '../../includes/payment_confirmation.php';
 	                            sendEmail(
 	                                $email,
@@ -558,11 +559,13 @@ if ($uid) {
 }
 ?>
 
-<?php require_once '../../includes/header.php'; ?>
+<?php require_once '../../includes/paymentheader.php'; ?>
 <link rel="stylesheet" href="../../assets/css/paymentdetail.css">
+<link rel="stylesheet" href="../../assets/css/header.css">
+<link rel="stylesheet" href="../../assets/css/footer.css">
 <link rel="stylesheet" href="../../assets/css/kharcha_payment.css">
 <script src="https://kit.fontawesome.com/ac1574deb1.js" crossorigin="anonymous"></script>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <div id="payment-page">
 
     <!-- ════════════ LEFT: PAYMENT FORM ════════════ -->
