@@ -7,6 +7,7 @@
     font-family: inherit;
     display: flex;
     justify-content: center;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .reminder-banner__inner {
@@ -16,11 +17,6 @@
     max-width: 1200px;
     width: 100%;
     flex-wrap: wrap;
-}
-
-.reminder-banner__icon {
-    font-size: 1.4rem;
-    flex-shrink: 0;
 }
 
 .reminder-banner__text {
@@ -34,6 +30,7 @@
     font-size: 0.95rem;
     font-weight: 700;
     letter-spacing: 0.02em;
+    transition: color 0.3s;
 }
 
 .reminder-banner__text span {
@@ -50,48 +47,121 @@
     border-radius: 4px;
     border: 2px solid currentColor;
     white-space: nowrap;
-    transition: background 0.2s, color 0.2s;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
-/* ── Variants ── */
+/* ─────────────────────────────────────────────────────────────
+   🟡 Tomorrow (Pickup Tomorrow)
+   ───────────────────────────────────────────────────────────── */
+/* Dark Mode (Default) */
 .reminder-banner--tomorrow {
-    background: #fffbea;
-    color: #7a5c00;
-    border-bottom: 2px solid #f5d76e;
+    background: rgba(245, 158, 11, 0.12); /* Yellow tint (low opacity) */
+    color: #F5F4F2;
+    border-bottom: 2px solid #f59e0b;
+}
+.reminder-banner--tomorrow strong {
+    color: #f59e0b; /* Yellow highlight text */
+}
+.reminder-banner--tomorrow .reminder-banner__link {
+    border-color: #f59e0b;
+    color: #F5F4F2;
 }
 .reminder-banner--tomorrow .reminder-banner__link:hover {
-    background: #7a5c00;
-    color: #fff;
+    background: #f59e0b;
+    color: #0f0f10;
+    border-color: #f59e0b;
 }
 
+/* Light Mode Overrides */
+html[data-theme="light"] .reminder-banner--tomorrow {
+    background: rgba(245, 158, 11, 0.08); /* Yellow tint (lower opacity) */
+    color: #18181b;
+    border-bottom: 2px solid #f59e0b;
+}
+html[data-theme="light"] .reminder-banner--tomorrow strong {
+    color: #f59e0b;
+}
+html[data-theme="light"] .reminder-banner--tomorrow .reminder-banner__link {
+    border-color: #f59e0b;
+    color: #18181b;
+}
+html[data-theme="light"] .reminder-banner--tomorrow .reminder-banner__link:hover {
+    background: #f59e0b;
+    color: #FFFFFF;
+    border-color: #f59e0b;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   🟠 Soon (Within a few hours)
+   ───────────────────────────────────────────────────────────── */
+/* Dark Mode (Default) */
 .reminder-banner--soon {
-    background: #fff3e0;
-    color: #7c4400;
-    border-bottom: 2px solid #ff9800;
+    background: rgba(192, 57, 43, 0.15); /* Red tint (low opacity) */
+    color: #F5F4F2;
+    border-bottom: 2px solid #C0392B;
+}
+.reminder-banner--soon strong {
+    color: #C0392B; /* Red highlight text */
+}
+.reminder-banner--soon .reminder-banner__link {
+    border-color: #C0392B;
+    color: #F5F4F2;
 }
 .reminder-banner--soon .reminder-banner__link:hover {
-    background: #7c4400;
-    color: #fff;
+    background: #C0392B;
+    color: #FFFFFF;
+    border-color: #C0392B;
 }
 
-.reminder-banner--urgent {
-    background: #C0392B;
-    color: #fff;
+/* Light Mode Overrides */
+html[data-theme="light"] .reminder-banner--soon {
+    background: rgba(192, 57, 43, 0.08); /* Red tint (lower opacity) */
+    color: #18181b;
     border-bottom: 2px solid #C0392B;
-    animation: pulse-bg 1.5s ease-in-out infinite alternate;
 }
-.reminder-banner--urgent .reminder-banner__link {
-    border-color: #fff;
-    color: #fff;
-}
-.reminder-banner--urgent .reminder-banner__link:hover {
-    background: #fff;
+html[data-theme="light"] .reminder-banner--soon strong {
     color: #C0392B;
 }
+html[data-theme="light"] .reminder-banner--soon .reminder-banner__link {
+    border-color: #C0392B;
+    color: #18181b;
+}
+html[data-theme="light"] .reminder-banner--soon .reminder-banner__link:hover {
+    background: #C0392B;
+    color: #FFFFFF;
+    border-color: #C0392B;
+}
 
-@keyframes pulse-bg {
-    from { background: #C0392B; }
-    to   { background: #C0392B; }
+/* ─────────────────────────────────────────────────────────────
+   🔴 Urgent (Very Imminent)
+   ───────────────────────────────────────────────────────────── */
+/* Both Modes */
+.reminder-banner--urgent {
+    background: #C0392B;
+    color: #FFFFFF;
+    border-bottom: 2px solid #C0392B;
+    animation: pulse-border-glow 1.5s ease-in-out infinite alternate;
+}
+.reminder-banner--urgent strong {
+    color: #FFFFFF;
+}
+.reminder-banner--urgent .reminder-banner__link {
+    border-color: #FFFFFF;
+    color: #FFFFFF;
+}
+.reminder-banner--urgent .reminder-banner__link:hover {
+    background: #FFFFFF;
+    color: #C0392B;
+    border-color: #FFFFFF;
+}
+
+@keyframes pulse-border-glow {
+    from {
+        border-bottom-color: #C0392B;
+    }
+    to {
+        border-bottom-color: #ffffff;
+    }
 }
 
 @media (max-width: 600px) {
