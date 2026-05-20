@@ -1,6 +1,13 @@
+
 body {
   background-color: #131313;
   color: #ffffff; /* make text color white */
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 .subtitle
 {
@@ -555,19 +562,23 @@ html[data-theme="light"] #qr-button {
 @media screen and (max-width: 900px) {
     #payment-page {
         flex-direction: column-reverse;
-        gap: 40px;
-        padding: 20px 15px;
+        gap: 28px;
+        width: 100%;
+        max-width: 100%;
+        padding: 18px 16px 28px;
     }
 
     #payment-form-section,
     #summary-section {
         flex: none;
         width: 100%;
-        min-width: 100%; /* Override the min-width constraint */
+        min-width: 0;
+        box-sizing: border-box;
     }
 
     #summary-section {
         position: static;
+        margin-top: 0;
     }
 
     #pay-button,
@@ -578,6 +589,40 @@ html[data-theme="light"] #qr-button {
 }
 
 @media screen and (max-width: 600px) {
+    #payment-page {
+        gap: 22px;
+        padding: 14px 12px 24px;
+    }
+
+    #payment-form-section {
+        overflow: hidden;
+    }
+
+    .subtitle {
+        margin-top: 8px;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+    }
+
+    .title {
+        font-size: 28px;
+        line-height: 1.05;
+        margin: 6px 0 18px;
+        overflow-wrap: anywhere;
+    }
+
+    .section-title {
+        font-size: 14px;
+        line-height: 1.35;
+    }
+
+    .input-field {
+        min-width: 0;
+        padding: 14px 15px;
+        font-size: 16px;
+        letter-spacing: 0;
+    }
+
     .form-row {
         flex-direction: column;
         gap: 0;
@@ -589,15 +634,93 @@ html[data-theme="light"] #qr-button {
     }
     
     .car-info {
-        height: 180px;
+        height: 160px;
     }
     
     .car-title {
         font-size: 18px;
+        line-height: 1.15;
+        right: 16px;
+    }
+
+    .booking-panel {
+        padding: 18px 16px;
+    }
+
+    .booking-meta {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .booking-meta > div {
+        text-align: left !important;
+    }
+
+    .booking-meta-value {
+        font-size: 12px;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+    }
+
+    .price-row,
+    .total-row {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .price-row-name {
+        min-width: 0;
+        line-height: 1.4;
+    }
+
+    .price-row-amount {
+        flex-shrink: 0;
+        text-align: right;
     }
     
     .total-amount {
         font-size: 20px;
+        text-align: right;
+    }
+
+    .discount-section > div {
+        flex-direction: column;
+        gap: 8px !important;
+    }
+
+    .discount-section #apply-discount-btn {
+        width: 100% !important;
+        min-height: 44px;
+    }
+
+    #pay-button {
+        min-height: 52px;
+        padding: 15px 18px;
+        font-size: 13px;
+        line-height: 1.25;
+        letter-spacing: 0.06em;
+        text-align: center;
+    }
+
+    .security-note {
+        font-size: 12px;
+        line-height: 1.5;
     }
 }
 
+@media screen and (max-width: 380px) {
+    #payment-page {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .title {
+        font-size: 25px;
+    }
+
+    .booking-panel {
+        padding: 16px 14px;
+    }
+}

@@ -208,7 +208,7 @@ if (isset($khalti_data['status']) && $khalti_data['status'] === 'Completed') {
                 $chk_use->close();
             }
 
-            $v_stmt = $conn->prepare("SELECT model, price_per_day FROM vehicles WHERE id = ?");
+            $v_stmt = $conn->prepare("SELECT model, price_per_day, image_path FROM vehicles WHERE id = ?");
             $v_stmt->bind_param("i", $vehicle_id);
             $v_stmt->execute();
             $vehicle = $v_stmt->get_result()->fetch_assoc();
@@ -240,25 +240,37 @@ if (isset($khalti_data['status']) && $khalti_data['status'] === 'Completed') {
                 ];
                 $pdf_string = generateInvoicePDF($invoice_data);
 
-                $mail = createMailer();
-                $mail->addAddress($email, $first_name . ' ' . $last_name);
-                $mail->Subject = 'Booking Confirmation (Khalti QR Payment)';
-                $mail->isHTML(true);
-                $mail->Body = "
-                    <p>Hi {$first_name},</p>
-                    <h2>Your booking for {$vehicle['model']} is confirmed.</h2>
-                    <p>Payment Method: Khalti (QR)</p>
-                    <p>Transaction ID: {$transaction_ref}</p>
-                    <p>Pickup date: {$pickup_date}</p>
-                    <p>Dropoff date: {$dropoff_date}</p>
-                    <p>Total Paid: NPR {$totalprice}</p>
-                    <p>Please find your invoice attached.</p>
-                    <p>Thank you for choosing TD Rentals 🚀</p>
-                    <p>Best Regards,<br>TD Rentals Team</p>
-                ";
-                $mail->AltBody = "Hi {$first_name}, Your booking for {$vehicle['model']} is confirmed via Khalti QR.";
-                $mail->addStringAttachment($pdf_string, "invoice_{$booking_id}.pdf", 'base64', 'application/pdf');
-                $mail->send();
+                // send booking confirmation mail
+                if (isNotificationEnabled($conn, $user_id)) {
+                    $html = require '../../includes/booking_confirmation.php';
+                    $altBody = "Hi $first_name, your booking for {$vehicle['model']} is confirmed. Dates: $pickup_date - $dropoff_date.";
+                    sendEmail($email, $first_name, 'Booking Confirmation', $html, $altBody, [
+                        'data' => $pdf_string,
+                        'filename' => "invoice_{$booking_id}.pdf",
+                        'mime' => 'application/pdf'
+                    ]);
+                }
+                // send payment confimation mail
+	                if (isNotificationEnabled($conn, $user_id)) {
+	                    $AltBody = "Hi {$first_name} {$last_name}. Your payment has been confirmed. Thank you for choosing TD Rentals.";
+	                    $payment_vehicle_image_src = 'cid:vehicle_image';
+	                    $payment_confirmation_method = 'Khalti QR';
+	                    $html = require '../../includes/payment_confirmation.php';
+	                    sendEmail(
+	                        $email,
+	                        $first_name,
+	                        'Payment Confirmed!',
+	                        $html,
+	                        $AltBody,
+	                        [
+	                            'embedded_images' => [[
+	                                'path' => getVehicleEmailImagePath($vehicle),
+	                                'cid' => 'vehicle_image',
+	                                'name' => 'vehicle-image'
+	                            ]]
+	                        ]
+	                    );
+	                }
             } catch (Exception $e) {
                 error_log("QR booking email failed: " . $e->getMessage());
             }

@@ -119,6 +119,8 @@ function getCardType($number)
         return 'Visa';
     if (preg_match('/^5[1-5]/', $clean))
         return 'Mastercard';
+    if (preg_match('/^3[47]/', $number))
+        return 'Amex';
     return 'Unknown';
 }
 function getImageUrl($path)
@@ -258,4 +260,149 @@ function generateOTP($length = 6) {
     }
     return $otp;
 }
-?>
+
+// function to get user data
+function getUserData($conn, $user_id)
+{
+    $sql = "SELECT email, first_name, last_name FROM users WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+    return $result;
+}
+
+// function to record transaction
+function recordTransaction(
+    $conn,
+    $booking_id,
+    $user_id,
+    $amount,
+    $card_last4,
+    $card_type,
+    $transaction_ref
+) {
+    $sql = "
+        INSERT INTO transactions (
+            booking_id,
+            user_id,
+            amount,
+            payment_method,
+            card_last4,
+            card_type,
+            transaction_ref,
+            created_at
+        )
+        VALUES (?, ?, ?, 'card', ?, ?, ?, NOW())
+    ";
+
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        error_log('recordTransaction prepare failed: ' . $conn->error);
+        return false;
+    }
+    $stmt->bind_param(
+        "iidsss",
+        $booking_id,
+        $user_id,
+        $amount,
+        $card_last4,
+        $card_type,
+        $transaction_ref
+    );
+
+    if (!$stmt->execute()) {
+        error_log('recordTransaction execute failed: ' . $stmt->error);
+        error_log("Values — booking_id: $booking_id, user_id: $user_id, amount: $amount, card_last4: $card_last4, card_type: $card_type, ref: $transaction_ref");
+        return false;
+    }
+
+    return true;
+}
+function sendEmail(
+    $to,
+    $name,
+    $subject,
+    $htmlBody,
+    $altBody = '',
+    $attachment = null
+) {
+
+    $mail = createMailer();
+
+    $mail->addAddress($to, $name);
+    $mail->Subject = $subject;
+    $mail->isHTML(true);
+
+    $mail->Body = $htmlBody;
+    $mail->AltBody = $altBody;
+
+    if ($attachment) {
+        if (!empty($attachment['data']) && !empty($attachment['filename']) && !empty($attachment['mime'])) {
+            $mail->addStringAttachment(
+                $attachment['data'],
+                $attachment['filename'],
+                'base64',
+                $attachment['mime']
+            );
+        }
+
+        if (!empty($attachment['embedded_images']) && is_array($attachment['embedded_images'])) {
+            foreach ($attachment['embedded_images'] as $image) {
+                if (!empty($image['path']) && is_file($image['path'])) {
+                    $mail->addEmbeddedImage(
+                        $image['path'],
+                        $image['cid'] ?? 'embedded_image',
+                        $image['name'] ?? basename($image['path'])
+                    );
+                }
+            }
+        }
+    }
+
+    return $mail->send();
+}
+
+function getVehicleEmailImagePath(array $vehicle): string
+{
+    $root = dirname(__DIR__);
+    $fallback = $root . '/assets/images/car_1775474575.jpg';
+
+    foreach (['image_path', 'image_url'] as $key) {
+        if (empty($vehicle[$key])) {
+            continue;
+        }
+
+        $path = (string) $vehicle[$key];
+        if (preg_match('/^https?:\/\//i', $path)) {
+            continue;
+        }
+
+        $local_path = $root . '/' . ltrim($path, '/');
+        if (is_file($local_path)) {
+            return $local_path;
+        }
+    }
+
+    return $fallback;
+}
+
+function sendBookingExtensionEmail($conn, int $user_id, array $vehicle, string $dropoff_date, float $extra_cost, string $payment_method): void
+{
+    try {
+        if (isNotificationEnabled($conn, $user_id)) {
+            $user_data = getUserData($conn, $user_id);
+            $email = $user_data['email'] ?? '';
+            $first_name = $user_data['first_name'] ?? '';
+
+            $html = require __DIR__ . '/booking_extension.php';
+            $altBody = "Hi $first_name, your booking for {$vehicle['model']} has been extended to $dropoff_date. Payment Method: $payment_method.";
+
+            sendEmail($email, $first_name, 'Booking Extended - TD Rentals', $html, $altBody);
+        }
+    } catch (Throwable $e) {
+        error_log('Extension email failed: ' . $e->getMessage());
+    }
+}
+    ?>
